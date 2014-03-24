@@ -1,0 +1,23 @@
+{
+  "name": "UPC_OD_Project",
+  "version": "0.0.0",
+  "description": "This project is developed during the Open Data course as part of our studies at UPC (www.fib.upc.edu)",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/vogelsgesang/upc-od.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "readmeFilename": "README.md",
+  "gitHead": "6a72d2ce45a128eb91f155f0704f4a493f31afcf",
+  "dependencies": {
+    "node-static": "~0.7.3",
+    "grunt": "~0.4.4",
+    "grunt-contrib-less": "~0.11.0"
+  }
+}
