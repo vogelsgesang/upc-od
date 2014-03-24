@@ -17,5 +17,11 @@
   "gitHead": "6a72d2ce45a128eb91f155f0704f4a493f31afcf",
   "dependencies": {
     "node-static": "~0.7.3"
+  },
+  "devDependencies": {
+    "grunt": "^0.4.4",
+    "grunt-contrib-copy": "^0.5.0",
+    "grunt-contrib-clean": "^0.5.0",
+    "grunt-contrib-htmlmin": "^0.2.0"
   }
 }
