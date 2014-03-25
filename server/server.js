@@ -2,21 +2,19 @@
 var port = 4443;
 
 var http = require("http");
-var url = require('url');
-var nodeStatic = require('node-static');;
+var url = require("url");
+var nodeStatic = require("node-static");
+var api = require("./api");
 
-var staticFiles = new(nodeStatic.Server)('./static');
+var staticFiles = new(nodeStatic.Server)("./static", {gzip: true});
 
 function handleRequest(request, response) {
   var pathName = url.parse(request.url).pathname;
   var apiRegExp = /^\/api\//;
-  var ressourceRegExp = /^\/(style.css|js\/|partials\/)/;
+  var ressourceRegExp = /^\/(style.css$|js\/|partials\/|fonts\/)/;
   if(apiRegExp.test(pathName)) {
-    //this is an api call.
-    //Since we do not have an api so far, just answer with an error
-    response.writeHead(404, {});
-    response.write("Not implemented.");
-    response.end();
+    //handle this api call
+    api.handle(request, response);
   } else if(ressourceRegExp.test(pathName)) {
     // Serve ressource files
     staticFiles.serve(request, response, function (err, result) {
@@ -28,7 +26,7 @@ function handleRequest(request, response) {
     });
   } else {
     // Serve the main file
-    staticFiles.serveFile('/main.html', 200, {}, request, response, function (err, result) {
+    staticFiles.serveFile("/main.html", 200, {}, request, response, function (err, result) {
       if (err) {
         console.error("Error serving " + request.url + " - " + err.message);
         response.writeHead(err.status, err.headers);
