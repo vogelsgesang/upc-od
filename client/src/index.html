@@ -5,37 +5,39 @@
     <script src="js/angular.min.js"></script>
     <script>
       angular.module('odIntegrator', [])
-      .controller('SchemaEditor', ['$scope', function(scope) {
-        scope.schema = {
-        'entities': {
-            'ent1': {
-              'name': 'book',
-              'attributes': [
-                {
-                  'name': 'title',
-                  'type': 'string'
-                },
-                {
-                  'name': 'author',
-                  'type': 'link'
-                }
-              ]
-            },
-            'ent2': {
-              'name': 'author',
-              'attributes': [
-                {
-                  'name': 'name',
-                  'type': 'string'
-                },
-                {
-                  'name': 'birthyear',
-                  'type': 'integer'
-                }
-              ]
-            }
+      .controller('SchemaEditor', ['$scope', function($scope) {
+        $scope.schema = {
+          'book': {
+            'attributes': [
+              {
+                'name': 'title',
+                'type': 'string'
+              },
+              {
+                'name': 'author',
+                'type': 'link'
+              }
+            ]
+          },
+          'author': {
+            'attributes': [
+              {
+                'name': 'name',
+                'type': 'string'
+              },
+              {
+                'name': 'birthyear',
+                'type': 'integer'
+              }
+            ]
           }
-        }
+        };
+        $scope.editEntity = function(a) {
+          alert("Editing " + a);
+        };
+        $scope.createEntity = function() {
+          alert("Creating " + $scope.newEntityName);
+        };
       }]);
     </script>
   </head>
@@ -59,15 +61,19 @@
       <h1>Schema</h1>
       <div ng-controller="SchemaEditor">
         <ul>
-          <li ng-repeat="(eId, entity) in schema.entities">
-          {{entity.name}} (id: {{eId}})
+          <li ng-repeat="(eName, eDefinition) in schema">
+          {{eName}} <a ng-click="editEntity(eName)">Edit</a>
             <ul>
-              <li ng-repeat="attribute in entity.attributes">
+              <li ng-repeat="attribute in eDefinition.attributes">
                 {{attribute.name}} ({{attribute.type}})
               </li>
             </ul>
           </li>
         </ul>
+        <form ng-submit="createEntity()">
+          <input type="text" ng-model="newEntityName" placeholder="entity name"/>
+          <button type="submit">Create new entity</button>
+        </form>
       </div>
     </section>
   </body>
