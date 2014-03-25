@@ -3,6 +3,8 @@ var static = require('node-static');
 
 var staticFiles = new(static.Server)('./static');
 
+var port = 4443;
+
 http.createServer(function(request, response) {
     request.addListener('end', function () {
         // Serve files!
@@ -14,4 +16,4 @@ http.createServer(function(request, response) {
              }
          });
     }).resume();
-}).listen(8888);
+}).listen(port);
