@@ -3,8 +3,22 @@
     <title>OD project</title>
     <link rel="stylesheet" href="style.css">
     <script src="js/angular.min.js"></script>
+    <script src="js/angular-route.js"></script>
     <script>
-      angular.module('odIntegrator', [])
+      angular.module('odIntegrator', ['ngRoute'])
+      .config(function($routeProvider, $locationProvider) {
+        $locationProvider.html5Mode(true);
+        $routeProvider
+        .when('/', {
+          'templateUrl': 'home.html'
+        })
+        .when('/schema', {
+          'templateUrl': 'partials/schema-overview.html'
+        })
+        .otherwise({
+          'redirectTo': '/'
+        });
+      })
       .controller('SchemaEditor', ['$scope', function($scope) {
         $scope.schema = {
           'book': {
@@ -44,37 +58,12 @@
   <body ng-app="odIntegrator">
     <section class="container">
       <ul class="nav nav-pills">
-        <li class="active"><a href="#">Home</a></li>
-        <li><a href="#">Schema</a></li>
-        <li><a href="#">Data</a></li>
-        <li><a href="#">Recommendations</a></li>
-        <li><a href="#">You</a></li>
+        <li class="active"><a href="/">Home</a></li>
+        <li><a href="/schema">Schema</a></li>
+        <li><a href="/data">Data</a></li>
+        <li><a href="/recommendation/recommendations">Recommendations</a></li>
       </ul>
-
-      <h1>OD project</h1>
-      <div>
-        <p>
-        This is the first page we have...<br/>
-        From here we will build an awesome project.
-        </p>
-      </div>
-      <h1>Schema</h1>
-      <div ng-controller="SchemaEditor">
-        <ul>
-          <li ng-repeat="(eName, eDefinition) in schema">
-          {{eName}} <a ng-click="editEntity(eName)">Edit</a>
-            <ul>
-              <li ng-repeat="attribute in eDefinition.attributes">
-                {{attribute.name}} ({{attribute.type}})
-              </li>
-            </ul>
-          </li>
-        </ul>
-        <form ng-submit="createEntity()">
-          <input type="text" ng-model="newEntityName" placeholder="entity name"/>
-          <button type="submit">Create new entity</button>
-        </form>
-      </div>
+      <div ng-view></div>
     </section>
   </body>
 </html>
