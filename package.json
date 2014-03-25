@@ -2,7 +2,7 @@
   "name": "UPC_OD_Project",
   "version": "0.0.0",
   "description": "This project is developed during the Open Data course as part of our studies at UPC (www.fib.upc.edu)",
-  "main": "server.js",
+  "main": "server/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server/server.js"
