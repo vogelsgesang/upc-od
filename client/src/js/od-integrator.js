@@ -3,15 +3,22 @@ angular.module('odIntegrator', ['ngRoute'])
   $locationProvider.html5Mode(true);
   $routeProvider
   .when('/', {
-    'templateUrl': 'partials/home.html'
+    'templateUrl': 'partials/home.html',
+    'navItem': 'home'
   })
   .when('/schema', {
-    'templateUrl': 'partials/schema-overview.html'
+    'templateUrl': 'partials/schema-overview.html',
+    'navItem': 'schema'
   })
   .otherwise({
     'redirectTo': '/'
   });
 })
+.controller('Navigation', ['$scope', '$route', function($scope, $route) {
+  $scope.$on("$routeChangeSuccess", function(evt, routeData) {
+    $scope.navItem = $route.current.navItem;
+  });
+}])
 .controller('SchemaEditor', ['$scope', function($scope) {
   $scope.schema = {
     'book': {

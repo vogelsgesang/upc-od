@@ -10,12 +10,14 @@
   </head>
   <body ng-app="odIntegrator">
     <section class="container">
-      <ul class="nav nav-pills">
-        <li class="active"><a href="/">Home</a></li>
-        <li><a href="/schema">Schema</a></li>
-        <li><a href="/data">Data</a></li>
-        <li><a href="/recommendation/recommendations">Recommendations</a></li>
-      </ul>
+      <nav ng-controller="Navigation">
+        <ul class="nav nav-pills">
+          <li ng-class="{active: navItem == 'home'}"><a href="/">Home</a></li>
+          <li ng-class="{active: navItem == 'schema'}"><a href="/schema">Schema</a></li>
+          <li class="disabled"><a href="/data">Data</a></li>
+          <li class="disabled"><a href="/recommendation/recommendations">Recommendations</a></li>
+        </ul>
+      </nav>
       <div ng-view></div>
     </section>
   </body>
