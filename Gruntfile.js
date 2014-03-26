@@ -42,11 +42,24 @@ module.exports = function(grunt) {
           'client/build/style.css': 'client/src/less/style.less'
         }
       }
+    },
+    compress: {
+      deploy: {
+        options: {
+          mode: 'gzip'
+        },
+        files: [
+          {expand: true, cwd: 'server/static/', src: '**/*.html', dest: 'server/static/'},
+          {expand: true, cwd: 'server/static/', src: '**/*.css', dest: 'server/static/'},
+          {expand: true, cwd: 'server/static/', src: '**/*.js', dest: 'server/static/'},
+        ]
+      }
     }
   });
 
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-copy');
+  grunt.loadNpmTasks('grunt-contrib-compress');
   grunt.loadNpmTasks('grunt-contrib-htmlmin');
   grunt.loadNpmTasks('grunt-contrib-less');
 
@@ -55,6 +68,7 @@ module.exports = function(grunt) {
     'less',
     'htmlmin:build',
     'copy:build',
-    'copy:deploy'
+    'copy:deploy',
+    'compress:deploy'
   ]);
 };
