@@ -1,5 +1,6 @@
 "use strict";
 var Router = require("./router");
+var sendJson = require("send-data/json");
 
 var schema = {
   "test": "a",
@@ -17,14 +18,10 @@ var apiRoot = Router({unknownRoute: handleUnknownRoute});
 
 apiRoot
 .addRoute("/schema", function(request, response, opts) {
-  response.writeHead(200, {});
-  response.write("Schema data...");
-  response.end();
+  sendJson(request, response, schema);
 })
 .addRoute("/data/:id", function(request, response, opts) {
-  response.writeHead(200, {});
-  response.write("{id: " + opts.params.id + ", data: \"Not implemented so far\"}");
-  response.end();
+  sendJson(request, response, {id: opts.params.id, data: "Not implemented so far"});
 });
 
 module.exports = apiRoot;
