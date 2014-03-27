@@ -16,7 +16,11 @@
   "readmeFilename": "README.md",
   "gitHead": "6a72d2ce45a128eb91f155f0704f4a493f31afcf",
   "dependencies": {
-    "node-static": "~0.7.3"
+    "node-static": "~0.7.3",
+    "connect": "^2.14.3",
+    "routes": "^0.2.0",
+    "xtend": "^2.2.0",
+    "send-data": "^3.1.2"
   },
   "devDependencies": {
     "grunt": "^0.4.4",

@@ -2,19 +2,20 @@
 var port = 4443;
 
 var http = require("http");
+var connect = require("connect");
 var url = require("url");
 var nodeStatic = require("node-static");
-var api = require("./api");
+var apiRoot = require("./api/root");
 
 var staticFiles = new(nodeStatic.Server)("./static", {gzip: true});
 
 function handleRequest(request, response) {
   var pathName = url.parse(request.url).pathname;
-  var apiRegExp = /^\/api\//;
   var ressourceRegExp = /^\/(style.css$|js\/|partials\/|fonts\/)/;
-  if(apiRegExp.test(pathName)) {
+  if(pathName.substring(0,5) == "/api/") {
+    request.url = request.url.substring(4);
     //handle this api call
-    api.handle(request, response);
+    apiRoot(request, response);
   } else if(ressourceRegExp.test(pathName)) {
     // Serve ressource files
     staticFiles.serve(request, response, function (err, result) {
@@ -36,6 +37,10 @@ function handleRequest(request, response) {
   }
 }
 
-http.createServer(handleRequest).listen(port);
+var app = connect()
+  .use(connect.logger('dev'))
+  .use(handleRequest);
+
+http.createServer(app).listen(port);
 
 console.log("server is listening on port " + port);
