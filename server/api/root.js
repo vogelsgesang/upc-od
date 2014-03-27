@@ -22,11 +22,12 @@ schema.teamMember = [
   }
 ]
 
-function handleUnknownRoute(request, response) {
+function handleUnknownRoute(req, res) {
   //Since we do not have an api so far, just answer with an error
-  response.writeHead(404, {});
-  response.write("Not implemented.");
-  response.end();
+  sendJson(req, res, {
+    statusCode: 404,
+    body: {type:"error", msg: "Unknown api endpoint"}
+  })
 }
 
 var apiRoot = Router({unknownRoute: handleUnknownRoute})
@@ -57,12 +58,12 @@ var apiRoot = Router({unknownRoute: handleUnknownRoute})
     req.end();
   });
 
-var testRouter = Router()
+var testRouter = Router({unknownRoute: handleUnknownRoute})
   .addRoute("/adrian", function(req, res, opts) {
-    res.write("Adrian");
+    sendJson(req, res, {firstname: "Adrian", surname:"Vogelsgesang"});
     res.end();
   })
-  .addRoute("/splats/*/*/*", function(req, res, opts) {
+  .addRoute("/splats/*/*?", function(req, res, opts) {
     sendJson(req, res, {splats: opts.splats});
   });
 
