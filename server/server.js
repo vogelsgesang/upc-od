@@ -7,7 +7,7 @@ var url = require("url");
 var nodeStatic = require("node-static");
 var apiRoot = require("./api/root");
 
-var staticFiles = new(nodeStatic.Server)("./static", {gzip: true});
+var staticFiles = new(nodeStatic.Server)(__dirname + "/static", {gzip: true});
 
 function handleRequest(request, response) {
   var pathName = url.parse(request.url).pathname;
