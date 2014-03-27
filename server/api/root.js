@@ -1,12 +1,26 @@
 "use strict";
 var Router = require("./router");
 var sendJson = require("send-data/json");
+var http = require("http");
 
 var schema = {
-  "test": "a",
+  "test1": "a",
   "test2": 2
 }
 schema.test3 = "b";
+schema.teamMember = [
+  {
+    firstName: "Maryam",
+    surname: "Pashmi"
+  },
+  {
+    firstName: "Adrian",
+    surname: "Vogelsgesang"
+  },
+  {
+    firstName: "Franz"
+  }
+]
 
 function handleUnknownRoute(request, response) {
   //Since we do not have an api so far, just answer with an error
@@ -22,6 +36,26 @@ apiRoot
 })
 .addRoute("/data/:id", function(request, response, opts) {
   sendJson(request, response, {id: opts.params.id, data: "Not implemented so far"});
+})
+.addRoute("/keyword/:kw", function(req, res, opts) {
+  var options = "http://librarycloud.harvard.edu/v1/api/item?filter=keyword:" + opts.params.kw;
+  
+  res.writeHead(200, {"Content-Type": "application/json"});
+ 
+  function callback(contents) {
+    contents.on('data', function (chunk) {
+      res.write(chunk);
+    });
+    contents.on("end", function(chunk) {
+      res.end();
+    });
+  }
+
+  var req = http.request(options, callback);
+  req.on("error", function() {
+    console.log("error");
+  });
+  req.end();
 });
 
 module.exports = apiRoot;
