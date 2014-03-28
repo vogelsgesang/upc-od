@@ -5,8 +5,30 @@ var connect = require("connect");
 var bodyParser = require("body-parser");
 
 var schema = {
-  "test1": "a",
-  "test2": 2
+  'book': {
+    'attributes': [
+      {
+        'name': 'title',
+        'type': 'string'
+      },
+      {
+        'name': 'author',
+        'type': 'link'
+      }
+    ]
+  },
+  'author': {
+    'attributes': [
+      {
+        'name': 'name',
+        'type': 'string'
+      },
+      {
+        'name': 'birthyear',
+        'type': 'integer'
+      }
+    ]
+  }
 }
 
 function schemaIndex(req, res) {

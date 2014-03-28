@@ -19,33 +19,12 @@ angular.module('odIntegrator', ['ngRoute'])
     $scope.navItem = $route.current.navItem;
   });
 }])
-.controller('SchemaEditor', ['$scope', function($scope) {
-  $scope.schema = {
-    'book': {
-      'attributes': [
-        {
-          'name': 'title',
-          'type': 'string'
-        },
-        {
-          'name': 'author',
-          'type': 'link'
-        }
-      ]
-    },
-    'author': {
-      'attributes': [
-        {
-          'name': 'name',
-          'type': 'string'
-        },
-        {
-          'name': 'birthyear',
-          'type': 'integer'
-        }
-      ]
-    }
-  };
+.controller('SchemaEditor', ['$scope', '$http', function($scope, $http) {
+  $http({method:'GET', url:'/api/schema'}).success(function(data, statusCode) {
+    $scope.schema = data;
+  }).error(function(data, statusCode) {
+    alert("Unable to fetch schema");
+  });
   $scope.editEntity = function(a) {
     alert("Editing " + a);
   };
