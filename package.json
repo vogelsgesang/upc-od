@@ -19,7 +19,8 @@
     "node-static": "~0.7.3",
     "connect": "^2.14.3",
     "routes": "^0.2.0",
-    "send-data": "^3.1.2"
+    "send-data": "^3.1.2",
+    "body-parser": "^1.0.1"
   },
   "devDependencies": {
     "grunt": "^0.4.4",
