@@ -12,11 +12,11 @@ function handleUnknownRoute(req, res) {
 
 var apiRoot = Router({unknownRoute: handleUnknownRoute})
   .addChildRouter("/schema", require("./schema"))
-  .addRoute("/data/:id", function(request, response, opts) {
-    sendJson(request, response, {id: opts.params.id, data: "Not implemented so far"});
+  .addRoute("/data/:id", function(request, response) {
+    sendJson(request, response, {id: request.params.id, data: "Not implemented so far"});
   })
-  .addRoute("/keyword/:kw", function(req, res, opts) {
-    var options = "http://librarycloud.harvard.edu/v1/api/item?filter=keyword:" + opts.params.kw;
+  .addRoute("/keyword/:kw", function(req, res) {
+    var options = "http://librarycloud.harvard.edu/v1/api/item?filter=keyword:" + req.params.kw;
     
     res.writeHead(200, {"Content-Type": "application/json"});
    
@@ -37,12 +37,12 @@ var apiRoot = Router({unknownRoute: handleUnknownRoute})
   });
 
 var testRouter = Router({unknownRoute: handleUnknownRoute})
-  .addRoute("/adrian", function(req, res, opts) {
+  .addRoute("/adrian", function(req, res) {
     sendJson(req, res, {firstname: "Adrian", surname:"Vogelsgesang"});
     res.end();
   })
-  .addRoute("/splats/*/*?", function(req, res, opts) {
-    sendJson(req, res, {splats: opts.splats});
+  .addRoute("/splats/*/*?", function(req, res) {
+    sendJson(req, res, {splats: res.splats});
   });
 
 apiRoot.addChildRouter("/test/", testRouter);

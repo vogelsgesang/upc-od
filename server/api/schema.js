@@ -6,29 +6,25 @@ var schema = {
   "test1": "a",
   "test2": 2
 }
-schema.test3 = "b";
-schema.teamMember = [
-  {
-    firstName: "Maryam",
-    surname: "Pashmi"
-  },
-  {
-    firstName: "Adrian",
-    surname: "Vogelsgesang"
-  },
-  {
-    firstName: "Franz"
-  }
-]
 
-function schemaIndex(request, response, opts) {
-  sendJson(request, response, schema);
+function schemaIndex(req, res) {
+  sendJson(req, res, schema);
+}
+
+function setSchema(req, res) {
+
+}
+
+function deleteSchema(req, res) {
+  schema = {};
+  sendJson({type:"success", msg: "The schema was successfully reset."});
 }
 
 var schemaRouter = Router()
   .addRoute('/', {
-    GET: schemaIndex
-    //DELETE: deleteSchema,
+    GET: schemaIndex,
+    PUT: setSchema,
+    DELETE: deleteSchema
   })
 
 module.exports = schemaRouter;

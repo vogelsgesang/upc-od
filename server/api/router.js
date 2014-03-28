@@ -16,29 +16,28 @@ function Router(options) {
   var router = new RoutesRouter();
 
   //handleRequest handles the actual requests and will be returned by this function
-  var handleRequest = function (req, res, parentOpts) {
+  var handleRequest = function (req, res, next) {
     var route = router.match(url.parse(req.url).pathname)
 
     if (!route) {
       res.statusCode = 404;
-      return handleRequest.unknownRoute(req, res, parentOpts);
+      return handleRequest.unknownRoute(req, res, next);
     }
 
-    var opts = {
-      params: route.params,
-      splats: route.splats
-    };
-
-    if(parentOpts !== undefined) {
-      for(key in Object.keys(parentOpts.params)) {
-        if(!opts.params.hasOwnProperty(key)) {
-          opts.params[key] = parentOpts.params[key];
-        }
+    if(!res.hasOwnProperty('params')) {
+      req.params = {};
+    }
+    for(var key in route.params) {
+      if(route.params.hasOwnProperty(key)) {
+        req.params[key] = route.params[key];
       }
-      opts.splats = parentOpts.splats.concat(opts.splats);
     }
+    if(!res.hasOwnProperty('splats')) {
+      req.splats = [];
+    }
+    req.splats = req.splats.concat(route.splats);
 
-    return route.fn(req, res, opts);
+    return route.fn(req, res, next);
   }
   //set the error handlers
   handleRequest.unknownMethod = unknownMethod;
@@ -74,7 +73,7 @@ function Router(options) {
 
 //handles the selection of a function based on the HTTP method
 function wrapMethodSelector(routes, unknownRouteCallback) {
-  function handleUnknownRoute(req, res, opts) {
+  function handleUnknownRoute(req, res, next) {
     res.statusCode = 405;
     var acceptedMethods = Object.keys(routes);
     res.setHeader("Accept", acceptedMethods.join(', '));
@@ -89,23 +88,25 @@ function wrapMethodSelector(routes, unknownRouteCallback) {
 
 //returns a wrapped child router which is able to handle the urls correctly
 function wrapChildRouter(router) {
-  return function adjustUrlForChildRouter(req, res, opts) {
-    var remainingUrl = opts.splats.pop();
+  return function adjustUrlForChildRouter(req, res, next) {
+    var remainingUrl = req.splats.pop();
     if(remainingUrl == undefined) remainingUrl = "/";
     remainingUrl = "/" + remainingUrl;
     req.url = remainingUrl;
-    router(req, res, opts);
+    router(req, res, next);
   }
 }
 
-function defaultUnknownRoute(req, res) {
+function defaultUnknownRoute(req, res, next) {
   res.statusCode = 404;
   res.write("404 Not found");
   res.end();
+  next();
 }
 
-function defaultUnknownMethod(req, res) {
+function defaultUnknownMethod(req, res, next) {
   res.statusCode = 405;
   res.write("405 Method not allowed");
   res.end();
+  next();
 }
