@@ -5,13 +5,7 @@ var url = require("url");
 
 module.exports = Router;
 
-function Router(options) {
-  //interpret the options
-  if(options === undefined) options = {};
-  var unknownRoute = options.unknownRoute || defaultUnknownRoute;
-  var unknownMethod = options.unknownMethod || defaultUnknownMethod;
-  var baseUrl = options.baseUrl || "";
-
+function Router() {
   //this router is used in order to parse the urls
   var router = new RoutesRouter();
 
@@ -21,7 +15,9 @@ function Router(options) {
 
     if (!route) {
       res.statusCode = 404;
-      return handleRequest.unknownRoute(req, res, next);
+      var error = new Error("Unknown route");
+      error.code = 404;
+      next(error);
     }
 
     if(!res.hasOwnProperty('params')) {
@@ -37,15 +33,12 @@ function Router(options) {
     }
     req.splats = req.splats.concat(route.splats);
 
-    return route.fn(req, res, next);
+    route.fn(req, res, next);
   }
-  //set the error handlers
-  handleRequest.unknownMethod = unknownMethod;
-  handleRequest.unknownRoute = unknownRoute;
   //expose a possibility to add routes
   handleRequest.addRoute = function(uri, fn) {
     if (typeof fn === "object") {
-      fn = wrapMethodSelector(fn, handleRequest.unknownMethod);
+      fn = wrapMethodSelector(fn);
     }
     router.addRoute(uri, fn);
     return this;
@@ -57,12 +50,6 @@ function Router(options) {
     } else {
       uri += "*?";
     }
-    if(childRouter.unknownRoute === defaultUnknownRoute) {
-      childRouter.unknownRoute = handleRequest.unknownRoute;
-    }
-    if(childRouter.unknownMethod === defaultUnknownMethod) {
-      childRouter.unknownMethod = handleRequest.unknownMethod;
-    }
     var wrappedRouter = wrapChildRouter(childRouter);
     router.addRoute(uri, wrappedRouter);
     return this;
@@ -72,16 +59,16 @@ function Router(options) {
 }
 
 //handles the selection of a function based on the HTTP method
-function wrapMethodSelector(routes, unknownRouteCallback) {
-  function handleUnknownRoute(req, res, next) {
-    res.statusCode = 405;
-    var acceptedMethods = Object.keys(routes);
-    res.setHeader("Accept", acceptedMethods.join(', '));
-    return unknownRouteCallback.apply(this, arguments);
+function wrapMethodSelector(routes) {
+  function handleUnknownMethod(req, res, next) {
+    var error = new Error("Method not allowed");
+    error.code = 405;
+    error.acceptedMethods = Object.keys(routes);
+    next(error);
   }
   return function selectByMethod(req) {
     var method = req.method;
-    var f = routes[method] || handleUnknownRoute;
+    var f = routes[method] || handleUnknownMethod;
     return f.apply(this, arguments)
   }
 }
@@ -95,18 +82,4 @@ function wrapChildRouter(router) {
     req.url = remainingUrl;
     router(req, res, next);
   }
-}
-
-function defaultUnknownRoute(req, res, next) {
-  res.statusCode = 404;
-  res.write("404 Not found");
-  res.end();
-  next();
-}
-
-function defaultUnknownMethod(req, res, next) {
-  res.statusCode = 405;
-  res.write("405 Method not allowed");
-  res.end();
-  next();
 }
