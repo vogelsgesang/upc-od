@@ -3,27 +3,7 @@ var Router = require("./router");
 var sendJson = require("send-data/json");
 var http = require("http");
 
-var schema = {
-  "test1": "a",
-  "test2": 2
-}
-schema.test3 = "b";
-schema.teamMember = [
-  {
-    firstName: "Maryam",
-    surname: "Pashmi"
-  },
-  {
-    firstName: "Adrian",
-    surname: "Vogelsgesang"
-  },
-  {
-    firstName: "Franz"
-  }
-]
-
 function handleUnknownRoute(req, res) {
-  //Since we do not have an api so far, just answer with an error
   sendJson(req, res, {
     statusCode: 404,
     body: {type:"error", msg: "Unknown api endpoint"}
@@ -31,9 +11,7 @@ function handleUnknownRoute(req, res) {
 }
 
 var apiRoot = Router({unknownRoute: handleUnknownRoute})
-  .addRoute("/schema", function(request, response, opts) {
-    sendJson(request, response, schema);
-  })
+  .addChildRouter("/schema", require("./schema"))
   .addRoute("/data/:id", function(request, response, opts) {
     sendJson(request, response, {id: opts.params.id, data: "Not implemented so far"});
   })
