@@ -1,0 +1,44 @@
+{
+  "person": {
+    "description": "A natural person",
+    "display": "name",
+    "attributes": {
+      "name": {
+        "type": "string",
+        "quantity": "1"
+      },
+      "email": {
+        "type": "string",
+        "quantity": "*"
+      },
+      "parents": {
+        "type": "link",
+        "linkTo": "person",
+        "quantity": "+"
+      },
+      "birthplace": {
+        "type": "link",
+        "linkTo": "city",
+        "quantity": "1"
+      }
+    }
+  },
+  "city": {
+    "description": "a city with its name and location",
+    "display": "name",
+    "attributes": {
+      "name": {
+        "type": "string",
+        "quantity": "1"
+      },
+      "lon": {
+        "type": "number",
+        "quantity": "1"
+      },
+      "lat": {
+        "type": "number",
+        "quantity": "1"
+      }
+    }
+  }
+}
