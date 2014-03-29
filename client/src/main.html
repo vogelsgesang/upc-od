@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="style.css">
     <script src="js/angular.min.js"></script>
     <script src="js/angular-route.js"></script>
+    <script src="js/angular-resource.js"></script>
     <script src="js/od-integrator.js"></script>
   </head>
   <body ng-app="odIntegrator">
@@ -14,6 +15,7 @@
         <ul class="nav nav-pills">
           <li ng-class="{active: navItem == 'home'}"><a href="/">Home</a></li>
           <li ng-class="{active: navItem == 'schema'}"><a href="/schema">Schema</a></li>
+          <li ng-class="{active: navItem == 'sources'}"><a href="/sources">Sources</a></li>
           <li class="disabled"><a href="/data">Data</a></li>
           <li class="disabled"><a href="/recommendation/recommendations">Recommendations</a></li>
         </ul>

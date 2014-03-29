@@ -1,4 +1,4 @@
-angular.module('odIntegrator', ['ngRoute'])
+angular.module('odIntegrator', ['ngRoute', 'ngResource'])
 .config(function($routeProvider, $locationProvider) {
   $locationProvider.html5Mode(true);
   $routeProvider
@@ -9,6 +9,10 @@ angular.module('odIntegrator', ['ngRoute'])
   .when('/schema', {
     'templateUrl': 'partials/schema-overview.html',
     'navItem': 'schema'
+  })
+  .when('/sources', {
+    'templateUrl': 'partials/sources-overview.html',
+    'navItem': 'sources'
   })
   .otherwise({
     'redirectTo': '/'
@@ -31,5 +35,23 @@ angular.module('odIntegrator', ['ngRoute'])
   $scope.createEntity = function() {
     alert("Creating " + $scope.newEntityName);
   };
+}])
+.factory('Sources', ['$resource', function($ressource) {
+   return $ressource('/api/sources/:id', {id: "@_id"});
+}])
+.controller('SourcesOverview', ['$scope', '$http', 'Sources', function($scope, $http, Sources) {
+  function loadSources() {
+    $scope.state = "loading";
+    Sources.query(function(sources) {
+      $scope.sources = sources;
+      $scope.state = "loaded";
+    }, function(errMessage) {
+      $scope.state = "error";
+    });
+  }
+  $scope.reload = loadSources;
+  $scope.deleteSource = function(id) {
+    alert("delete " + id);
+  };
+  loadSources();
 }]);
-
