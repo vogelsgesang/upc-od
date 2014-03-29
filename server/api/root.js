@@ -2,38 +2,39 @@
 var Router = require("./router");
 var connect = require("connect");
 var sendJson = require("send-data/json");
+var bodyParser = require("body-parser");
 
-function handleApiError(err, req, res, next) {
-  if(err.code == 404) {
+function handleBodyError(err, req, res, next) {
+  if(err instanceof SyntaxError) {
     sendJson(req, res, {
-      statusCode: 404,
-      body: {"status":"error", msg: "Unknown api endpoint"}
-    });
-  } else if(err.code == 405) {
-    sendJson(req, res, {
-      statusCode: 405,
-      headers: {Accept: err.acceptedMethods.join(", ")},
-      body: {"status":"error", msg: "Method not supported"}
+      statusCode: 400,
+      body: {"status":"error", msg: "Unable to parse request body: " + err.message}
     });
   } else {
-    var jsonResponse = {"status":"error"};
-    if(err.message !== undefined) {
-      jsonResponse.message = err.message;
-    }
-    if(err.stack !== undefined) {
-      jsonResponse.stack = err.stack;
-    }
-    sendJson(req, res, {
-      statusCode: 500,
-      body: jsonResponse
-    });
+    next(err);
   }
 }
 
+function handleApiError(err, req, res, next) {
+  var statusCode = 500;
+  if(err.statusCode !== undefined) {
+    statusCode = err.statusCode;
+  }
+  if(err.message !== undefined) {
+    jsonResponse.message = err.message;
+  }
+  sendJson(req, res, {
+    statusCode: statusCode,
+    body: jsonResponse
+  });
+}
+
 var apiRoot = connect()
+  .use(bodyParser.json())
+  .use(handleBodyError)
   .use(Router()
     .addChildRouter("/schema", require("./schema"))
-    .addChildRouter("/experiments", require("./experiments"))
+    .addChildRouter("/sources", require("./sources"))
   ).use(handleApiError);
 
 module.exports = apiRoot;

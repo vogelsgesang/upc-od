@@ -2,7 +2,6 @@
 var Router = require("./router");
 var sendJson = require("send-data/json");
 var connect = require("connect");
-var bodyParser = require("body-parser");
 
 var schema = {
   'book': {
@@ -49,7 +48,7 @@ function deleteSchema(req, res) {
 var schemaRouter = Router()
   .addRoute('/', {
     GET: schemaIndex,
-    PUT: connect().use(bodyParser.json()).use(setSchema),
+    PUT: setSchema,
     DELETE: deleteSchema
   })
 

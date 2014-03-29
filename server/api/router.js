@@ -16,7 +16,7 @@ function Router() {
     if (!route) {
       res.statusCode = 404;
       var error = new Error("Unknown route");
-      error.code = 404;
+      error.statusCode = 404;
       next(error);
     }
 
@@ -62,7 +62,7 @@ function Router() {
 function wrapMethodSelector(routes) {
   function handleUnknownMethod(req, res, next) {
     var error = new Error("Method not allowed");
-    error.code = 405;
+    error.statusCode = 405;
     error.acceptedMethods = Object.keys(routes);
     next(error);
   }
