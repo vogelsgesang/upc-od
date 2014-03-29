@@ -26,6 +26,15 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource'])
     'redirectTo': '/'
   });
 })
+.directive('staticInclude', ['$http', '$templateCache', '$compile', function($http, $templateCache, $compile) {
+  return function(scope, element, attrs) {
+    var templatePath = attrs.staticInclude;
+    $http.get(templatePath, {cache: $templateCache}).success(function(response) {
+      element.html(response);
+      $compile(element.contents())(scope);
+    });
+  };
+}])
 .controller('Navigation', ['$scope', '$route', function($scope, $route) {
   $scope.$on("$routeChangeSuccess", function(evt, routeData) {
     $scope.navItem = $route.current.navItem;
@@ -52,7 +61,7 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource'])
     $scope.state = "loading";
     Sources.query(function(sources) {
       $scope.sources = sources;
-      $scope.state = "loaded";
+      $scope.state = "ready";
     }, function(errMessage) {
       $scope.state = "error";
     });
@@ -84,6 +93,46 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource'])
       return;
     }
     sourceObject = {
+      name: $scope.name,
+      module: $scope.module,
+      config: config
+    }
+    Sources.save(sourceObject, function() {
+      $scope.saving = false;
+      $location.path("/sources");
+    }, function() {
+      $scope.error = "Failed saving the source";
+      $scope.saving = false;
+    });
+  };
+}])
+.controller('SourceEditor', ['$scope', '$location', '$routeParams', 'Sources', function($scope, $location, $routeParams, Sources) {
+  $scope.state = 'loading';
+  function loadSource() {
+    Sources.get({_id: $routeParams.id}, function(result) {
+      console.log(result);
+      $scope.state = 'ready';
+      $scope.name = result.name;
+      $scope.module = result.module;
+      $scope.config = JSON.stringify(result.config, null, 2);
+    }, function(result) {
+      $scope.state = 'error'
+    });
+  }
+  $scope.load = loadSource;
+  loadSource();
+  $scope.save = function() {
+    $scope.saving = true;
+    delete $scope.error;
+    try {
+      var config = JSON.parse($scope.config);
+    } catch(e) {
+      $scope.error = "Configuration is not valid JSON";
+      $scope.saving = false;
+      return;
+    }
+    sourceObject = {
+      _id: $routeParams.id,
       name: $scope.name,
       module: $scope.module,
       config: config

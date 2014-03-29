@@ -11,12 +11,12 @@
     Unable to retrieve the list of sources from the server.<br>
     <a ng-click="reload()">Retry</a>
   </div>
-  <div ng-show="state == 'loaded'">
+  <div ng-show="state == 'ready'">
     <p class="input-group">
       <span class="input-group-addon"><span class="glyphicon glyphicon-filter"></span></span>
       <input type="text" ng-model="sourcesFilter" class="form-control" id="sourcesFilter">
     </p>
-    <section class="panel panel-default" ng-repeat="source in sources | filter:{name:sourcesFilter}" ng-class="{deleting: deleting[source._id]}">
+    <section class="panel panel-default" ng-repeat="source in filteredSources = (sources | filter:{name:sourcesFilter})" ng-class="{deleting: deleting[source._id]}">
       <div class="panel-heading">
         {{source.name}}
         <div class="pull-right">
@@ -27,8 +27,12 @@
       </div>
       <div class="panel-body">
         Module: {{source.module}}<br>
-        Config: {{source.config}}<br>
+        Config:
+        <pre>{{source.config | json}}</pre>
       </div>
+    </section>
+    <section ng-show="filteredSources.length == 0" class="well">
+      No sources found...
     </section>
   </div>
   <p>
