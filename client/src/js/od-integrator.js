@@ -3,15 +3,23 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource'])
   $locationProvider.html5Mode(true);
   $routeProvider
   .when('/', {
-    'templateUrl': 'partials/home.html',
+    'templateUrl': '/partials/home.html',
     'navItem': 'home'
   })
   .when('/schema', {
-    'templateUrl': 'partials/schema-overview.html',
+    'templateUrl': '/partials/schema-overview.html',
     'navItem': 'schema'
   })
   .when('/sources', {
-    'templateUrl': 'partials/sources-overview.html',
+    'templateUrl': '/partials/sources-overview.html',
+    'navItem': 'sources'
+  })
+  .when('/sources/create', {
+    'templateUrl': '/partials/sources-create.html',
+    'navItem': 'sources'
+  })
+  .when('/sources/edit/:id', {
+    'templateUrl': '/partials/sources-edit.html',
     'navItem': 'sources'
   })
   .otherwise({
@@ -37,7 +45,7 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource'])
   };
 }])
 .factory('Sources', ['$resource', function($ressource) {
-   return $ressource('/api/sources/:id', {id: "@_id"});
+   return $ressource('/api/sources/:_id', {_id: "@_id"});
 }])
 .controller('SourcesOverview', ['$scope', '$http', 'Sources', function($scope, $http, Sources) {
   function loadSources() {
@@ -50,8 +58,16 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource'])
     });
   }
   $scope.reload = loadSources;
+  $scope.deleting = {};
   $scope.deleteSource = function(id) {
-    alert("delete " + id);
+    $scope.deleting[id] = true;
+    Sources.delete({_id: id}, function() {
+      delete $scope.deleting[id];
+      loadSources();
+    }, function() {
+      delete $scope.deleting[id];
+      alert("failed to delete source");
+    });
   };
   loadSources();
 }]);
