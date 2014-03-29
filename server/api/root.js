@@ -20,6 +20,7 @@ function handleApiError(err, req, res, next) {
   if(err.statusCode !== undefined) {
     statusCode = err.statusCode;
   }
+  var jsonResponse = {};
   if(err.message !== undefined) {
     jsonResponse.message = err.message;
   }

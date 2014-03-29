@@ -92,6 +92,13 @@ function getSource(req, res, next) {
 }
 
 function updateSource(req, res, next) {
+  if(req.body._id !== undefined ) {
+    if(req.body._id != req.params.id) {
+      next(new Error("cannot change _id of a document"));
+    } else {
+      delete req.body._id;
+    }
+  }
   try {
     var objId = mongo.ObjectID(req.params.id);
   } catch(e) {
@@ -134,6 +141,7 @@ var sourcesRouter = Router()
   .addRoute('/:id', {
     GET: getSource,
     PUT: updateSource,
+    POST: updateSource,
     DELETE: deleteSource
   })
 
