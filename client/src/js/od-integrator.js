@@ -71,8 +71,10 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource'])
   $scope.deleteSource = function(id) {
     $scope.deleting[id] = true;
     Sources.delete({_id: id}, function() {
+      $scope.sources = $scope.sources.filter(function(source) {
+        return source._id != id;
+      });
       delete $scope.deleting[id];
-      loadSources();
     }, function() {
       delete $scope.deleting[id];
       alert("failed to delete source");
