@@ -1,9 +1,9 @@
-<a class="btn btn-default pull-right" ng-click="reload()">
-  <span class="glyphicon glyphicon-refresh"></span>
-  Reload
-</a>
-<h1>Data Sources</h1>
-<div ng-controller="SourcesOverview">
+<div ng-controller="SourceOverview">
+  <a class="btn btn-default pull-right" ng-click="reload()">
+    <span class="glyphicon glyphicon-refresh"></span>
+    Reload
+  </a>
+  <h1>Data Sources</h1>
   <div class="alert alert-info" ng-show="state == 'loading'">
     Loading...
   </div>
@@ -12,8 +12,8 @@
     <a ng-click="reload()">Retry</a>
   </div>
   <div ng-show="state == 'loaded'">
-    <p class="form-horizontal">
-      <label for="sourcesFilter" class="control-label">Filter:</label>
+    <p class="input-group">
+      <span class="input-group-addon"><span class="glyphicon glyphicon-filter"></span></span>
       <input type="text" ng-model="sourcesFilter" class="form-control" id="sourcesFilter">
     </p>
     <section class="panel panel-default" ng-repeat="source in sources | filter:{name:sourcesFilter}" ng-class="{deleting: deleting[source._id]}">

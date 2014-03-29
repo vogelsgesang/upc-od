@@ -1,4 +1,35 @@
-<h1>Create a new source</h1>
-<div class="well">
-  Not implemented so far...
+<div ng-controller="SourceCreator">
+  <h1>Add a new source</h1>
+  <p class="alert alert-danger" ng-show="error">
+    {{error}}
+  </p>
+  <form class="form-horizontal" name="sourceForm">
+    <div class="form-group has-feedback"
+    ng-class="{'has-error': sourceForm.name.$dirty && sourceForm.name.$invalid, 'has-success': sourceForm.name.$dirty && !sourceForm.name.$invalid}">
+      <label for="name" class="col-sm-1 control-label">Name:</label>
+      <div class="col-sm-11">
+        <input ng-model="name" class="form-control" id="name" name="name" required>
+        <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="sourceForm.name.$dirty && !sourceForm.name.$invalid"></span>
+        <span class="glyphicon glyphicon-remove form-control-feedback" ng-show="sourceForm.name.$dirty && sourceForm.name.$invalid"></span>
+      </div>
+    </div>
+    <div class="form-group has-feedback"
+        ng-class="{'has-error': sourceForm.module.$dirty && sourceForm.module.$invalid, 'has-success': sourceForm.module.$dirty && !sourceForm.module.$invalid}">
+      <label for="module" class="col-sm-1 control-label">Module:</label>
+      <div class="col-sm-11">
+        <input ng-model="module" class="form-control" id="module" name="module" required>
+        <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="sourceForm.module.$dirty && !sourceForm.module.$invalid"></span>
+        <span class="glyphicon glyphicon-remove form-control-feedback" ng-show="sourceForm.module.$dirty && sourceForm.module.$invalid"></span>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="config" class="col-sm-1 control-label">Configuration:</label>
+      <div class="col-sm-11">
+        <textarea ng-model="config" class="form-control" id="config" rows="10" required></textarea>
+      </div>
+    </div>
+    <button ng-click="save()" class="btn btn-primary btn-block" ng-disabled="sourceForm.$invalid || saving">
+      {{saving ? "Adding source..." : "Add source"}}
+    </button>
+  </form>
 </div>

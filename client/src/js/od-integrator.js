@@ -47,7 +47,7 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource'])
 .factory('Sources', ['$resource', function($ressource) {
    return $ressource('/api/sources/:_id', {_id: "@_id"});
 }])
-.controller('SourcesOverview', ['$scope', '$http', 'Sources', function($scope, $http, Sources) {
+.controller('SourceOverview', ['$scope', 'Sources', function($scope, Sources) {
   function loadSources() {
     $scope.state = "loading";
     Sources.query(function(sources) {
@@ -70,4 +70,30 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource'])
     });
   };
   loadSources();
+}])
+.controller('SourceCreator', ['$scope', '$location', 'Sources', function($scope, $location, Sources) {
+  $scope.config = "{\n}";
+  $scope.save = function() {
+    $scope.saving = true;
+    delete $scope.error;
+    try {
+      var config = JSON.parse($scope.config);
+    } catch(e) {
+      $scope.error = "Configuration is not valid JSON";
+      $scope.saving = false;
+      return;
+    }
+    sourceObject = {
+      name: $scope.name,
+      module: $scope.module,
+      config: config
+    }
+    Sources.save(sourceObject, function() {
+      $scope.saving = false;
+      $location.path("/sources");
+    }, function() {
+      $scope.error = "Failed saving the source";
+      $scope.saving = false;
+    });
+  };
 }]);
