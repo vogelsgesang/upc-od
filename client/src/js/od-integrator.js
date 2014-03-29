@@ -71,7 +71,7 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource'])
   }
   $scope.reload = loadSources;
   function updateDonwlodLink() {
-    $scope.downloadLink = 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify($scope.sources));
+    $scope.downloadLink = 'data:application/json;charset=utf-8,' + encodeURIComponent(angular.toJson($scope.sources));
   }
   $scope.updateDownloadLink = updateDonwlodLink;
   $scope.deleting = {};
