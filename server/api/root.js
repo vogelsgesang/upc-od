@@ -3,6 +3,7 @@ var Router = require("./router");
 var connect = require("connect");
 var sendJson = require("send-data/json");
 var bodyParser = require("body-parser");
+var delayResponse = require("./delay-response");
 
 function handleBodyError(err, req, res, next) {
   if(err instanceof SyntaxError) {
@@ -33,9 +34,11 @@ function handleApiError(err, req, res, next) {
 var apiRoot = connect()
   .use(bodyParser.json())
   .use(handleBodyError)
+  .use(delayResponse(300))
   .use(Router()
     .addChildRouter("/schema", require("./schema"))
     .addChildRouter("/sources", require("./sources"))
+    .addChildRouter("/experiments", require("./experiments"))
   ).use(handleApiError);
 
 module.exports = apiRoot;
