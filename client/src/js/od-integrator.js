@@ -26,6 +26,9 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource'])
     'redirectTo': '/'
   });
 })
+.config(['$compileProvider', function($compileProvider){
+  $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|data):/);
+}])
 .directive('staticInclude', ['$http', '$templateCache', '$compile', function($http, $templateCache, $compile) {
   return function(scope, element, attrs) {
     var templatePath = attrs.staticInclude;
@@ -67,6 +70,10 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource'])
     });
   }
   $scope.reload = loadSources;
+  function updateDonwlodLink() {
+    $scope.downloadLink = 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify($scope.sources));
+  }
+  $scope.updateDownloadLink = updateDonwlodLink;
   $scope.deleting = {};
   $scope.deleteSource = function(id) {
     $scope.deleting[id] = true;
