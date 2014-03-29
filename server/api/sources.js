@@ -115,7 +115,7 @@ function deleteSource(req, res, next) {
     err.statusCode = 400;
     return next(err);
   }
-  sourcesCollection.remove({}, function(err, result) {
+  sourcesCollection.remove({_id: objId}, function(err, result) {
     if(err !== null) {
       next(err);
     } else {
