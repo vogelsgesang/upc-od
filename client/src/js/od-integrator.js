@@ -63,7 +63,9 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource', 'ngAnimate', 'mgcrea.ng
   };
 }])
 .factory('Sources', ['$resource', function($ressource) {
-   return $ressource('/api/sources/:_id', {_id: "@_id"});
+  return $ressource('/api/sources/:_id', {_id: "@_id"}, {
+    'replace': {method: 'PUT'}
+  });
 }])
 .controller('SourceOverview', ['$scope', '$sce', 'Sources', '$alert', function($scope, $sce, Sources, $alert) {
   function loadSources() {
@@ -88,18 +90,30 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource', 'ngAnimate', 'mgcrea.ng
     if(fileInput.files.length < 1) {
       $alert({title: "Error:", content: $sce.trustAsHtml("Please select a file"), type: 'danger', duration: 3});
     } else {
-      $scope['sourcesImport']['working'] = true;
+      $scope.sourcesImport.working = true;
       var reader = new FileReader();
       reader.onload = function(e) {
         var text = reader['result'];
         try {
-          var sources = JSON.parse(text);
+          var importedSources = JSON.parse(text);
         } catch(e) {
           $alert({title: "Error:", content: $sce.trustAsHtml("Please select a valid JSON file"), type: 'danger', duration: 3});
-          $scope['sourcesImport']['working'] = false;
+          $scope.sourcesImport.working = false;
           return;
         }
-        $alert({title: "Error:", content: $sce.trustAsHtml("Not implemented so far..."), type: 'info'});
+        if($scope.sourcesImport.replace) {
+          Sources.replace({_id: null}, importedSources, function() {
+            $scope['sourcesImport']['working'] = false;
+            $alert({title: "Success:", content: $sce.trustAsHtml("Sources were successfully imported"), type: 'info'});
+            loadSources();
+          }, function() {
+            $scope['sourcesImport']['working'] = false;
+            $alert({title: "Error:", content: $sce.trustAsHtml("Replace..."), type: 'danger'});
+          });
+        } else {
+          $alert({title: "Error:", content: $sce.trustAsHtml("Not implemented so far..."), type: 'info'});
+          $scope.sourcesImport.working = false;
+        }
       }
       reader.onerror = function(e) {
         $alert({title: "Error:", content: $sce.trustAsHtml("Unable to read the file"), type: 'danger', duration: 3});
