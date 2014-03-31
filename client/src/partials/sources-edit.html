@@ -1,5 +1,5 @@
 <div ng-controller="SourceEditor">
-  <h1>Edit Source</h1>
+  <h1>Edit Source <small>{{name}}</small></h1>
   <form class="form-horizontal" name="sourceForm">
     <div class="alert alert-info" ng-show="state == 'loading'">Loading description of the source...</div>
     <div class="alert alert-danger" ng-show="state == 'error'">

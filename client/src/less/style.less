@@ -1,4 +1,5 @@
-@import "bootstrap/bootstrap.less";
+@import "bootstrap/bootstrap";
+@import "lesshat";
 
 body {
   padding-top:4em;
@@ -9,6 +10,46 @@ a {
   cursor: pointer;
 }
 
-.deleting {
-  opacity: 0.5;
+.keyframes(~'rotating, 0%{transform: rotate(0deg);} 100%{transform: rotate(360deg);}');
+
+.rotating {
+  .animation(rotating 1.5s linear infinite);
+}
+textarea {
+  .resizable(horizontal)
+}
+
+/*alerts*/
+.container {
+  position:relative;
+}
+#alert-container {
+  position:fixed;
+  z-index:99;
+  top: 1em;
+  left: 1em;
+  right: 1em;
+  @media(min-width: @screen-sm-min) {
+    width: 30em;
+    top:3em;
+    left: 0;
+    right: 0;
+    margin:auto;
+  }
+}
+
+/*Animations for deletions*/
+.deleting-add,
+.deleting-remove {
+  .transition(0.3s linear all);
+}
+.deleting-add {
+  opacity: 1;
+}
+.deleting,
+.deleting-add-active {
+  opacity: 0.3;
+}
+.deleting-remove {
+  opacity: 1;
 }

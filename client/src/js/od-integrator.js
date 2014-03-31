@@ -1,4 +1,4 @@
-angular.module('odIntegrator', ['ngRoute', 'ngResource'])
+angular.module('odIntegrator', ['ngRoute', 'ngResource', 'ngAnimate', 'mgcrea.ngStrap'])
 .config(function($routeProvider, $locationProvider) {
   $locationProvider.html5Mode(true);
   $routeProvider
@@ -28,6 +28,12 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource'])
 })
 .config(['$compileProvider', function($compileProvider){
   $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|data):/);
+}])
+.config(['$alertProvider', function($alertProvider) {
+  angular.extend($alertProvider.defaults, {
+    animation: 'am-fade-and-slide-top',
+    container: '#alert-container'
+  });
 }])
 .directive('staticInclude', ['$http', '$templateCache', '$compile', function($http, $templateCache, $compile) {
   return function(scope, element, attrs) {
@@ -59,7 +65,7 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource'])
 .factory('Sources', ['$resource', function($ressource) {
    return $ressource('/api/sources/:_id', {_id: "@_id"});
 }])
-.controller('SourceOverview', ['$scope', 'Sources', function($scope, Sources) {
+.controller('SourceOverview', ['$scope', '$sce', 'Sources', '$alert', function($scope, $sce, Sources, $alert) {
   function loadSources() {
     $scope.state = "loading";
     Sources.query(function(sources) {
@@ -73,8 +79,36 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource'])
   function updateDonwlodLink() {
     $scope.downloadLink = 'data:application/json;charset=utf-8,' + encodeURIComponent(angular.toJson($scope.sources));
   }
-  $scope.updateDownloadLink = updateDonwlodLink;
-  $scope.deleting = {};
+  $scope['updateDownloadLink'] = updateDonwlodLink;
+  $scope['deleting'] = {};
+  $scope['sourcesImport'] = [];
+  $scope['sourcesImport']['replace'] = true;
+  function importSources() {
+    var fileInput = document.getElementById('sourcesImportFile');
+    if(fileInput.files.length < 1) {
+      $alert({title: "Error:", content: $sce.trustAsHtml("Please select a file"), type: 'danger', duration: 3});
+    } else {
+      $scope['sourcesImport']['working'] = true;
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var text = reader['result'];
+        try {
+          var sources = JSON.parse(text);
+        } catch(e) {
+          $alert({title: "Error:", content: $sce.trustAsHtml("Please select a valid JSON file"), type: 'danger', duration: 3});
+          $scope['sourcesImport']['working'] = false;
+          return;
+        }
+        $alert({title: "Error:", content: $sce.trustAsHtml("Not implemented so far..."), type: 'info'});
+      }
+      reader.onerror = function(e) {
+        $alert({title: "Error:", content: $sce.trustAsHtml("Unable to read the file"), type: 'danger', duration: 3});
+      }
+      reader.readAsText(fileInput.files[0]);
+    }
+    
+  }
+  $scope['sourcesImport']['import'] = importSources;
   $scope.deleteSource = function(id) {
     $scope.deleting[id] = true;
     Sources.delete({_id: id}, function() {
@@ -84,12 +118,26 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource'])
       delete $scope.deleting[id];
     }, function() {
       delete $scope.deleting[id];
-      alert("failed to delete source");
+      var sourceName = '<unknown>';
+      for(var i = 0; i < $scope.sources.length; i++) {
+        if($scope.sources[i]._id == id) {
+          sourceName = $scope.sources[i].name;
+          break;
+        }
+      }
+      sourceName = sourceName
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+      var message = "Failed to delete source " + sourceName;
+      $alert({title: "Error:", content: $sce.trustAsHtml(message), type: 'danger'});
     });
   };
   loadSources();
 }])
-.controller('SourceCreator', ['$scope', '$location', 'Sources', function($scope, $location, Sources) {
+.controller('SourceCreator', ['$scope', '$alert', '$sce', '$location', 'Sources', function($scope, $alert, $sce, $location, Sources) {
   $scope.config = "{\n}";
   $scope.save = function() {
     $scope.saving = true;
@@ -97,7 +145,7 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource'])
     try {
       var config = JSON.parse($scope.config);
     } catch(e) {
-      $scope.error = "Configuration is not valid JSON";
+      $alert({title: "Error:", content: $sce.trustAsHtml("Configuration of the source must be valid JSON"), type: 'danger'});
       $scope.saving = false;
       return;
     }
@@ -110,12 +158,12 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource'])
       $scope.saving = false;
       $location.path("/sources");
     }, function() {
-      $scope.error = "Failed saving the source";
+      $alert({title: "Error:", content: $sce.trustAsHtml("Failed to save source"), type: 'danger'});
       $scope.saving = false;
     });
   };
 }])
-.controller('SourceEditor', ['$scope', '$location', '$routeParams', 'Sources', function($scope, $location, $routeParams, Sources) {
+.controller('SourceEditor', ['$scope', '$alert', '$sce', '$location', '$routeParams', 'Sources', function($scope, $alert, $sce, $location, $routeParams, Sources) {
   $scope.state = 'loading';
   function loadSource() {
     Sources.get({_id: $routeParams.id}, function(result) {
@@ -136,7 +184,7 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource'])
     try {
       var config = JSON.parse($scope.config);
     } catch(e) {
-      $scope.error = "Configuration is not valid JSON";
+      $alert({title: "Error:", content: $sce.trustAsHtml("Configuration of the source must be valid JSON"), type: 'danger'});
       $scope.saving = false;
       return;
     }
@@ -150,7 +198,7 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource'])
       $scope.saving = false;
       $location.path("/sources");
     }, function() {
-      $scope.error = "Failed saving the source";
+      $alert({title: "Error:", content: $sce.trustAsHtml("Failed to save source"), type: 'danger'});
       $scope.saving = false;
     });
   };

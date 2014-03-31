@@ -1,11 +1,30 @@
 <div ng-controller="SourceOverview">
   <div class="pull-right">
+    <script type="text/ng-template" id="popover/sources-upload-form.html">
+      <form role="form" name="sourcesImportForm">
+        <div class="form-group">
+          <label for="sourcesImportFile">File:</label>
+          <input type="file" name="sourcesImport.file" id="sourcesImportFile" required>
+        </div>
+        <div class="checkbox">
+          <label>
+            <input type="checkbox" name="sourcesImport.replace"> Replace existing sources
+          </label>
+        </div>
+        <button class="btn btn-primary btn-block" ng-click="sourcesImport.import()">Import</button>
+      </form>
+    </script>
+    <button class="btn btn-default" ng-disabled="state != 'ready' || sourcesImport.working" bs-popover data-content-template="popover/sources-upload-form.html" data-placement="bottom">
+      <span class="glyphicon glyphicon-cloud-upload" ng-show="!sourcesImport.working"></span>
+      <span class="glyphicon glyphicon-refresh rotating" ng-show="sourcesImport.working"></span>
+      Import
+    </button>
     <a ng-href="{{downloadLink}}" class="btn btn-default" ng-click="updateDownloadLink()" target="_blank" ng-href ng-disabled="state != 'ready'">
       <span class="glyphicon glyphicon-cloud-download"></span>
-      Download
+      Export
     </a>
     <button class="btn btn-default" ng-click="reload()" ng-disabled="state == 'loading'">
-      <span class="glyphicon glyphicon-refresh"></span>
+      <span class="glyphicon glyphicon-refresh" ng-class="{rotating: state == 'loading'}"></span>
       Reload
     </button>
   </div>
@@ -22,7 +41,7 @@
       <span class="input-group-addon"><span class="glyphicon glyphicon-filter"></span></span>
       <input type="text" ng-model="sourcesFilter" class="form-control" id="sourcesFilter">
     </p>
-    <section class="panel panel-default" ng-repeat="source in filteredSources = (sources | filter:{name:sourcesFilter})" ng-class="{deleting: deleting[source._id]}">
+    <section class="panel panel-default fade-in-out" ng-repeat="source in filteredSources = (sources | filter:{name:sourcesFilter})" ng-class="{deleting: deleting[source._id]}">
       <div class="panel-heading">
         {{source.name}}
         <div class="pull-right">
@@ -37,7 +56,7 @@
         <pre>{{source.config | json}}</pre>
       </div>
     </section>
-    <section ng-show="filteredSources.length == 0" class="well">
+    <section ng-show="filteredSources.length == 0" class="well fade-in-out">
       No sources found...
     </section>
   </div>
