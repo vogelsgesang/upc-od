@@ -32,7 +32,8 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource', 'ngAnimate', 'mgcrea.ng
 .config(['$alertProvider', function($alertProvider) {
   angular.extend($alertProvider.defaults, {
     animation: 'am-fade-and-slide-top',
-    container: '#alert-container'
+    container: '#alert-container',
+    duration: 5
   });
 }])
 .directive('staticInclude', ['$http', '$templateCache', '$compile', function($http, $templateCache, $compile) {
@@ -88,7 +89,7 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource', 'ngAnimate', 'mgcrea.ng
   function importSources() {
     var fileInput = $document[0].getElementById('sourcesImportFile');
     if(fileInput.files.length < 1) {
-      $alert({title: "Error:", content: $sce.trustAsHtml("Please select a valid JSON file"), type: 'danger', duration: 3});
+      $alert({title: "Error:", content: $sce.trustAsHtml("Please select a valid JSON file"), type: 'danger'});
     } else {
       $scope.sourcesImport.working = true;
       var reader = new FileReader();
@@ -98,12 +99,12 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource', 'ngAnimate', 'mgcrea.ng
         try {
           var importedSources = JSON.parse(text);
         } catch(e) {
-          $alert({title: "Error:", content: $sce.trustAsHtml("Please select a valid JSON file"), type: 'danger', duration: 3});
+          $alert({title: "Error:", content: $sce.trustAsHtml("Please select a valid JSON file"), type: 'danger'});
           $scope.sourcesImport.working = false;
           return;
         }
         if(!importedSources instanceof Array) {
-          $alert({title: "Error:", content: $sce.trustAsHtml("The specified file does not contain valid source definitions"), type: 'danger', duration: 3});
+          $alert({title: "Error:", content: $sce.trustAsHtml("The specified file does not contain valid source definitions"), type: 'danger'});
           $scope.sourcesImport.working = false;
           return;
         }
@@ -130,7 +131,7 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource', 'ngAnimate', 'mgcrea.ng
         }
       };
       reader.onerror = function(e) {
-        $alert({title: "Error:", content: $sce.trustAsHtml("Unable to read the file"), type: 'danger', duration: 3});
+        $alert({title: "Error:", content: $sce.trustAsHtml("Unable to read the file"), type: 'danger'});
       }
       reader.readAsText(fileInput.files[0]);
     }
