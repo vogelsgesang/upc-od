@@ -67,7 +67,7 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource', 'ngAnimate', 'mgcrea.ng
     'replace': {method: 'PUT'}
   });
 }])
-.controller('SourceOverview', ['$scope', '$sce', 'Sources', '$alert', function($scope, $sce, Sources, $alert) {
+.controller('SourceOverview', ['$document', '$scope', '$sce', '$q', 'Sources', '$alert', function($document, $scope, $sce, $q, Sources, $alert) {
   function loadSources() {
     $scope.state = "loading";
     Sources.query(function(sources) {
@@ -81,18 +81,19 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource', 'ngAnimate', 'mgcrea.ng
   function updateDonwlodLink() {
     $scope.downloadLink = 'data:application/json;charset=utf-8,' + encodeURIComponent(angular.toJson($scope.sources));
   }
-  $scope['updateDownloadLink'] = updateDonwlodLink;
-  $scope['deleting'] = {};
-  $scope['sourcesImport'] = [];
-  $scope['sourcesImport']['replace'] = true;
+  $scope.updateDownloadLink = updateDonwlodLink;
+  $scope.deleting = {};
+  $scope.sourcesImport = [];
+  $scope.sourcesImport.replace = true;
   function importSources() {
-    var fileInput = document.getElementById('sourcesImportFile');
+    var fileInput = $document[0].getElementById('sourcesImportFile');
     if(fileInput.files.length < 1) {
-      $alert({title: "Error:", content: $sce.trustAsHtml("Please select a file"), type: 'danger', duration: 3});
+      $alert({title: "Error:", content: $sce.trustAsHtml("Please select a valid JSON file"), type: 'danger', duration: 3});
     } else {
       $scope.sourcesImport.working = true;
       var reader = new FileReader();
-      reader.onload = function(e) {
+      reader.onload = function(e) { 
+        //parse
         var text = reader['result'];
         try {
           var importedSources = JSON.parse(text);
@@ -101,20 +102,33 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource', 'ngAnimate', 'mgcrea.ng
           $scope.sourcesImport.working = false;
           return;
         }
-        if($scope.sourcesImport.replace) {
-          Sources.replace({_id: null}, importedSources, function() {
-            $scope['sourcesImport']['working'] = false;
-            $alert({title: "Success:", content: $sce.trustAsHtml("Sources were successfully imported"), type: 'info'});
-            loadSources();
-          }, function() {
-            $scope['sourcesImport']['working'] = false;
-            $alert({title: "Error:", content: $sce.trustAsHtml("Replace..."), type: 'danger'});
-          });
-        } else {
-          $alert({title: "Error:", content: $sce.trustAsHtml("Not implemented so far..."), type: 'info'});
+        if(!importedSources instanceof Array) {
+          $alert({title: "Error:", content: $sce.trustAsHtml("The specified file does not contain valid source definitions"), type: 'danger', duration: 3});
           $scope.sourcesImport.working = false;
+          return;
         }
-      }
+        //the success and error callback
+        function successCallback() {
+          $scope.sourcesImport.working = false;
+          $alert({title: "Success:", content: $sce.trustAsHtml("Sources were imported successfully"), type: 'success'});
+          loadSources();
+        }
+        function errorCallback() {
+            $scope.sourcesImport.working = false;
+            $alert({title: "Error:", content: $sce.trustAsHtml("Unable to import ressources"), type: 'error'});
+        }
+        //dispatch the queries to the server
+        if($scope.sourcesImport.replace) {
+          Sources.replace({_id: null}, importedSources, successCallback, errorCallback);
+        } else {
+          var promises = [];
+          for(var i = 0; i < importedSources.length; i++) {
+            var resource = Sources.save(importedSources[i]);
+            promises.push(resource.$promise);
+          }
+          $q.all(promises).then(successCallback, errorCallback);
+        }
+      };
       reader.onerror = function(e) {
         $alert({title: "Error:", content: $sce.trustAsHtml("Unable to read the file"), type: 'danger', duration: 3});
       }
