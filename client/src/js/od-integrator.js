@@ -135,7 +135,6 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource', 'ngAnimate', 'mgcrea.ng
       }
       reader.readAsText(fileInput.files[0]);
     }
-    
   }
   $scope['sourcesImport']['import'] = importSources;
   $scope.deleteSource = function(id) {
@@ -167,21 +166,24 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource', 'ngAnimate', 'mgcrea.ng
   loadSources();
 }])
 .controller('SourceCreator', ['$scope', '$alert', '$sce', '$location', 'Sources', function($scope, $alert, $sce, $location, Sources) {
-  $scope.config = "{\n}";
+  $scope.source = {};
+  $scope.source.adapter = {};
+  $scope.source.adapter.config = "{\n}";
   $scope.save = function() {
     $scope.saving = true;
     delete $scope.error;
     try {
-      var config = JSON.parse($scope.config);
+      var sourceObject = {
+        name: $scope.source.name,
+        adapter: {
+          name: $scope.source.adapter.name,
+          config: JSON.parse($scope.source.adapter.config)
+        }
+      }
     } catch(e) {
-      $alert({title: "Error:", content: $sce.trustAsHtml("Configuration of the source must be valid JSON"), type: 'danger'});
+      $alert({title: "Error:", content: $sce.trustAsHtml("Adapter configuration of the source must be valid JSON"), type: 'danger'});
       $scope.saving = false;
       return;
-    }
-    sourceObject = {
-      name: $scope.name,
-      module: $scope.module,
-      config: config
     }
     Sources.save(sourceObject, function() {
       $scope.saving = false;
@@ -195,12 +197,10 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource', 'ngAnimate', 'mgcrea.ng
 .controller('SourceEditor', ['$scope', '$alert', '$sce', '$location', '$routeParams', 'Sources', function($scope, $alert, $sce, $location, $routeParams, Sources) {
   $scope.state = 'loading';
   function loadSource() {
-    Sources.get({_id: $routeParams.id}, function(result) {
-      console.log(result);
+    Sources.get({_id: $routeParams.id}, function(source) {
       $scope.state = 'ready';
-      $scope.name = result.name;
-      $scope.module = result.module;
-      $scope.config = JSON.stringify(result.config, null, 2);
+      $scope.source = source;
+      $scope.source.adapter.config = JSON.stringify(source.adapter.config, null, 4);
     }, function(result) {
       $scope.state = 'error'
     });
@@ -211,17 +211,18 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource', 'ngAnimate', 'mgcrea.ng
     $scope.saving = true;
     delete $scope.error;
     try {
-      var config = JSON.parse($scope.config);
+      var sourceObject = {
+        _id: $routeParams.id,
+        name: $scope.source.name,
+        adapter: {
+          name: $scope.source.adapter.name,
+          config: JSON.parse($scope.source.adapter.config)
+        }
+      }
     } catch(e) {
-      $alert({title: "Error:", content: $sce.trustAsHtml("Configuration of the source must be valid JSON"), type: 'danger'});
+      $alert({title: "Error:", content: $sce.trustAsHtml("Adapter configuration of the source must be valid JSON"), type: 'danger'});
       $scope.saving = false;
       return;
-    }
-    sourceObject = {
-      _id: $routeParams.id,
-      name: $scope.name,
-      module: $scope.module,
-      config: config
     }
     Sources.save(sourceObject, function() {
       $scope.saving = false;

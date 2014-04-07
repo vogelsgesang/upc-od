@@ -51,9 +51,9 @@
         </div>
       </div>
       <div class="panel-body">
-        Module: {{source.module}}<br>
+        Adapter: {{source.adapter.name}}<br>
         Config:
-        <pre>{{source.config | json}}</pre>
+        <pre>{{source.adapter.config | json}}</pre>
       </div>
     </section>
     <section ng-show="filteredSources.length == 0" class="well fade-in-out">

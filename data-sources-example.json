@@ -1,40 +1,50 @@
 [
   {
     "name": "Amazon-Crawling",
-    "module": "crawler",
-    "config": {
-      "baseUrl": "http://www.amazon.org/",
-      "pathPattern": "products/:title",
-      "select": "#offer > .price"
+    "adapter": {
+      "name": "crawler",
+      "config": {
+        "baseUrl": "http://www.amazon.org/",
+        "pathPattern": "products/:title",
+        "select": "#offer > .price"
+      }
     }
   },
   {
     "name": "Wikipedia-Crawling",
-    "module": "crawler",
-    "config": {
-      "baseUrl": "http://en.wikipedia.org/",
-      "pathPattern": "wiki/:title",
-      "select": "#offer > .price"
+    "adapter": {
+      "name": "crawler",
+      "config": {
+        "baseUrl": "http://en.wikipedia.org/",
+        "pathPattern": "wiki/:title",
+        "select": "#offer > .price"
+      }
     }
   },
   {
     "name": "Wikidata",
-    "module": "wikidata",
-    "config": {
+    "adapter": {
+      "name": "wikidata",
+      "config": {
+      }
     }
   },
   {
     "name": "DBpedia",
-    "module": "sparql",
-    "config": {
-      "endpoint": "http://www.example.com/"
+    "adapter": {
+      "name": "sparql",
+      "config": {
+        "endpoint": "http://www.example.com/"
+      }
     }
   },
   {
     "name": "Freebase",
-    "module": "sparql",
-    "config": {
-      "endpoint": "http://www.example.com/freebase/sparql"
+    "adapter": {
+      "name": "sparql",
+      "config": {
+        "endpoint": "http://www.example.com/freebase/sparql"
+      }
     }
   }
 ]
