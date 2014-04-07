@@ -1,3 +1,4 @@
+"use strict";
 angular.module('odIntegrator', ['ngRoute', 'ngResource', 'ngAnimate', 'mgcrea.ngStrap'])
 .config(function($routeProvider, $locationProvider) {
   $locationProvider.html5Mode(true);
