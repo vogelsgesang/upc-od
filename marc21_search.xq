@@ -43,7 +43,7 @@ declare function local:getLimit() as xs:integer {
 declare function local:buildLimitedSearchQuery($conditions as xs:string, $offset as xs:integer, $limit as xs:integer) as xs:string {
   let $query := concat(
     'subsequence(doc("/db/od/books_export.xml")/collection/record',
-    $conditions, ',', $offset, ',', $offset+$limit,')'
+    $conditions, ',', 1+$offset, ',', $limit,')'
   )
   return $query
 };
