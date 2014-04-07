@@ -23,18 +23,18 @@ declare function local:buildConditions() as xs:string {
 
 (: gets the offsets and ensures a valid value :)
 declare function local:getOffset() as xs:integer {
-  let $offset := request:get-parameter('offset', 0)
+  let $offset := xs:int(request:get-parameter('offset', 0))
   return
-    if ($offset instance of xs:integer and $offset gt 0)
+    if ($offset gt 0)
     then $offset
     else 0
 };
 
 (: returns the limit. The limit is clamped to the range 0-100 :)
 declare function local:getLimit() as xs:integer {
-  let $limit := request:get-parameter('limit', 20)
+  let $limit := xs:int(request:get-parameter('limit', 20))
   return
-    if ($limit instance of xs:integer and $limit gt 0 and $limit le 100)
+    if ($limit gt 0 and $limit le 100)
     then $limit
     else 20
 };
@@ -51,3 +51,4 @@ declare function local:buildLimitedSearchQuery($conditions as xs:string, $offset
 <collection>{
   util:eval(local:buildLimitedSearchQuery(local:buildConditions(), local:getOffset(), local:getLimit()))
 }</collection>
+
