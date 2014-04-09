@@ -45,8 +45,14 @@ function eXistCallback(xmlResults) {
   } else {
     xmlResults.setEncoding("utf8");
     xmlResults.pipe(concat({encoding: "string"}, function(xmlString) {
-      var parsedData = parseMarc21XmlIntoObject(xmlString);
-      console.log(util.inspect(parsedData, null, 25));
+      var parsedCollection = parseMarc21XmlIntoObject(xmlString);
+      var data = parsedCollection.map(function(record) {
+        return {
+          _id: record["001"],
+          fields: record
+        }
+      });
+      console.log(data);
     }));
   }
 }
