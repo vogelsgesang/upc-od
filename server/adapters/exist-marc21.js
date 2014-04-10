@@ -1,6 +1,7 @@
 "use strict";
-var util = require("util");
+var url = require("url");
 var http = require("http");
+var https = require("https");
 var concat = require("concat-stream");
 var et = require("elementtree");
 
@@ -112,9 +113,16 @@ function eXistCallback(xmlResults) {
   }
 }
 //send the query...
-var url = config.eXistEndpoint + config.xmlDocumentPath + "?_query=" + encodeURIComponent(xquery);
-console.log(url);
-var req = http.request(url, eXistCallback);
+var queryUrl = config.eXistEndpoint + config.xmlDocumentPath + "?_query=" + encodeURIComponent(xquery);
+console.log(queryUrl);
+var protocol = url.parse(queryUrl).protocol;
+if(protocol == "http:") {
+  var req = http.request(queryUrl, eXistCallback);
+} else if(protocol == "https:") {
+  var req = https.request(queryUrl, eXistCallback);
+} else {
+  throw new Error("unsupported protocol: " + protocol);
+}
 req.on("error", function(e) {
   errorCallback("requestFailed");
 });
