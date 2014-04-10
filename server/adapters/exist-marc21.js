@@ -35,6 +35,17 @@ function parseMarc21XmlIntoObject(xmlString) {
   return resultRecords;
 }
 
+//restructures the records in a way in which we can expose them to the integration layer
+function restructureMarcRecords(records) {
+  return records.map(function(record) {
+    return {
+      id: record["001"],
+      type: "marcRecord",
+      fields: record
+    }
+  });
+}
+
 //builds an Xquery string in order to find the relevant records
 function buildMarc21Xquery(conditions, offset, limit) {
   var selectionPaths = []; //set of Xpaths for retrieving the correct records
@@ -53,7 +64,7 @@ function buildMarc21Xquery(conditions, offset, limit) {
             .replace(/</g, "&lt;")
             .replace(/>/g, "&gt;")
             .replace(/"/g, "&quot;")
-            .replace(/"/g, "&apos;");
+            .replace(/'/g, "&apos;");
       if(condition[0] == "=") {
         if(/^00[1-8]$/.test(fieldName)) {
           conditionString += "[controlfield[@tag='"+fieldName+"']/text() = '"+escapedValue+"']";
@@ -77,70 +88,64 @@ function buildMarc21Xquery(conditions, offset, limit) {
   return namespaceDefinition + "\n" + selectionXquery;
 }
 
-var config = {
-  eXistEndpoint : "http://localhost:8080/exist/rest/",
-  xmlDocumentPath: "/db/od/books_export.xml",
-  limit: 20
-};
-
-var condition = [
-  [
-    ["=", "003", "SzGeCERN"],
-    ["=", "020a", "3540120351"]
-  ]
-];
-
-var xquery = buildMarc21Xquery(condition, 0, config.limit);
-console.log(xquery);
-
-//the callback which handles the answer from eXistDb
-function eXistCallback(xmlResults) {
-  if(xmlResults.statusCode != 200) {
-    console.log("unexpected http status code " + xmlResults.statusCode);
+//this function sends the query to the eXistDb server and
+//parses the results...
+function requestMarc21Records(queryUrl, successCallback, errorCallback) {
+  //the callback which handles the answer from eXistDb
+  function eXistCallback(xmlResults) {
+    if(xmlResults.statusCode != 200) {
+      errorCallback(new Error("unexpected http status code " + xmlResults.statusCode));
+    } else {
+      xmlResults.setEncoding("utf8");
+      xmlResults.pipe(concat({encoding: "string"}, function(xmlString) {
+        var parsedCollection = parseMarc21XmlIntoObject(xmlString);
+        successCallback(parsedCollection);
+      }));
+    }
+  }
+  //send the query...
+  var protocol = url.parse(queryUrl).protocol;
+  if(protocol == "http:") {
+    var req = http.request(queryUrl, eXistCallback);
+  } else if(protocol == "https:") {
+    var req = https.request(queryUrl, eXistCallback);
   } else {
-    xmlResults.setEncoding("utf8");
-    xmlResults.pipe(concat({encoding: "string"}, function(xmlString) {
-      var parsedCollection = parseMarc21XmlIntoObject(xmlString);
-      var data = parsedCollection.map(function(record) {
-        return {
-          id: record["001"],
-          type: "marcRecord",
-          fields: record
+    errorCallback(new Error("unexpected http status code " + xmlResults.statusCode));
+  }
+  req.on("error", function(e) {
+    throw new Error("request failed: " + protocol);
+    errorCallback(new Error("request failed: " + e.message));
+  });
+  req.end();
+  return req.abort;
+}
+
+//the object which is actually exported...
+module.exports = function ExistMarc21Adapter(config) {
+  //this function can be used in order to query for data
+  this.query = function query(objectType, conditions, fields, successCallback, errorCallback) {
+    if(objectType != "marcRecord") {
+      errorCallback(new Error("unsupported object type" + objectType));
+      return function() {};
+    } else {
+      var xquery = buildMarc21Xquery(conditions, 0, config.limit);
+      var queryUrl = config.eXistEndpoint + config.xmlDocumentPath + "?_query=" + encodeURIComponent(xquery);
+      return requestMarc21Records(queryUrl, function(marcRecords) {
+        var exposedData = restructureMarcRecords(marcRecords);
+        var results = {
+          "status": "finished",
+          "data": exposedData
         }
-      });
-      console.log(data);
-    }));
+        successCallback(results);
+      }, errorCallback);
+    }
   }
-}
-//send the query...
-var queryUrl = config.eXistEndpoint + config.xmlDocumentPath + "?_query=" + encodeURIComponent(xquery);
-console.log(queryUrl);
-var protocol = url.parse(queryUrl).protocol;
-if(protocol == "http:") {
-  var req = http.request(queryUrl, eXistCallback);
-} else if(protocol == "https:") {
-  var req = https.request(queryUrl, eXistCallback);
-} else {
-  throw new Error("unsupported protocol: " + protocol);
-}
-req.on("error", function(e) {
-  errorCallback("requestFailed");
-});
-req.end();
 
-/*
-function resolveId(id, fields, successCallback, errorCallback) {
-  return queryExistForMarc21(eXistEndpoint + queryString, successCallback, errorCallback);
-};
+  //resolves an id
+  this.resolveId = function resolveId(id, fields, successCallback, errorCallback) {
+    return queryExistForMarc21([[["=", "001", id]]], successCallback, errorCallback);
+  };
 
-function query(objectType, conditions, successCallback, errorCallback) {
-  if(objectType != "marcRecord") {
-    errorCallback("unsupported object type" + objectType);
-    return function() {};
-  } else {
-    //TODO: build the query string
-    var queryString = "TODO";
-    return queryExistForMarc21(eXistEndpoint + queryString, successCallback, errorCallback);
-  }
+  //there are no cleanup procedures involved for this adapter
+  this.destroy = function() {};
 }
-*/
