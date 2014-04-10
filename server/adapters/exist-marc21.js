@@ -123,9 +123,9 @@ function requestMarc21Records(queryUrl, successCallback, errorCallback) {
 //the object which is actually exported...
 module.exports = function ExistMarc21Adapter(config) {
   //this function can be used in order to query for data
-  this.query = function query(objectType, conditions, fields, successCallback, errorCallback) {
+  function query(objectType, conditions, fields, successCallback, errorCallback) {
     if(objectType != "marcRecord") {
-      errorCallback(new Error("unsupported object type" + objectType));
+      errorCallback(new Error("unsupported object type: " + objectType));
       return function() {};
     } else {
       var xquery = buildMarc21Xquery(conditions, 0, config.limit);
@@ -140,11 +140,13 @@ module.exports = function ExistMarc21Adapter(config) {
       }, errorCallback);
     }
   }
+  this.query = query;
 
   //resolves an id
-  this.resolveId = function resolveId(id, fields, successCallback, errorCallback) {
-    return queryExistForMarc21([[["=", "001", id]]], successCallback, errorCallback);
+  function resolveId(id, fields, successCallback, errorCallback) {
+    return query("marcRecord", [[["=", "001", id]]], fields, successCallback, errorCallback);
   };
+  this.resolveId = resolveId;
 
   //there are no cleanup procedures involved for this adapter
   this.destroy = function() {};
