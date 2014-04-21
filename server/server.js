@@ -22,7 +22,24 @@ var app = express()
   .use(express.logger('dev'))
   .use('/api', require("./api/root"))
   .get(/^\/(style.css$|js\/|partials\/|fonts\/)/, serveStatic)
-  .get('*', serveMain);
+  .get('*', serveMain)
+  .use(function(err, req, res, next) {
+    console.log(err);
+    next(err);
+  })
+  .use(function(err, req, res, next) {
+    if(err.status !== undefined) {
+      res.statusCode = err.status;
+    } else {
+      res.statusCode = 500;
+    }
+    if(err.message !== undefined) {
+      res.write(err.message);
+    } else {
+      res.write("Unknown Error");
+    }
+    res.end();
+  });
 
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
