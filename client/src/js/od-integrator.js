@@ -66,7 +66,9 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource', 'ngAnimate', 'mgcrea.ng
 }])
 .factory('Sources', ['$resource', function($ressource) {
   return $ressource('/api/sources/:_id', {_id: "@_id"}, {
-    'replace': {method: 'PUT'}
+    'save': {method: 'PUT'},
+    'create': {method: 'POST'},
+    'createBulk': {method: 'POST', isArray: true}
   });
 }])
 .controller('SourceOverview', ['$document', '$scope', '$sce', '$q', 'Sources', '$alert', function($document, $scope, $sce, $q, Sources, $alert) {
@@ -76,7 +78,12 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource', 'ngAnimate', 'mgcrea.ng
       $scope.sources = sources;
       $scope.state = "ready";
     }, function(errMessage) {
-      $scope.state = "error";
+      if(errMessage.status == 404) {
+        $scope.sources = [];
+        $scope.state = "ready";
+      } else {
+        $scope.state = "error";
+      }
     });
   }
   $scope.reload = loadSources;
@@ -121,14 +128,11 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource', 'ngAnimate', 'mgcrea.ng
         }
         //dispatch the queries to the server
         if($scope.sourcesImport.replace) {
-          Sources.replace({_id: null}, importedSources, successCallback, errorCallback);
+          Sources.delete(function() {
+            Sources.createBulk(importedSources, successCallback, errorCallback);
+          }, errorCallback);
         } else {
-          var promises = [];
-          for(var i = 0; i < importedSources.length; i++) {
-            var resource = Sources.save(importedSources[i]);
-            promises.push(resource.$promise);
-          }
-          $q.all(promises).then(successCallback, errorCallback);
+          Sources.createBulk(importedSources, successCallback, errorCallback);
         }
       };
       reader.onerror = function(e) {
@@ -186,7 +190,7 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource', 'ngAnimate', 'mgcrea.ng
       $scope.saving = false;
       return;
     }
-    Sources.save(sourceObject, function() {
+    Sources.create(sourceObject, function() {
       $scope.saving = false;
       $location.path("/sources");
     }, function() {
@@ -199,8 +203,11 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource', 'ngAnimate', 'mgcrea.ng
   $scope.state = 'loading';
   function loadSource() {
     Sources.get({_id: $routeParams.id}, function(source) {
-      $scope.state = 'ready';
+      if(source.adapter.config === undefined) {
+        source.adapter.config = {};
+      }
       $scope.source = source;
+      $scope.state = 'ready';
       $scope.source.adapter.config = JSON.stringify(source.adapter.config, null, 4);
     }, function(result) {
       $scope.state = 'error'

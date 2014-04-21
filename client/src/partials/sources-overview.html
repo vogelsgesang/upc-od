@@ -53,7 +53,8 @@
       <div class="panel-body">
         Adapter: {{source.adapter.name}}<br>
         Config:
-        <pre>{{source.adapter.config | json}}</pre>
+        <span ng-show="source.adapter.config === undefined">empty</span>
+        <pre ng-show="source.adapter.config !== undefined">{{source.adapter.config | json}}</pre>
       </div>
     </section>
     <section ng-show="filteredSources.length == 0" class="well fade-in-out">
