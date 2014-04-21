@@ -1,7 +1,5 @@
 "use strict";
 var Router = require("./router");
-var sendJson = require("send-data/json");
-var connect = require("connect");
 var mongo = require('mongodb');
 var MongoClient = mongo.MongoClient;
 
@@ -26,7 +24,7 @@ function sourcesIndex(req, res, next) {
     if(err !== null) {
       return next(err);
     }
-    sendJson(req, res, items);
+    res.json(items);
   });
 }
 
@@ -39,7 +37,7 @@ function replaceAllSources(req, res, next) {
       if(err !== null) {
         return next(err);
       }
-      sendJson(req, res, {});
+      res.json({});
     });
   });
 }
@@ -53,7 +51,7 @@ function createSource(req, res, next) {
       return next(err);
     }
     res.statusCode = 201;
-    sendJson(req, res, {"new_id": result[0]['_id']});
+    res.json({"new_id": result[0]['_id']});
   });
 }
 
@@ -62,7 +60,7 @@ function deleteAllSources(req, res, next) {
     if(err !== null) {
       next(err);
     } else {
-      sendJson(req, res, {});
+      res.json({});
     }
   });
 }
@@ -87,7 +85,7 @@ function getSource(req, res, next) {
     if(err !== null) {
       return next(err);
     }
-    sendJson(req, res, items[0]);
+    res.json(items[0]);
   });
 }
 
@@ -110,7 +108,7 @@ function updateSource(req, res, next) {
     if(err) {
       return next(err);
     }
-    sendJson(req, res, {});
+    res.json({});
   })
 }
 
@@ -126,7 +124,7 @@ function deleteSource(req, res, next) {
     if(err !== null) {
       next(err);
     } else {
-      sendJson(req, res, {});
+      res.json({});
     }
   });
 }

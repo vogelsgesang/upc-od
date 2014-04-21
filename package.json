@@ -17,13 +17,14 @@
   "gitHead": "6a72d2ce45a128eb91f155f0704f4a493f31afcf",
   "dependencies": {
     "node-static": "~0.7.3",
-    "connect": "^2.14.3",
     "routes": "^0.2.0",
-    "send-data": "^3.1.2",
     "body-parser": "^1.0.1",
     "mongodb": "^1.3.23",
     "elementtree": "^0.1.6",
-    "concat-stream": "^1.4.4"
+    "concat-stream": "^1.4.4",
+    "mongoose": "^3.8.8",
+    "express": "^3.5.1",
+    "baucis": "^0.18.4"
   },
   "devDependencies": {
     "grunt": "^0.4.4",

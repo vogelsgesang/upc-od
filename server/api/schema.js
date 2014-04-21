@@ -1,7 +1,5 @@
 "use strict";
 var Router = require("./router");
-var sendJson = require("send-data/json");
-var connect = require("connect");
 
 var schema = {
   'book': {
@@ -31,18 +29,18 @@ var schema = {
 }
 
 function schemaIndex(req, res) {
-  sendJson(req, res, schema);
+  res.json(schema);
 }
 
 function setSchema(req, res) {
   schema = req.body;
-  sendJson(req, res, {type: "success", msg:"The schema was successfully replaced."});
+  res.json({type: "success", msg:"The schema was successfully replaced."});
   res.end();
 }
 
 function deleteSchema(req, res) {
   schema = {};
-  sendJson({type:"success", msg: "The schema was successfully reset."});
+  res.json({type:"success", msg: "The schema was successfully reset."});
 }
 
 var schemaRouter = Router()

@@ -1,13 +1,11 @@
 "use strict";
-var Router = require("./router");
-var connect = require("connect");
-var sendJson = require("send-data/json");
+var express = require("express");
 var bodyParser = require("body-parser");
 var delayResponse = require("./delay-response");
 
 function handleBodyError(err, req, res, next) {
   if(err instanceof SyntaxError) {
-    sendJson(req, res, {
+    res.json({
       statusCode: 400,
       body: {"status":"error", msg: "Unable to parse request body: " + err.message}
     });
@@ -25,20 +23,24 @@ function handleApiError(err, req, res, next) {
   if(err.message !== undefined) {
     jsonResponse.message = err.message;
   }
-  sendJson(req, res, {
+  res.json({
     statusCode: statusCode,
     body: jsonResponse
   });
 }
 
-var apiRoot = connect()
+var apiRoot = express()
   .use(bodyParser.json())
   .use(handleBodyError)
-  .use(delayResponse(300))
-  .use(Router()
-    .addChildRouter("/schema", require("./schema"))
-    .addChildRouter("/sources", require("./sources"))
-    .addChildRouter("/experiments", require("./experiments"))
-  ).use(handleApiError);
+  .use(delayResponse(800))
+  .use("/schema", require("./schema"))
+  .use("/sources", require("./sources"))
+  .use("/experiments", require("./experiments"))
+  .use(function(req, res, next) {
+    var err = new Error("Invalid api endpoint");
+    err.statusCode = 404;
+    next(err);
+  })
+  .use(handleApiError);
 
 module.exports = apiRoot;

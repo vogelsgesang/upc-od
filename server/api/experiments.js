@@ -1,6 +1,5 @@
 "use strict";
 var Router = require("./router");
-var sendJson = require("send-data/json");
 var http = require("http");
 
 function harvardKeywordSearch(req, res) {
@@ -33,13 +32,13 @@ var team = [
 
 module.exports = Router()
   .addRoute("/data/:id", function(request, response) {
-    sendJson(request, response, {id: request.params.id, data: "Not implemented so far"});
+    response.json({id: request.params.id, data: "Not implemented so far"});
   })
   .addRoute("/keyword/:kw", harvardKeywordSearch)
   .addRoute("/team", function(req, res) {
-    sendJson(req, res, team);
+    res.json(team);
     res.end();
   })
   .addRoute("/echo/*?", function(req, res) {
-    sendJson(req, res, {query: req.splats[0]});
+    res.josn({query: req.splats[0]});
   });
