@@ -32,6 +32,7 @@ baucis.rest('Source');
 baucis.rest('ObjectDefinition');
 
 var apiRoot = express()
+  .use(require('compression')())
   .use(delayResponse(800))
   .use(baucis())
   .use(require("./data-api"))

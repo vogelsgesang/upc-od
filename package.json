@@ -22,7 +22,8 @@
     "mongoose": "^3.8.8",
     "express": "^3.5.1",
     "baucis": "^0.18.4",
-    "body-parser": "^1.0.2"
+    "body-parser": "^1.0.2",
+    "compression": "^1.0.1"
   },
   "devDependencies": {
     "grunt": "^0.4.4",
