@@ -23,6 +23,10 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource', 'ngAnimate', 'mgcrea.ng
     'templateUrl': '/partials/sources-edit.html',
     'navItem': 'sources'
   })
+  .when('/rawquery', {
+    'templateUrl': '/partials/raw-query.html',
+    'navItem': 'rawquery'
+  })
   .otherwise({
     'redirectTo': '/'
   });
@@ -240,4 +244,23 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource', 'ngAnimate', 'mgcrea.ng
       $scope.saving = false;
     });
   };
+}])
+.controller('RawQueryController', ['$scope', '$alert', '$sce', '$http', function($scope, $alert, $sce, $http) {
+  $scope.query = "[]";
+  function sendQuery() {
+    delete $scope.error;
+    delete $scope.results;
+    try {
+      var query = JSON.parse($scope.query);
+    } catch(e) {
+      $scope.error = "Query must be valid JSON";
+      return;
+    }
+    $http.post('/api/data/rawquery', query).success(function(data){
+      $scope.results = data;
+    }).error(function(data) {
+      $scope.error = data;
+    });
+  }
+  $scope.sendQuery = sendQuery;
 }]);

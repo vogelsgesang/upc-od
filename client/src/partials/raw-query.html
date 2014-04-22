@@ -1,0 +1,20 @@
+<div ng-controller="RawQueryController">
+  <h1>Raw Query</h1>
+  <form name="rawquery" ng-submit="sendQuery()">
+    <div class="form-group">
+      <label for="query">Query:</label>
+      <textarea class="form-control" ng-model="query" id="query"></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary btn-block">Send query</button>
+  </form>
+  <hr>
+  <div ng-show="results !== undefined">
+    Results:
+    <pre>{{results | json}}</pre>
+  </div>
+  <div ng-show="error !== undefined">
+    Error:
+    <pre class="bg-danger">{{error | json}}</pre>
+  </div>
+</div>
+
