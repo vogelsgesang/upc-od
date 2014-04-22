@@ -1,7 +1,6 @@
 "use strict";
 var express = require("express");
 var baucis = require("baucis");
-var bodyParser = require("body-parser");
 var delayResponse = require("./delay-response");
 
 function handleApiError(err, req, res, next) {
@@ -22,8 +21,7 @@ function handleApiError(err, req, res, next) {
   }
   res.statusCode = statusCode;
   res.json({
-    status: statusCode,
-    message: message
+    msg: message
   });
 }
 
@@ -36,6 +34,7 @@ baucis.rest('ObjectDefinition');
 var apiRoot = express()
   .use(delayResponse(800))
   .use(baucis())
+  .use(require("./data-api"))
   .use("/experiments", require("./experiments"))
   .use(function(req, res, next) {
     var err = new Error("Invalid api endpoint");
