@@ -17,7 +17,6 @@
   "gitHead": "6a72d2ce45a128eb91f155f0704f4a493f31afcf",
   "dependencies": {
     "node-static": "~0.7.3",
-    "routes": "^0.2.0",
     "elementtree": "^0.1.6",
     "concat-stream": "^1.4.4",
     "mongoose": "^3.8.8",

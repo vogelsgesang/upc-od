@@ -1,5 +1,5 @@
 "use strict";
-var Router = require("./router");
+var express = require("express");
 var http = require("http");
 
 function harvardKeywordSearch(req, res) {
@@ -30,15 +30,12 @@ var team = [
   {firstname: "Adrian", surname: "Vogelsgesang"}
 ];
 
-module.exports = Router()
-  .addRoute("/data/:id", function(request, response) {
+module.exports = express()
+  .get("/data/:id", function(request, response) {
     response.json({id: request.params.id, data: "Not implemented so far"});
   })
-  .addRoute("/keyword/:kw", harvardKeywordSearch)
-  .addRoute("/team", function(req, res) {
+  .get("/keyword/:kw", harvardKeywordSearch)
+  .get("/team", function(req, res) {
     res.json(team);
     res.end();
   })
-  .addRoute("/echo/*?", function(req, res) {
-    res.josn({query: req.splats[0]});
-  });
