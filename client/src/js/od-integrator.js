@@ -122,13 +122,19 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource', 'ngAnimate', 'mgcrea.ng
         }
         //the success and error callback
         function successCallback() {
-          $scope.sourcesImport.working = false;
           $alert({title: "Success:", content: $sce.trustAsHtml("Sources were imported successfully"), type: 'success'});
+          $scope.sourcesImport.working = false;
           loadSources();
         }
-        function errorCallback() {
-            $scope.sourcesImport.working = false;
-            $alert({title: "Error:", content: $sce.trustAsHtml("Unable to import ressources"), type: 'error'});
+        function errorCallback(response) {
+          var msg = response.data.msg
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+          $alert({title: "Unable to import ressources", content: $sce.trustAsHtml(msg), type: 'error'});
+          $scope.sourcesImport.working = false;
         }
         //dispatch the queries to the server
         if($scope.sourcesImport.replace) {
@@ -153,7 +159,7 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource', 'ngAnimate', 'mgcrea.ng
         return source._id != id;
       });
       delete $scope.deleting[id];
-    }, function() {
+    }, function(response) {
       delete $scope.deleting[id];
       var sourceName = '<unknown>';
       for(var i = 0; i < $scope.sources.length; i++) {
@@ -162,14 +168,14 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource', 'ngAnimate', 'mgcrea.ng
           break;
         }
       }
-      sourceName = sourceName
+      var msg = response.data.msg
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
-      var message = "Failed to delete source " + sourceName;
-      $alert({title: "Error:", content: $sce.trustAsHtml(message), type: 'danger'});
+      var title = "Failed to delete source " + sourceName;
+      $alert({title: title, content: $sce.trustAsHtml(msg), type: 'danger'});
     });
   };
   loadSources();
@@ -197,8 +203,14 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource', 'ngAnimate', 'mgcrea.ng
     Sources.create(sourceObject, function() {
       $scope.saving = false;
       $location.path("/sources");
-    }, function() {
-      $alert({title: "Error:", content: $sce.trustAsHtml("Failed to save source"), type: 'danger'});
+    }, function(response) {
+      var msg = response.data.msg
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+      $alert({title: "Failed to save source", content: $sce.trustAsHtml(msg), type: 'danger'});
       $scope.saving = false;
     });
   };
@@ -239,8 +251,14 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource', 'ngAnimate', 'mgcrea.ng
     Sources.save(sourceObject, function() {
       $scope.saving = false;
       $location.path("/sources");
-    }, function() {
-      $alert({title: "Error:", content: $sce.trustAsHtml("Failed to save source"), type: 'danger'});
+    }, function(response) {
+      var msg = response.data.msg
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+      $alert({title: "Failed to save source", content: $sce.trustAsHtml(msg), type: 'danger'});
       $scope.saving = false;
     });
   };
