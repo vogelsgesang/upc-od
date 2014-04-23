@@ -1,7 +1,7 @@
 module.exports = function handleApiError(err, req, res, next) {
   if(!err) return next();
   var statusCode = res.statusCode;
-  if(statusCode == 200) {
+  if(statusCode >= 200 && statusCode <= 400) {
     statusCode = 500;
   }
   if(err.status!== undefined) {
