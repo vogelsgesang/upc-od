@@ -10,4 +10,7 @@ var sourceSchema = mongoose.Schema({
 });
 
 var Source = mongoose.model('Source', sourceSchema);
-module.exports = Source;
+module.exports = {
+  model: Source,
+  schema: sourceSchema
+}

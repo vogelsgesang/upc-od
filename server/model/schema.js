@@ -10,4 +10,7 @@ var objectDefinitionSchema = mongoose.Schema({
 });
 
 var ObjectDefinition = mongoose.model('ObjectDefinition', objectDefinitionSchema);
-module.exports = ObjectDefinition;
+module.exports = {
+  model: ObjectDefinition,
+  schema: objectDefinitionSchema
+}
