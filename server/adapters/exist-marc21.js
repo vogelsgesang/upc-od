@@ -84,7 +84,7 @@ function buildMarc21Xquery(conditions, offset, limit) {
     selectionPaths.push("/collection/record"+conditionString);
   });
   var selectionPath = "(\n   " + selectionPaths.join("\n | ") + "\n)";
-  var selectionXquery = "subsequence(" + selectionPath +","+offset+","+limit+")";
+  var selectionXquery = "subsequence(" + selectionPath +","+offset+","+(limit+1)+")";
   var namespaceDefinition = "declare default element namespace 'http://www.loc.gov/MARC21/slim';";
   return namespaceDefinition + "\n" + selectionXquery;
 }
@@ -141,7 +141,7 @@ module.exports = function ExistMarc21Adapter(config) {
   //this function can be used in order to query for data
   function query(objectType, conditions, fields, successCallback, errorCallback) {
     if(objectType != "marcRecord") {
-      process.tick(function() {
+      process.nextTick(function() {
         errorCallback(new Error("unsupported object type: " + objectType));
       });
       return function() {};
