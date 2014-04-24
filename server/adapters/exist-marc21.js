@@ -121,10 +121,22 @@ function requestMarc21Records(queryUrl, successCallback, errorCallback) {
 
 //the object which is actually exported...
 module.exports = function ExistMarc21Adapter(config) {
+  //check, if the configuration is valid
+  if(!("eXistEndpoint" in config)) {
+    throw new Error("config property \"eXistEnpoint\" is missing");
+  }
+  if(!("xmlDocumentPath" in config)) {
+    throw new Error("config property \"xmlDocumentPath\" is missing");
+  }
+  if(!("limit" in config)) {
+    throw new Error("config property \"limit\" is missing");
+  }
   //this function can be used in order to query for data
   function query(objectType, conditions, fields, successCallback, errorCallback) {
     if(objectType != "marcRecord") {
-      errorCallback(new Error("unsupported object type: " + objectType));
+      process.tick(function() {
+        errorCallback(new Error("unsupported object type: " + objectType));
+      });
       return function() {};
     } else {
       var xquery = buildMarc21Xquery(conditions, 0, config.limit);
