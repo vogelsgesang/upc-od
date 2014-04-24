@@ -124,10 +124,16 @@ function requestMarc21Records(queryUrl, successCallback, errorCallback) {
 module.exports = function ExistMarc21Adapter(config) {
   //check, if the configuration is valid
   if(!("eXistEndpoint" in config)) {
-    throw new Error("config property \"eXistEnpoint\" is missing");
+    throw new Error("config property \"eXistEndpoint\" is missing");
+  }
+  if(typeof config.eXistEndpoint != "string" || !/^https?:\/\//.test(config.eXistEndpoint)) {
+    throw new Error("eXistEndpoint is not a valid endpoint URL");
   }
   if(!("xmlDocumentPath" in config)) {
     throw new Error("config property \"xmlDocumentPath\" is missing");
+  }
+  if(typeof config.xmlDocumentPath != "string") {
+    throw new Error("xmlDocumentPath is invalid");
   }
   if(!("limit" in config)) {
     throw new Error("config property \"limit\" is missing");
