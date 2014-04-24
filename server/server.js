@@ -19,11 +19,11 @@ function serveMain(request, response, next) {
 }
 
 //creates the express app, sets up all the routes etc.
-function createExpressApp() {
+function createExpressApp(dataService) {
   //create the API router
   var api = express()
     .use(require('compression')())
-    .use(require("./api/data-api"))
+    .use(require("./api/data-api")(dataService))
     .use(require("./api/meta-data"))
     .use('/experiments', require("./api/experiments"))
     .use(function(req, res, next) {
@@ -117,7 +117,7 @@ db.once('open', function callback () {
     registerMongooseListenersForMiddleware(middleware);
     //start the server
     console.log("Starting http server...");
-    var app = createExpressApp();
+    var app = createExpressApp(middleware);
     var server = app.listen(4443, function() {
       console.log("Server is listening on port " + server.address().port);
     });
