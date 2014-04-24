@@ -84,7 +84,6 @@ function initializeMiddleware(callback) {
 function registerMongooseListenersForMiddleware(middleware) {
   Source.schema.pre('save', function(next) {
     try {
-      console.log(this);
       middleware.configureSource(this);
     } catch(e) {
       return next(e);

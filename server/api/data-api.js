@@ -15,7 +15,7 @@ module.exports = function(integrationService) {
       var conditions = req.body.conditions;
       var fields = req.body.fields;
       var type = req.body.objectType;
-      var abortFunction = integrationService.querySource(
+      var abortQuery = integrationService.querySource(
         sourceId, type, conditions, fields,
         function(err, results) {
           if(err) return next(err);
@@ -23,9 +23,7 @@ module.exports = function(integrationService) {
         }
       );
       req.on('close', function() {
-        console.log("abort");
-        abortFunction();
-        console.log("aborted");
+        abortQuery();
       });
     })
     .post('/data/raw/:id/resolveLink', function(req, res, next) {
