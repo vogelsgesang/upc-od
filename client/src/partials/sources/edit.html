@@ -6,7 +6,7 @@
       Unable load the configuration for this source.<br>
       <a ng-click="load()">Retry</a>
     </div>
-    <div static-include="/partials/sources-inputs.html">
+    <div static-include="/partials/sources-inputs.html" ng-show="state == 'ready'">
       <div class="alert alert-info">Loading input form...</div>
     </div>
     <button ng-click="save()" class="btn btn-primary btn-block" ng-disabled="state != 'ready' || sourceForm.$invalid || saving">
