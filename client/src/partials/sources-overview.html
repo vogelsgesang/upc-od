@@ -45,8 +45,8 @@
       <div class="panel-heading">
         {{source.name}} (Id: {{source._id}})
         <div class="pull-right">
-          <a href="/sources/edit/{{source._id}}"><span class="glyphicon glyphicon-pencil"></span> Edit</a>
-          |
+          <a href="/data/raw?sourceId={{source._id}}"><span class="glyphicon glyphicon-flash"></span> Query</a> |
+          <a href="/sources/edit/{{source._id}}"><span class="glyphicon glyphicon-pencil"></span> Edit</a> |
           <a ng-click="deleteSource(source._id)"><span class="glyphicon glyphicon-trash"></span> Delete</a>
         </div>
       </div>

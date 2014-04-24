@@ -264,6 +264,9 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource', 'ngAnimate', 'mgcrea.ng
   };
 }])
 .controller('RawQueryController', ['$scope', '$alert', '$sce', '$http', '$routeParams', function($scope, $alert, $sce, $http, $routeParams) {
+  if("sourceId" in $routeParams) {
+    $scope.sourceId = $routeParams["sourceId"];
+  }
   $scope.objectType = "";
   $scope.conditions = "[]";
   $scope.fields = "[]";
