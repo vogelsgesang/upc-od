@@ -116,7 +116,7 @@ function requestMarc21Records(queryUrl, successCallback, errorCallback) {
     errorCallback(new Error("request failed: " + e.message));
   });
   req.end();
-  return req.abort;
+  return req.abort.bind(req);
 }
 
 //the object which is actually exported...
