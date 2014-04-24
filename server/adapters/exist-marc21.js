@@ -58,6 +58,7 @@ function buildMarc21Xquery(conditions, offset, limit) {
     var conditionString = "";
     //go through all the subconditions (combined by an AND)
     andConditions.forEach(function(condition) {
+      var operator = condition[0];
       var fieldName = condition[1];
       var escapedValue = condition[2]
             .replace(/&/g, "&amp;")
@@ -65,7 +66,7 @@ function buildMarc21Xquery(conditions, offset, limit) {
             .replace(/>/g, "&gt;")
             .replace(/"/g, "&quot;")
             .replace(/'/g, "&apos;");
-      if(condition[0] == "=") {
+      if(operator == "=") {
         if(/^00[1-8]$/.test(fieldName)) {
           conditionString += "[controlfield[@tag='"+fieldName+"'] = '"+escapedValue+"']";
         } else if(/^[0-9]{3}[a-z0-9]$/.test(fieldName)) {
@@ -74,10 +75,10 @@ function buildMarc21Xquery(conditions, offset, limit) {
           conditionString += "[datafield[@tag='"+tag+"']/"+
               "subfield[@code='"+code+"'] = '"+escapedValue+"']";
         } else {
-          console.error("not supported...");
+          throw new Error("unknown field: " + fieldName);
         }
       } else {
-        console.error("not supported...");
+        throw new Error("unknown operator: " + operator);
       }
     });
     selectionPaths.push("/collection/record"+conditionString);
@@ -139,7 +140,11 @@ module.exports = function ExistMarc21Adapter(config) {
       });
       return function() {};
     } else {
-      var xquery = buildMarc21Xquery(conditions, 0, config.limit);
+      try {
+        var xquery = buildMarc21Xquery(conditions, 0, config.limit);
+      } catch(e) {
+        errorCallback(e);
+      }
       var queryUrl = config.eXistEndpoint + config.xmlDocumentPath + "?_query=" + encodeURIComponent(xquery);
       return requestMarc21Records(queryUrl, function(marcRecords) {
         var exposedData = restructureMarcRecords(marcRecords);
