@@ -1,8 +1,8 @@
 <div ng-controller="SourceCreator">
   <h1>Add a new source</h1>
   <form class="form-horizontal" name="sourceForm">
-    <div static-include="/partials/sources-inputs.html">
-      <div class="well">Loading...</div>
+    <div static-include="/partials/sources/inputs.html">
+      <div class="well">Loading input form...</div>
     </div>
     <button ng-click="save()" class="btn btn-primary btn-block" ng-disabled="sourceForm.$invalid || saving">
       {{saving ? "Adding source..." : "Add source"}}
