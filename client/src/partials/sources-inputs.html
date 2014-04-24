@@ -1,24 +1,30 @@
-    <div class="form-group has-feedback"
-    ng-class="{'has-error': sourceForm.name.$dirty && sourceForm.name.$invalid, 'has-success': !sourceForm.name.$invalid}">
-      <label for="name" class="col-sm-1 control-label">Name:</label>
-      <div class="col-sm-11">
-        <input ng-model="source.name" class="form-control" id="name" name="name" required>
-        <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="!sourceForm.name.$invalid"></span>
-        <span class="glyphicon glyphicon-remove form-control-feedback" ng-show="sourceForm.name.$dirty && sourceForm.name.$invalid"></span>
-      </div>
-    </div>
-    <div class="form-group has-feedback"
-        ng-class="{'has-error': sourceForm.adapter_name.$dirty && sourceForm.adapter_name.$invalid, 'has-success': !sourceForm.adapter_name.$invalid}">
-      <label for="adapter_name" class="col-sm-1 control-label">Adapter:</label>
-      <div class="col-sm-11">
-        <input ng-model="source.adapter.name" class="form-control" id="adapter_name" name="adapter_name" required>
-        <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="!sourceForm.adapter_name.$invalid"></span>
-        <span class="glyphicon glyphicon-remove form-control-feedback" ng-show="sourceForm.adapter_name.$dirty && sourceForm.adapter_name.$invalid"></span>
-      </div>
-    </div>
-    <div class="form-group">
-      <label for="adapter_config" class="col-sm-1 control-label">Adapter configuration:</label>
-      <div class="col-sm-11">
-        <textarea ng-model="source.adapter.config" class="form-control" id="adapter_config" name="adapter_config" rows="10" required></textarea>
-      </div>
-    </div>
+<div class="form-group has-feedback"
+ng-class="{'has-error': sourceForm.name.$dirty && sourceForm.name.$invalid, 'has-success': !sourceForm.name.$invalid}">
+  <label for="name" class="col-sm-1 control-label">Name:</label>
+  <div class="col-sm-11">
+    <input ng-model="source.name" class="form-control" id="name" name="name" required>
+    <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="!sourceForm.name.$invalid"></span>
+    <span class="glyphicon glyphicon-remove form-control-feedback" ng-show="sourceForm.name.$dirty && sourceForm.name.$invalid"></span>
+  </div>
+</div>
+<div class="form-group has-feedback"
+    ng-class="{'has-error': sourceForm.adapter_name.$dirty && sourceForm.adapter_name.$invalid, 'has-success': !sourceForm.adapter_name.$invalid}">
+  <label for="adapter_name" class="col-sm-1 control-label">Adapter:</label>
+  <div class="col-sm-11">
+    <input ng-model="source.adapter.name" class="form-control" id="adapter_name" name="adapter_name" required>
+    <span class="glyphicon glyphicon-ok form-control-feedback" ng-show="!sourceForm.adapter_name.$invalid"></span>
+    <span class="glyphicon glyphicon-remove form-control-feedback" ng-show="sourceForm.adapter_name.$dirty && sourceForm.adapter_name.$invalid"></span>
+  </div>
+</div>
+<div class="form-group">
+  <label for="adapter_config" class="col-sm-1 control-label">Adapter configuration:</label>
+  <div class="col-sm-11">
+    <textarea ng-model="source.adapter.config" class="form-control" id="adapter_config" name="adapter_config" rows="10" required></textarea>
+  </div>
+</div>
+<div class="form-group row">
+  <label for="mapping" class="col-sm-1 control-label">Mapping:</label>
+  <div class="col-sm-11">
+    <textarea ng-model="source.mapping" class="form-control" id="mapping" name="mapping" rows="10" required></textarea>
+  </div>
+</div>

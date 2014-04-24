@@ -55,6 +55,9 @@
         <li class="list-group-item"><p><strong>Adapter configuration:</strong><span ng-show="source.adapter.config === undefined">empty</span></p>
           <pre ng-show="source.adapter.config !== undefined">{{source.adapter.config | json}}</pre>
         </li>
+        <li class="list-group-item"><p><strong>Mapping:</strong></p>
+          <pre>{{source.mapping | json}}</pre>
+        </li>
       </ul>
     </section>
     <section ng-show="filteredSources.length == 0" class="well fade-in-out">

@@ -4,8 +4,23 @@ Welcome to our project. So far there is not much to be seen here.
 But starting from here we will build an awesome application and we will deliver an outstanding project.
 </p>
 
-<h2>The overall concept</h2>
+<h2>Configuration</h2>
 <p>
-  Using the settings under <a href="/schema">Schema</a> the schema can be configured.
-  As soon as the schema is configured, data can be imported.
+  The <a href="/schema">Schema</a> contains the definition of all know objects types to which all the
+  sources need to be mapped. For each object type the following properties are defined:
 </p>
+<ul>
+  <li>a list containing the available fields</li>
+  <li>the conditions under which two objects are identical</li>
+</ul>
+<p>
+  On the other side, the configuration of <a href="/sources">sources</a> defines the available sources.
+  For every source the following properties are defined:
+</p>
+<ul>
+  <li>A human readable name</li>
+  <li>The name of the adapter used in order to access the source</li>
+  <li>Additional configuration provided to the adapter (in an adapter specific format)</li>
+  <li>The mapping from the source's schema to our internal schema</li>
+</ul>
+
