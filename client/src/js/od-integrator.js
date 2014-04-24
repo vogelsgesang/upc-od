@@ -23,8 +23,8 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource', 'ngAnimate', 'mgcrea.ng
     'templateUrl': '/partials/sources-edit.html',
     'navItem': 'sources'
   })
-  .when('/rawquery', {
-    'templateUrl': '/partials/raw-query.html',
+  .when('/data/raw', {
+    'templateUrl': '/partials/data/raw-query.html',
     'navItem': 'rawquery'
   })
   .otherwise({
@@ -263,18 +263,37 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource', 'ngAnimate', 'mgcrea.ng
     });
   };
 }])
-.controller('RawQueryController', ['$scope', '$alert', '$sce', '$http', function($scope, $alert, $sce, $http) {
-  $scope.query = "[]";
+.controller('RawQueryController', ['$scope', '$alert', '$sce', '$http', '$routeParams', function($scope, $alert, $sce, $http, $routeParams) {
+  $scope.objectType = "";
+  $scope.conditions = "[]";
+  $scope.fields = "[]";
   function sendQuery() {
     delete $scope.error;
     delete $scope.results;
-    try {
-      var query = JSON.parse($scope.query);
-    } catch(e) {
-      $scope.error = "Query must be valid JSON";
+    var sourceId = $scope.sourceId;
+    if(!/^[0-9a-f]{24}$/.test(sourceId)) {
+      $scope.error = "Invalid format of source id";
       return;
     }
-    $http.post('/api/data/rawquery', query).success(function(data){
+    var objectType = $scope.objectType;
+    try {
+      var conditions = JSON.parse($scope.conditions);
+    } catch(e) {
+      $scope.error = "Definition of conditions must be valid JSON";
+      return;
+    }
+    try {
+      var fields = JSON.parse($scope.fields);
+    } catch(e) {
+      $scope.error = "Definition of fields must be valid JSON";
+      return;
+    }
+    var bodyContent = {
+      objectType: objectType,
+      conditions: conditions,
+      fields: fields
+    };
+    $http.post('/api/data/raw/'+sourceId+'/query', bodyContent).success(function(data){
       $scope.results = data;
     }).error(function(data) {
       $scope.error = data;

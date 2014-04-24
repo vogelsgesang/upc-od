@@ -43,19 +43,19 @@
     </p>
     <section class="panel panel-default fade-in-out" ng-repeat="source in filteredSources = (sources | filter:{name:sourcesFilter})" ng-class="{deleting: deleting[source._id]}">
       <div class="panel-heading">
-        {{source.name}}
+        {{source.name}} (Id: {{source._id}})
         <div class="pull-right">
           <a href="/sources/edit/{{source._id}}"><span class="glyphicon glyphicon-pencil"></span> Edit</a>
           |
           <a ng-click="deleteSource(source._id)"><span class="glyphicon glyphicon-trash"></span> Delete</a>
         </div>
       </div>
-      <div class="panel-body">
-        Adapter: {{source.adapter.name}}<br>
-        Config:
-        <span ng-show="source.adapter.config === undefined">empty</span>
-        <pre ng-show="source.adapter.config !== undefined">{{source.adapter.config | json}}</pre>
-      </div>
+      <ul class="list-group">
+        <li class="list-group-item"><strong>Adapter:</strong> {{source.adapter.name}}</li>
+        <li class="list-group-item"><p><strong>Adapter configuration:</strong><span ng-show="source.adapter.config === undefined">empty</span></p>
+          <pre ng-show="source.adapter.config !== undefined">{{source.adapter.config | json}}</pre>
+        </li>
+      </ul>
     </section>
     <section ng-show="filteredSources.length == 0" class="well fade-in-out">
       No sources found...
