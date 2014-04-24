@@ -67,12 +67,12 @@ function buildMarc21Xquery(conditions, offset, limit) {
             .replace(/'/g, "&apos;");
       if(condition[0] == "=") {
         if(/^00[1-8]$/.test(fieldName)) {
-          conditionString += "[controlfield[@tag='"+fieldName+"']/text() = '"+escapedValue+"']";
+          conditionString += "[controlfield[@tag='"+fieldName+"'] = '"+escapedValue+"']";
         } else if(/^[0-9]{3}[a-z0-9]$/.test(fieldName)) {
           var tag = fieldName.substr(0,3);
           var code = fieldName.substr(3,1);
           conditionString += "[datafield[@tag='"+tag+"']/"+
-              "subfield[@code='"+code+"']/text() = '"+escapedValue+"']";
+              "subfield[@code='"+code+"'] = '"+escapedValue+"']";
         } else {
           console.error("not supported...");
         }
@@ -110,10 +110,9 @@ function requestMarc21Records(queryUrl, successCallback, errorCallback) {
   } else if(protocol == "https:") {
     var req = https.request(queryUrl, eXistCallback);
   } else {
-    errorCallback(new Error("unexpected http status code " + xmlResults.statusCode));
+    return errorCallback(new Error("unknown protocol: " +  protocol));
   }
   req.on("error", function(e) {
-    throw new Error("request failed: " + protocol);
     errorCallback(new Error("request failed: " + e.message));
   });
   req.end();
