@@ -6,7 +6,8 @@ var sourceSchema = mongoose.Schema({
   adapter: {
     name: String,
     config: mongoose.Schema.Types.Mixed
-  }
+  },
+  mapping: [mongoose.Schema.Types.Mixed]
 });
 
 var Source = mongoose.model('Source', sourceSchema);
