@@ -4,13 +4,14 @@
     <meta charset="utf-8">
     <title>OD project</title>
     <link rel="stylesheet" href="/style.css">
-    <script src="/js/angular.min.js"></script>
-    <script src="/js/angular-animate.min.js"></script>
-    <script src="/js/angular-route.min.js"></script>
-    <script src="/js/angular-resource.min.js"></script>
-    <script src="/js/angular-strap.min.js"></script>
-    <script src="/js/angular-strap.tpl.min.js"></script>
-    <script src="/js/od-integrator.js"></script>
+    <script src="/js/lib/angular.min.js"></script>
+    <script src="/js/lib/angular-animate.min.js"></script>
+    <script src="/js/lib/angular-route.min.js"></script>
+    <script src="/js/lib/angular-resource.min.js"></script>
+    <script src="/js/lib/angular-strap.min.js"></script>
+    <script src="/js/lib/angular-strap.tpl.min.js"></script>
+    <script src="/js/integrator/main.js"></script>
+    <script src="/js/integrator/sources.js"></script>
   </head>
   <body ng-app="odIntegrator">
     <section id="alert-container"></section>
@@ -18,7 +19,7 @@
       <nav ng-controller="Navigation">
         <ul class="nav nav-pills">
           <li ng-class="{active: navItem == 'home'}"><a href="/">Home</a></li>
-          <li ng-class="{active: navItem == 'schema'}"><a href="/schema">Schema</a></li>
+          <li ng-class="{active: navItem == 'objectdefinitions'}"><a href="/objectdefinitions">Schema</a></li>
           <li ng-class="{active: navItem == 'sources'}"><a href="/sources">Sources</a></li>
           <li ng-class="{active: navItem == 'rawquery'}"><a href="/data/raw">Raw Query</a></li>
           <li class="disabled"><a href="/data">Data</a></li>

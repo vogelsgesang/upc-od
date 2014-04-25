@@ -8,8 +8,8 @@ module.exports = function(grunt) {
     copy: {
       build: {
         files: [
-          {expand: true, cwd: 'client/src', src:'js/*', dest: 'client/build'},
-          {expand: true, cwd: 'client/src', src:'fonts/*', dest: 'client/build'}
+          {expand: true, cwd: 'client/src', src:'js/**', dest: 'client/build'},
+          {expand: true, cwd: 'client/src', src:'fonts/**', dest: 'client/build'}
         ]
       },
       deploy: {
