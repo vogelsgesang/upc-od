@@ -78,7 +78,7 @@ function IntegrationService() {
   }
 
   this.destroy = function() {
-    for(id in Object.keys(sources)) {
+    for(var id in Object.keys(sources)) {
       sources[id].destroy();
     }
     sources = {};
