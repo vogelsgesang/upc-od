@@ -65,17 +65,24 @@ function buildHardvardQueries(conditions, offset, limit) {
 function requestHardvardData (queryUrl, successCallback, errorCallback) {
   //the callback which handles the answer from hardvard
   function harvardCallback(responseFromHarvard) {
-   if(responseFromHarvard.statusCode !== 200) {
-    console.log("unexpected http status code" + responseFromHarvard.statusCode);
-  } else {
-    responseFromHarvard.setEncoding("utf8");
-    responseFromHarvard.pipe(concat({encoding: "string"}, function(responseFromHarvard) {
-        var parsedCollection = parseHardvardIntoObject(responseFromHarvard);
-        successCallback(parsedCollection);
-      }));
+    if(responseFromHarvard.statusCode !== 200) {
+      console.log("unexpected http status code" + responseFromHarvard.statusCode);
+    } else {
+      responseFromHarvard.setEncoding("utf8");
+      responseFromHarvard.pipe(concat({encoding: "string"}, function(responseBody) {
+	var parsedData = JSON.parse(responseBody);
+	var exposedData = restructureHardvardData(parsedData["docs"]);
+        var results = {
+          "status": "finished",
+          "data": exposedData
+        }
+        successCallback(results);
+        //var parsedCollection = parseHardvardIntoObject(responseBody);
+        //successCallback(parsedCollection);
+	      }));
     }
   }
-
+  
   //send the query...
   var protocol = url.parse(queryUrl).protocol;
   if(protocol == "http:") {
@@ -85,9 +92,8 @@ function requestHardvardData (queryUrl, successCallback, errorCallback) {
   } else {
     errorCallback(new Error("unexpected http status code " + responseFromHarvard.statusCode));
   }
-  req.on("error", function(e) {
-    throw new Error("request failed: " + protocol);
-    errorCallback(new Error("request failed: " + e.message));
+  req.on("error", function(error) {
+    errorCallback(new Error("request failed: " + error.message));
   });
   req.end();
   return req.abort;
@@ -106,28 +112,16 @@ module.exports = function HardvardAdapter(config) {
       //console.log(allQueryStrings);
       allQueryStrings.forEach(function(queryString) {
 	var queryUrl = config.harvardEndpoint + "?" + queryString;
-	var req = http.request(queryUrl);
-	console.log(queryUrl);
-	
-	
-	
-      });
-      /*return requestHardvardData(queryUrl, function(marcRecords) {
-        var exposedData = restructureMarcRecords(marcRecords);
-        var results = {
-          "status": "finished",
-          "data": exposedData
-        }
-        successCallback(results);
-      }, errorCallback);*/
-      successCallback({});
-    }
+	requestHardvardData(queryUrl, successCallback, errorCallback);
+      }); 
+     }
   }
+  
   this.query = query;
 
   //resolves an id
   function resolveId(id, fields, successCallback, errorCallback) {
-    return query("marcRecord", [[["=", "001", id]]], fields, successCallback, errorCallback);
+    
   };
   this.resolveId = resolveId;
 
@@ -137,7 +131,7 @@ module.exports = function HardvardAdapter(config) {
  
 
 //restructures the records in a way in which we can expose them to the integration layer
-function restructureMarcRecords(foundBooks) {
+function restructureHardvardData(foundBooks) {
   return foundBooks.map(function(book) {
     return {
       "id": book["id"],
