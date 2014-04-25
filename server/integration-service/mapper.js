@@ -3,6 +3,8 @@ module.exports = function Mapper(mappings) {
    * returns the relevant mapping for a certain local type
    */
   function findMappingTo(internalType) {
+    /*find inside mappings the entry where mappedType == internalType
+    return this mapping*/
     return null;
   }
   this.findMappingTo = findMappingTo;
@@ -24,7 +26,7 @@ module.exports = function Mapper(mappings) {
    * returns the rewritten conditions
    */
   function renameFieldsForSource(mapping, fieldNames) {
-    return fieldNames;
+    return fieldNames; //for later...
   }
   this.renameFieldsForSource = renameFieldsForSource;
 
@@ -34,7 +36,7 @@ module.exports = function Mapper(mappings) {
    * returns the mapped properties
    */
   function mapInstanceFromSource(mapping, properties) {
-    return parameters;
+    return parameters; //later...
   }
   this.mapInstanceFromSource = mapInstanceFromSource;
 }
