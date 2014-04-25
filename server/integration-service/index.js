@@ -12,13 +12,14 @@ function IntegrationService() {
    */
   this.configureSource = function createSource(sourceConfig) {
     var AdapterClass = require("../adapters/" + sourceConfig.adapter.name);
+    var mapper = new Mapper(sourceConfig.mapping);
     var adapter = new AdapterClass(sourceConfig.adapter.config);
     if(Object.keys(sources).indexOf(sourceConfig._id) >= 0) {
       removeSource(sourceConfig._id);
     }
     sources[sourceConfig._id] =  {
       adapter: adapter,
-      mapper: new Mapper(sourceConfig.mapping)
+      mapper: mapper
     }
   };
 
@@ -70,7 +71,7 @@ function IntegrationService() {
     //objectType = relevantMapping["sourceType"]; //4Franz
     return adapter.query(objectType, conditions, fields, function successCallback(results) {
       //4Franz: for later
-      //results.fields = mapper.mapInstanceFromSource(relevantMapping, results.fields);
+      //results.fields = mapper.mapInstanceFromSource(relevantMapping, results.data);
       callback(null, results);
     }, function errorCallback(error) {
       callback(error, null);
@@ -78,9 +79,9 @@ function IntegrationService() {
   }
 
   this.destroy = function() {
-    for(var id in Object.keys(sources)) {
+    Object.keys(sources).forEach(function(id) {
       sources[id].destroy();
-    }
+    });
     sources = {};
   }
 }
