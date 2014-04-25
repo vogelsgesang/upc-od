@@ -56,7 +56,7 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource', 'ngAnimate', 'mgcrea.ng
   });
 }])
 .controller('SchemaEditor', ['$scope', '$http', function($scope, $http) {
-  $http({method:'GET', url:'/api/schema'}).success(function(data, statusCode) {
+  $http({method:'GET', url:'/api/schema'}).success(function(data) {
     $scope.schema = data;
   }).error(function(data, statusCode) {
     alert("Unable to fetch schema");
@@ -72,7 +72,7 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource', 'ngAnimate', 'mgcrea.ng
   return $ressource('/api/sources/:_id', {_id: "@_id"}, {
     'save': {method: 'PUT'},
     'create': {method: 'POST'},
-    'createBulk': {method: 'POST', isArray: true}
+    'createBulk': {method: 'POST', isArray: true, transformResponse: function(data, header) {if(typeof data == "object") return [data];}}
   });
 }])
 .controller('SourceOverview', ['$document', '$scope', '$sce', '$q', 'Sources', '$alert', function($document, $scope, $sce, $q, Sources, $alert) {
@@ -127,20 +127,27 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource', 'ngAnimate', 'mgcrea.ng
           loadSources();
         }
         function errorCallback(response) {
-          var msg = response.data.msg
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
-          $alert({title: "Unable to import ressources", content: $sce.trustAsHtml(msg), type: 'error'});
+          if(response && response.data && response.data.msg) {
+            var msg = response.data.msg
+              .replace(/&/g, "&amp;")
+              .replace(/</g, "&lt;")
+              .replace(/>/g, "&gt;")
+              .replace(/"/g, "&quot;")
+              .replace(/'/g, "&#039;");
+          } else {
+            var msg = "Unknown error";
+          }
+          $alert({title: "Unable to import ressources", content: $sce.trustAsHtml(msg), type: 'danger'});
           $scope.sourcesImport.working = false;
         }
         //dispatch the queries to the server
         if($scope.sourcesImport.replace) {
           Sources.delete(function() {
             Sources.createBulk(importedSources, successCallback, errorCallback);
-          }, errorCallback);
+          }, function(response) {
+            if(response.status == 404) Sources.createBulk(importedSources, successCallback, errorCallback);
+            else errorCallback();
+          });
         } else {
           Sources.createBulk(importedSources, successCallback, errorCallback);
         }
@@ -160,22 +167,33 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource', 'ngAnimate', 'mgcrea.ng
       });
       delete $scope.deleting[id];
     }, function(response) {
-      delete $scope.deleting[id];
-      var sourceName = '<unknown>';
-      for(var i = 0; i < $scope.sources.length; i++) {
-        if($scope.sources[i]._id == id) {
-          sourceName = $scope.sources[i].name;
-          break;
+      var severity = "danger";
+      if(response && response.data && response.data.msg) {
+        if(response.status == 404) {
+          $scope.sources = $scope.sources.filter(function(source) {
+            return source._id != id;
+          });
+          severity = "warning";
         }
+        var sourceName = '<unknown>';
+        for(var i = 0; i < $scope.sources.length; i++) {
+          if($scope.sources[i]._id == id) {
+            sourceName = $scope.sources[i].name;
+            break;
+          }
+        }
+        var msg = response.data.msg
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      } else {
+        var msg = "Unknown error occurred";
       }
-      var msg = response.data.msg
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
       var title = "Failed to delete source " + sourceName;
-      $alert({title: title, content: $sce.trustAsHtml(msg), type: 'danger'});
+      $alert({title: title, content: $sce.trustAsHtml(msg), type: severity});
+      delete $scope.deleting[id];
     });
   };
   loadSources();
@@ -213,12 +231,16 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource', 'ngAnimate', 'mgcrea.ng
       $scope.saving = false;
       $location.path("/sources");
     }, function(response) {
-      var msg = response.data.msg
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+      if(response && response.data && response.data.msg) {
+        var msg = response.data.msg
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      } else {
+        msg = "Unknown error occured";
+      }
       $alert({title: "Failed to save source", content: $sce.trustAsHtml(msg), type: 'danger'});
       $scope.saving = false;
     });
@@ -270,12 +292,16 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource', 'ngAnimate', 'mgcrea.ng
       $scope.saving = false;
       $location.path("/sources");
     }, function(response) {
-      var msg = response.data.msg
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+      if(response && response.data && response.data.msg) {
+        var msg = response.data.msg
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      } else {
+        msg = "Unknown error";
+      }
       $alert({title: "Failed to save source", content: $sce.trustAsHtml(msg), type: 'danger'});
       $scope.saving = false;
     });
