@@ -205,9 +205,9 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource', 'ngAnimate', 'mgcrea.ng
       name: $scope.source.name,
       adapter: {
         name: $scope.source.adapter.name,
-        config: config,
-        mapping: mapping
-      }
+        config: config
+      },
+      mapping: mapping
     }
     Sources.create(sourceObject, function() {
       $scope.saving = false;
@@ -262,9 +262,9 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource', 'ngAnimate', 'mgcrea.ng
       name: $scope.source.name,
       adapter: {
         name: $scope.source.adapter.name,
-        config: config,
-        mapping: mapping
-      }
+        config: config
+      },
+      mapping: mapping
     }
     Sources.save(sourceObject, function() {
       $scope.saving = false;

@@ -1,0 +1,11 @@
+<collection xmlns="http://exist-db.org/collection-config/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <index xmlns:marc="http://www.loc.gov/MARC21/slim">
+    <!--disable the legacy fulltext index-->
+    <fulltext default="none" attributes="false"/>
+    <!-- Range indexes -->
+    <range>
+      <create qname="marc:controlfield" type="xs:string"/>
+      <create qname="marc:subfield" type="xs:string"/>
+    </range>
+  </index>
+</collection>
