@@ -70,7 +70,7 @@ function IntegrationService() {
     //objectType = relevantMapping["sourceType"]; //4Franz
     return adapter.query(objectType, conditions, fields, function successCallback(results) {
       //4Franz:
-      //results = mapper.mapInstanceFromSource(relevantMapping, attributes);
+      //results.fields = mapper.mapInstanceFromSource(relevantMapping, results.fields);
       callback(null, results);
     }, function errorCallback(error) {
       callback(error, null);

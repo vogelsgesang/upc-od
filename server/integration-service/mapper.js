@@ -3,7 +3,7 @@ module.exports = function Mapper(mappings) {
    * returns the relevant mapping for a certain local type
    */
   function findMappingTo(internalType) {
-    return [null];
+    return null;
   }
   this.findMappingTo = findMappingTo;
 
