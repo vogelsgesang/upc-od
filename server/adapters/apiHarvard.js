@@ -13,7 +13,6 @@ function parseHardvardIntoObject(jsonString) {
       var foundBooks = parsedResponse['docs'];
       return foundBooks;
       
-      
      // parsedResponse["docs"][0]["title"]
       /*for(var i = 0; i < foundBooks.length; i++) {
         console.log("Result " + i);
@@ -52,7 +51,7 @@ function buildHardvardQueries(conditions, offset, limit) {
           var filter = "filter="+encodeURIComponent(fieldName+":"+value);
 	  filterStrings.push(filter);
         } else {
-          console.error("not supported...");
+          throw new Error("not supported...");
 	}
       }
     });  
@@ -66,23 +65,18 @@ function requestHardvardData (queryUrl, successCallback, errorCallback) {
   //the callback which handles the answer from hardvard
   function harvardCallback(responseFromHarvard) {
     if(responseFromHarvard.statusCode !== 200) {
-      console.log("unexpected http status code" + responseFromHarvard.statusCode);
+      errorCallback(new Error("unexpected http status code: " + responseFromHarvard.statusCode));
     } else {
       responseFromHarvard.setEncoding("utf8");
       responseFromHarvard.pipe(concat({encoding: "string"}, function(responseBody) {
 	var parsedData = JSON.parse(responseBody);
 	var exposedData = restructureHardvardData(parsedData["docs"]);
-        var results = {
-          "status": "finished",
-          "data": exposedData
-        }
-        successCallback(results);
+        successCallback(exposedData);
         //var parsedCollection = parseHardvardIntoObject(responseBody);
         //successCallback(parsedCollection);
 	      }));
     }
   }
-  
   //send the query...
   var protocol = url.parse(queryUrl).protocol;
   if(protocol == "http:") {
@@ -96,7 +90,7 @@ function requestHardvardData (queryUrl, successCallback, errorCallback) {
     errorCallback(new Error("request failed: " + error.message));
   });
   req.end();
-  return req.abort;
+  return req.abort.bind(req);
 }
 
 
@@ -108,27 +102,67 @@ module.exports = function HardvardAdapter(config) {
       errorCallback(new Error("unsupported object type: " + objectType));
       return function() {};
     } else {
-      var allQueryStrings = buildHardvardQueries(conditions, 0, config.limit);
-      //console.log(allQueryStrings);
+      try {
+	var allQueryStrings = buildHardvardQueries(conditions, 0, config.limit);
+      } catch(e) {
+	return errorCallback(e);
+      }
+      var allResponses = [];
+      var abortFunctions = [];
+      //abortFunctions = [function for aborting 1st request , function abort 2nd req, ....]
+      var errorCallbackAlreadyCalled = false;
       allQueryStrings.forEach(function(queryString) {
 	var queryUrl = config.harvardEndpoint + "?" + queryString;
-	requestHardvardData(queryUrl, successCallback, errorCallback);
-      }); 
+	abortFunctions.push(requestHardvardData(queryUrl, function(dataFromOneQuery) {
+	  allResponses.push(dataFromOneQuery);
+	  if(allResponses.length == allQueryStrings.length) {
+	 //   combine all response into one final response
+	    var exposedData = [];
+	    for (var i = 0; i < allResponses.length; i++) {
+	       exposedData = exposedData.concat(allResponses[i]);
+	    }
+	    var exposedData = {
+	      "status": "finished",
+	      "data": exposedData
+	    }
+	    successCallback(exposedData);
+	  }
+	}, function(error){
+	  if(!errorCallbackAlreadyCalled) {
+	    for(var i = 0; i < abortFunctions.length; i++) {
+	      abortFunctions[i]();
+	    }
+	    errorCallbackAlreadyCalled = true;
+	    errorCallback(error);
+	  }
+	}));
+      });
+     }
+     return function() {
+       for(var i = 0; i < abortFunctions.length; i++) {
+	 abortFunctions[i]();
+       }
      }
   }
-  
+  //this = {}
   this.query = query;
+  //this = {query: [Function]}
 
   //resolves an id
   function resolveId(id, fields, successCallback, errorCallback) {
     
   };
   this.resolveId = resolveId;
+  //this = {query: [Function], resolveId: [Function]}
 
   //there are no cleanup procedures involved for this adapter
   this.destroy = function() {};
+  //this = {query: [Function], resolveId: [Function], destroy: [Function]}
 }
- 
+
+//var adapter = new HarvardAdapter(config);
+//adapater = {query: [Function], resolveId: [Function]}
+//adapter.query();
 
 //restructures the records in a way in which we can expose them to the integration layer
 function restructureHardvardData(foundBooks) {
