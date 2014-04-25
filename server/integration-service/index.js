@@ -1,5 +1,7 @@
 "use strict";
 
+var Mapper = require("./mapper");
+
 function IntegrationService() {
   var sources = {};
 
@@ -14,7 +16,10 @@ function IntegrationService() {
     if(Object.keys(sources).indexOf(sourceConfig._id) >= 0) {
       removeSource(sourceConfig._id);
     }
-    sources[sourceConfig._id] = adapter;
+    sources[sourceConfig._id] =  {
+      adapter: adapter,
+      mapper: new Mapper(sourceConfig.mapping)
+    }
   };
 
   /**
@@ -46,14 +51,26 @@ function IntegrationService() {
    * This function returns a function which can be called in order to abort
    * the request.
    */
-  this.querySource = function(sourceId, type, conditions, fields, callback) {
+  this.querySource = function(sourceId, objectType, conditions, fields, callback) {
     var results = {};
     if(Object.keys(sources).indexOf(sourceId) < 0) {
       process.nextTick(function(){callback(new Error("No such source"), null)});
       return function() {};
     }
-    var source = sources[sourceId];
-    return source.query(type, conditions, fields, function successCallback(results) {
+    //get the mapper and the adapter
+    var mapper = sources[sourceId].mapper;
+    var adapter = sources[sourceId].adapter;
+    //apply the mapping from the consolidated schema to the source schema
+    /*4Franz:
+    var relevantMapping = mapper.findMappingToType(objectType);
+    objectType = relevantMapping["sourceType"];
+    conditions = mapper.rewriteConditionsForSource(relevantMapping, conditions);
+    fields = mapper.renameFieldsForSource(relevantMapping, fields);
+    */
+    //objectType = relevantMapping["sourceType"]; //4Franz
+    return adapter.query(objectType, conditions, fields, function successCallback(results) {
+      //4Franz:
+      //results = mapper.mapInstanceFromSource(relevantMapping, attributes);
       callback(null, results);
     }, function errorCallback(error) {
       callback(error, null);
