@@ -1,4 +1,14 @@
 "use strict";
+(function(angular) {
+function escapeStringForHtml(string) {
+  return string
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 angular.module('Sources', ['ngResource'])
 .factory('Sources', ['$resource', function($ressource) {
   return $ressource('/api/sources/:_id', {_id: "@_id"}, {
@@ -47,11 +57,6 @@ angular.module('Sources', ['ngResource'])
           $scope.sourcesImport.working = false;
           return;
         }
-        if(!importedSources instanceof Array) {
-          $alert({title: "Error:", content: $sce.trustAsHtml("The specified file does not contain valid source definitions"), type: 'danger'});
-          $scope.sourcesImport.working = false;
-          return;
-        }
         //the success and error callback
         function successCallback() {
           $alert({title: "Success:", content: $sce.trustAsHtml("Sources were imported successfully"), type: 'success'});
@@ -60,12 +65,7 @@ angular.module('Sources', ['ngResource'])
         }
         function errorCallback(response) {
           if(response && response.data && response.data.msg) {
-            var msg = response.data.msg
-              .replace(/&/g, "&amp;")
-              .replace(/</g, "&lt;")
-              .replace(/>/g, "&gt;")
-              .replace(/"/g, "&quot;")
-              .replace(/'/g, "&#039;");
+            var msg = escapeStringForHtml(response.data.msg);
           } else {
             var msg = "Unknown error";
           }
@@ -114,12 +114,7 @@ angular.module('Sources', ['ngResource'])
             break;
           }
         }
-        var msg = response.data.msg
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;")
-          .replace(/"/g, "&quot;")
-          .replace(/'/g, "&#039;");
+        var msg = escapeStringForHtml(response.data.msg);
       } else {
         var msg = "Unknown error occurred";
       }
@@ -137,39 +132,27 @@ angular.module('Sources', ['ngResource'])
   $scope.source.mapping = "[\n]";
   $scope.save = function() {
     $scope.saving = true;
+    var sourceObject = angular.copy($scope.source);
     try {
-      var config = JSON.parse($scope.source.adapter.config);
+      sourceObject.adapter.config = JSON.parse(sourceObject.adapter.config);
     } catch(e) {
       $alert({title: "Error:", content: $sce.trustAsHtml("Adapter configuration of the source must be valid JSON"), type: 'danger'});
       $scope.saving = false;
       return;
     }
     try {
-      var mapping = JSON.parse($scope.source.mapping);
+      sourceObject.mapping = JSON.parse(sourceObject.mapping);
     } catch(e) {
       $alert({title: "Error:", content: $sce.trustAsHtml("Mapping must be valid JSON"), type: 'danger'});
       $scope.saving = false;
       return;
-    }
-    var sourceObject = {
-      name: $scope.source.name,
-      adapter: {
-        name: $scope.source.adapter.name,
-        config: config
-      },
-      mapping: mapping
     }
     Sources.create(sourceObject, function() {
       $scope.saving = false;
       $location.path("/sources");
     }, function(response) {
       if(response && response.data && response.data.msg) {
-        var msg = response.data.msg
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;")
-          .replace(/"/g, "&quot;")
-          .replace(/'/g, "&#039;");
+        var msg = escapeStringForHtml(response.data.msg);
       } else {
         msg = "Unknown error occured";
       }
@@ -197,40 +180,27 @@ angular.module('Sources', ['ngResource'])
   loadSource();
   $scope.save = function() {
     $scope.saving = true;
+    var sourceObject = angular.copy($scope.source);
     try {
-      var config = JSON.parse($scope.source.adapter.config);
+      sourceObject.adapter.config = JSON.parse(sourceObject.adapter.config);
     } catch(e) {
       $alert({title: "Error:", content: $sce.trustAsHtml("Adapter configuration of the source must be valid JSON"), type: 'danger'});
       $scope.saving = false;
       return;
     }
     try {
-      var mapping = JSON.parse($scope.source.mapping);
+      sourceObject.mapping = JSON.parse(sourceObject.mapping);
     } catch(e) {
       $alert({title: "Error:", content: $sce.trustAsHtml("Mapping must be valid JSON"), type: 'danger'});
       $scope.saving = false;
       return;
-    }
-    var sourceObject = {
-      _id: $routeParams.id,
-      name: $scope.source.name,
-      adapter: {
-        name: $scope.source.adapter.name,
-        config: config
-      },
-      mapping: mapping
     }
     Sources.save(sourceObject, function() {
       $scope.saving = false;
       $location.path("/sources");
     }, function(response) {
       if(response && response.data && response.data.msg) {
-        var msg = response.data.msg
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;")
-          .replace(/"/g, "&quot;")
-          .replace(/'/g, "&#039;");
+        var msg = escapeStringForHtml(response.data.msg);
       } else {
         msg = "Unknown error";
       }
@@ -239,3 +209,4 @@ angular.module('Sources', ['ngResource'])
     });
   };
 }]);
+})(angular);
