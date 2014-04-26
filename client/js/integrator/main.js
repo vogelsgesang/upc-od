@@ -41,15 +41,6 @@ angular.module('odIntegrator', ['Sources', 'ngRoute', 'ngResource', 'ngAnimate',
     duration: 5
   });
 }])
-.directive('staticInclude', ['$http', '$templateCache', '$compile', function($http, $templateCache, $compile) {
-  return function(scope, element, attrs) {
-    var templatePath = attrs.staticInclude;
-    $http.get(templatePath, {cache: $templateCache}).success(function(response) {
-      element.html(response);
-      $compile(element.contents())(scope);
-    });
-  };
-}])
 .controller('Navigation', ['$scope', '$route', function($scope, $route) {
   $scope.$on("$routeChangeSuccess", function(evt, routeData) {
     $scope.navItem = $route.current.navItem;
