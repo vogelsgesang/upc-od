@@ -5,7 +5,15 @@ module.exports = function Mapper(mappings) {
   function findMappingTo(internalType) {
     /*find inside mappings the entry where mappedType == internalType
     return this mapping*/
-    return null;
+    var relevantMapping = null;
+    for(var i = 0; i < mappings.length; i++) {
+      var mapping = mappings[i];
+      if(mapping["mappedType"] == internalType) {
+        relevantMapping = mapping;
+        break;
+      }
+    }
+    return relevantMapping;
   }
   this.findMappingTo = findMappingTo;
 
