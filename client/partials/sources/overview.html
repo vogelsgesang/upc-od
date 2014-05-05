@@ -1,6 +1,6 @@
 <div ng-controller="SourceOverview">
   <div class="pull-right">
-    <script type="text/ng-template" id="popover/sources-upload-form.html">
+    <script type="text/ng-template" id="popover/sources/import-form.html">
       <form role="form">
         <div class="form-group">
           <label for="sourcesImportFile">File:</label>
@@ -14,7 +14,7 @@
         <button class="btn btn-primary btn-block" ng-click="importFromJson('sourcesImportFile', import.replaceOld)">Import</button>
       </form>
     </script>
-    <button class="btn btn-default" ng-disabled="state != 'ready' || sourcesImport.working" bs-popover data-content-template="popover/sources-upload-form.html" data-placement="bottom" id="sourcesImportPopover">
+    <button class="btn btn-default" ng-disabled="state != 'ready' || import.working" bs-popover data-content-template="popover/sources/upload-form.html" data-placement="bottom">
       <span class="glyphicon glyphicon-cloud-upload" ng-show="!sourcesImport.working"></span>
       <span class="glyphicon glyphicon-refresh rotating" ng-show="sourcesImport.working"></span>
       Import

@@ -1,0 +1,11 @@
+<div ng-controller="ObjectDefinitionCreator">
+  <h1>Add a object definition</h1>
+  <form class="form-horizontal" name="objDefForm">
+    <div ng-include="'/partials/objectdefinitions/inputs.html'">
+      <div class="well">Loading input form...</div>
+    </div>
+    <button ng-click="save()" class="btn btn-primary btn-block" ng-disabled="objDefForm.$invalid || saving">
+      {{saving ? "Adding object definition..." : "Add object definition"}}
+    </button>
+  </form>
+</div>

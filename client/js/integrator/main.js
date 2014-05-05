@@ -1,27 +1,11 @@
 "use strict";
-angular.module('odIntegrator', ['Sources', 'ngRoute', 'ngResource', 'ngAnimate', 'mgcrea.ngStrap'])
+angular.module('odIntegrator', ['Sources', 'ObjectDefinitions', 'ngRoute', 'ngResource', 'ngAnimate', 'mgcrea.ngStrap'])
 .config(function($routeProvider, $locationProvider) {
   $locationProvider.html5Mode(true);
   $routeProvider
   .when('/', {
     'templateUrl': '/partials/home.html',
     'navItem': 'home'
-  })
-  .when('/objectdefinitions', {
-    'templateUrl': '/partials/object-definitions/overview.html',
-    'navItem': 'objectdefinitions'
-  })
-  .when('/sources', {
-    'templateUrl': '/partials/sources/overview.html',
-    'navItem': 'sources'
-  })
-  .when('/sources/create', {
-    'templateUrl': '/partials/sources/create.html',
-    'navItem': 'sources'
-  })
-  .when('/sources/edit/:id', {
-    'templateUrl': '/partials/sources/edit.html',
-    'navItem': 'sources'
   })
   .when('/data/raw', {
     'templateUrl': '/partials/data/raw-query.html',

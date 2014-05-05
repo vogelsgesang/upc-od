@@ -1,6 +1,21 @@
 "use strict";
 (function(angular) {
-angular.module('Sources', ['ngResource', 'mgcrea.ngStrap'])
+angular.module('Sources', ['ngResource', 'ngRoute', 'mgcrea.ngStrap'])
+.config(function($routeProvider, $locationProvider) {
+  $routeProvider
+  .when('/sources', {
+    'templateUrl': '/partials/sources/overview.html',
+    'navItem': 'sources'
+  })
+  .when('/sources/create', {
+    'templateUrl': '/partials/sources/create.html',
+    'navItem': 'sources'
+  })
+  .when('/sources/edit/:id', {
+    'templateUrl': '/partials/sources/edit.html',
+    'navItem': 'sources'
+  })
+})
 .factory('Sources', createBaucisResourceFactory('sources'))
 .controller('SourceOverview', createOverviewController({
   resourceName: 'Sources',
@@ -29,8 +44,8 @@ angular.module('Sources', ['ngResource', 'mgcrea.ngStrap'])
 .controller('SourceEditor', createEditorController({
   resourceName: 'Sources',
   scopeVariable: 'source',
-  initialValue: {'adapter':{'config':'{}'}, 'mapping': '[]'},
   transformOnLoad: function(source) {
+    var source = angular.copy(source);
     if(source.adapter.config === undefined) {
       source.adapter.config = {};
     }

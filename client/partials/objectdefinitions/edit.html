@@ -1,0 +1,16 @@
+<div ng-controller="ObjectDefinitionEditor">
+  <h1>Edit Object Definition <small>{{name}}</small></h1>
+  <form class="form-horizontal" name="sourceForm">
+    <div class="alert alert-info" ng-show="state == 'loading'">Loading description of the source...</div>
+    <div class="alert alert-danger" ng-show="state == 'error'">
+      Unable load the configuration for this source.<br>
+      <a ng-click="load()">Retry</a>
+    </div>
+    <div ng-include="'/partials/sources/inputs.html'" ng-show="state == 'ready'">
+      <div class="alert alert-info">Loading input form...</div>
+    </div>
+    <button ng-click="save()" class="btn btn-primary btn-block" ng-disabled="state != 'ready' || sourceForm.$invalid || saving">
+      {{saving ? 'Saving...' : 'Save'}}
+    </button>
+  </form>
+</h1>

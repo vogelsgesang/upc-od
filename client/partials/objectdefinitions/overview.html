@@ -1,0 +1,67 @@
+<div ng-controller="ObjectDefinitionsOverview">
+  <div class="pull-right">
+    <script type="text/ng-template" id="popover/objectdefinitions/import-form.html">
+      <form role="form">
+        <div class="form-group">
+          <label for="objDefImportFile">File:</label>
+          <input type="file" id="objDefImportFile" required>
+        </div>
+        <div class="checkbox">
+          <label>
+            <input type="checkbox" ng-model="import.replaceOld"> Replace existing object definitions
+          </label>
+        </div>
+        <button class="btn btn-primary btn-block" ng-click="importFromJson('objDefImportFile', import.replaceOld)">Import</button>
+      </form>
+    </script>
+    <button class="btn btn-default" ng-disabled="state != 'ready' || import.working" bs-popover data-content-template="popover/objectdefinitions/import-form.html" data-placement="bottom">
+      <span class="glyphicon glyphicon-cloud-upload" ng-show="!import.working"></span>
+      <span class="glyphicon glyphicon-refresh rotating" ng-show="import.working"></span>
+      Import
+    </button>
+    <a ng-href="{{downloadLink}}" class="btn btn-default" ng-click="updateDownloadLink()" target="_blank" ng-href ng-disabled="state != 'ready'">
+      <span class="glyphicon glyphicon-cloud-download"></span>
+      Export
+    </a>
+    <button class="btn btn-default" ng-click="reload()" ng-disabled="state == 'loading'">
+      <span class="glyphicon glyphicon-refresh" ng-class="{rotating: state == 'loading'}"></span>
+      Reload
+    </button>
+  </div>
+  <h1>Schema</h1>
+  <div class="alert alert-info" ng-show="state == 'loading'">
+    Loading...
+  </div>
+  <div class="alert alert-warning" ng-show="state == 'error'">
+    Unable to retrieve the list of object definitions from the server.<br>
+    <a ng-click="reload()">Retry</a>
+  </div>
+  <div ng-show="state == 'ready'">
+    <p class="input-group">
+      <span class="input-group-addon"><span class="glyphicon glyphicon-filter"></span></span>
+      <input type="text" ng-model="objDefFilter" class="form-control" id="objDefFilter" placeHolder="Filter">
+    </p>
+    <section class="panel panel-default fade-in-out" ng-repeat="objDef in filteredObjDefs = (objectDefinitions | filter:{name:objDefFilter})" ng-class="{deleting: deleting[objDef._id]}">
+      <div class="panel-heading">
+        {{objDef.name}} (Id: {{objDef._id}})
+        <div class="pull-right">
+          <a href="/objectdefinitions/edit/{{objDef._id}}"><span class="glyphicon glyphicon-pencil"></span> Edit</a> |
+          <a ng-click="deleteEntry(objDef._id)"><span class="glyphicon glyphicon-trash"></span> Delete</a>
+        </div>
+      </div>
+      <ul class="list-group">
+        <li class="list-group-item"><strong>Fields:</strong> 
+          <pre>{{objDef.fields | json}}</pre>
+        </li>
+        <li class="list-group-item"><strong>Equality definition:</strong>
+          <pre>{{objDef.equality | json}}</pre>
+        </li>
+      </ul>
+    </section>
+    <section ng-show="filteredObjDefs.length == 0" class="well fade-in-out">
+      No object definitions found...
+    </section>
+  </div>
+  <p>
+    <a class="btn btn-primary btn-block" href="/objectdefinitions/create">Add a new object definition</a>
+  </p>
