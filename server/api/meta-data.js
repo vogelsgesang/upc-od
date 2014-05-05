@@ -3,7 +3,7 @@ var express = require("express");
 
 //load the necessary models
 require("../model/source");
-require("../model/schema");
+require("../model/objectdefinition");
 baucis.rest('Source');
 baucis.rest('ObjectDefinition');
 

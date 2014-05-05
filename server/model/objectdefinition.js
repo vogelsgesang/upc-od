@@ -3,9 +3,7 @@ var mongoose = require('mongoose');
 
 var objectDefinitionSchema = mongoose.Schema({
   name: String,
-  properties: [String],
-  links: [String],
-  displayAs: [String],
+  fields: [String],
   equality: mongoose.Schema.Types.Mixed
 });
 
