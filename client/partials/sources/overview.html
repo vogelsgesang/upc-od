@@ -1,17 +1,17 @@
 <div ng-controller="SourceOverview">
   <div class="pull-right">
     <script type="text/ng-template" id="popover/sources-upload-form.html">
-      <form role="form" name="sourcesImportForm">
+      <form role="form">
         <div class="form-group">
           <label for="sourcesImportFile">File:</label>
-          <input type="file" name="sourcesImport.file" id="sourcesImportFile" required>
+          <input type="file" id="sourcesImportFile" required>
         </div>
         <div class="checkbox">
           <label>
-            <input type="checkbox" ng-model="sourcesImport.replace"> Replace existing sources
+            <input type="checkbox" ng-model="import.replaceOld"> Replace existing sources
           </label>
         </div>
-        <button class="btn btn-primary btn-block" ng-click="sourcesImport.import()">Import</button>
+        <button class="btn btn-primary btn-block" ng-click="importFromJson('sourcesImportFile', import.replaceOld)">Import</button>
       </form>
     </script>
     <button class="btn btn-default" ng-disabled="state != 'ready' || sourcesImport.working" bs-popover data-content-template="popover/sources-upload-form.html" data-placement="bottom" id="sourcesImportPopover">
@@ -47,7 +47,7 @@
         <div class="pull-right">
           <a href="/data/raw?sourceId={{source._id}}"><span class="glyphicon glyphicon-flash"></span> Query</a> |
           <a href="/sources/edit/{{source._id}}"><span class="glyphicon glyphicon-pencil"></span> Edit</a> |
-          <a ng-click="deleteSource(source._id)"><span class="glyphicon glyphicon-trash"></span> Delete</a>
+          <a ng-click="deleteEntry(source._id)"><span class="glyphicon glyphicon-trash"></span> Delete</a>
         </div>
       </div>
       <ul class="list-group">
