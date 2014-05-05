@@ -1,0 +1,36 @@
+<div ng-controller="ObjectDefinitionsOverview">
+  <h1>Schema</h1>
+  <div class="alert alert-info" ng-show="state == 'loading'">
+    Loading...
+  </div>
+  <div class="alert alert-warning" ng-show="state == 'error'">
+    Unable to retrieve the list of object definitions from the server.<br>
+    <a ng-click="reload()">Retry</a>
+  </div>
+  <div ng-show="state == 'ready'">
+    <p class="input-group">
+      <span class="input-group-addon"><span class="glyphicon glyphicon-filter"></span></span>
+      <input type="text" ng-model="objDefFilter" class="form-control" id="objDefFilter" placeHolder="Filter">
+    </p>
+    <section class="panel panel-default fade-in-out" ng-repeat="objDef in filteredObjDefs = (sources | filter:{name:objDefFilter})" ng-class="{deleting: deleting[objDef._id]}">
+      <div class="panel-heading">
+        {{objDef.name}} (Id: {{objDef._id}})
+        <div class="pull-right">
+          <a href="/objectDefinitions/edit/{{source._id}}"><span class="glyphicon glyphicon-pencil"></span> Edit</a> |
+          <a ng-click="deleteObjDef(source._id)"><span class="glyphicon glyphicon-trash"></span> Delete</a>
+        </div>
+      </div>
+      <ul class="list-group">
+        <li class="list-group-item"><strong>Fields:</strong> {{objDef.fields | json}}</li>
+        <li class="list-group-item"><strong>Equality definition:</strong>
+          <pre>{{objDef.equality | json}}</pre>
+        </li>
+      </ul>
+    </section>
+    <section ng-show="filteredSources.length == 0" class="well fade-in-out">
+      No object definitions found...
+    </section>
+  </div>
+  <p>
+    <a class="btn btn-primary btn-block" href="/objectdefinitions/create">Add a new object definition</a>
+  </p>

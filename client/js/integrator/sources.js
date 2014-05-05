@@ -1,73 +1,15 @@
 "use strict";
-angular.module('odIntegrator', ['ngRoute', 'ngResource', 'ngAnimate', 'mgcrea.ngStrap'])
-.config(function($routeProvider, $locationProvider) {
-  $locationProvider.html5Mode(true);
-  $routeProvider
-  .when('/', {
-    'templateUrl': '/partials/home.html',
-    'navItem': 'home'
-  })
-  .when('/schema', {
-    'templateUrl': '/partials/schema-overview.html',
-    'navItem': 'schema'
-  })
-  .when('/sources', {
-    'templateUrl': '/partials/sources/overview.html',
-    'navItem': 'sources'
-  })
-  .when('/sources/create', {
-    'templateUrl': '/partials/sources/create.html',
-    'navItem': 'sources'
-  })
-  .when('/sources/edit/:id', {
-    'templateUrl': '/partials/sources/edit.html',
-    'navItem': 'sources'
-  })
-  .when('/data/raw', {
-    'templateUrl': '/partials/data/raw-query.html',
-    'navItem': 'rawquery'
-  })
-  .otherwise({
-    'redirectTo': '/'
-  });
-})
-.config(['$compileProvider', function($compileProvider){
-  $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|data):/);
-}])
-.config(['$alertProvider', function($alertProvider) {
-  angular.extend($alertProvider.defaults, {
-    animation: 'am-fade-and-slide-top',
-    container: '#alert-container',
-    duration: 5
-  });
-}])
-.directive('staticInclude', ['$http', '$templateCache', '$compile', function($http, $templateCache, $compile) {
-  return function(scope, element, attrs) {
-    var templatePath = attrs.staticInclude;
-    $http.get(templatePath, {cache: $templateCache}).success(function(response) {
-      element.html(response);
-      $compile(element.contents())(scope);
-    });
-  };
-}])
-.controller('Navigation', ['$scope', '$route', function($scope, $route) {
-  $scope.$on("$routeChangeSuccess", function(evt, routeData) {
-    $scope.navItem = $route.current.navItem;
-  });
-}])
-.controller('SchemaEditor', ['$scope', '$http', function($scope, $http) {
-  $http({method:'GET', url:'/api/schema'}).success(function(data) {
-    $scope.schema = data;
-  }).error(function(data, statusCode) {
-    alert("Unable to fetch schema");
-  });
-  $scope.editEntity = function(a) {
-    alert("Editing " + a);
-  };
-  $scope.createEntity = function() {
-    alert("Creating " + $scope.newEntityName);
-  };
-}])
+(function(angular) {
+function escapeStringForHtml(string) {
+  return string
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+angular.module('Sources', ['ngResource'])
 .factory('Sources', ['$resource', function($ressource) {
   return $ressource('/api/sources/:_id', {_id: "@_id"}, {
     'save': {method: 'PUT'},
@@ -115,11 +57,6 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource', 'ngAnimate', 'mgcrea.ng
           $scope.sourcesImport.working = false;
           return;
         }
-        if(!importedSources instanceof Array) {
-          $alert({title: "Error:", content: $sce.trustAsHtml("The specified file does not contain valid source definitions"), type: 'danger'});
-          $scope.sourcesImport.working = false;
-          return;
-        }
         //the success and error callback
         function successCallback() {
           $alert({title: "Success:", content: $sce.trustAsHtml("Sources were imported successfully"), type: 'success'});
@@ -128,12 +65,7 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource', 'ngAnimate', 'mgcrea.ng
         }
         function errorCallback(response) {
           if(response && response.data && response.data.msg) {
-            var msg = response.data.msg
-              .replace(/&/g, "&amp;")
-              .replace(/</g, "&lt;")
-              .replace(/>/g, "&gt;")
-              .replace(/"/g, "&quot;")
-              .replace(/'/g, "&#039;");
+            var msg = escapeStringForHtml(response.data.msg);
           } else {
             var msg = "Unknown error";
           }
@@ -182,12 +114,7 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource', 'ngAnimate', 'mgcrea.ng
             break;
           }
         }
-        var msg = response.data.msg
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;")
-          .replace(/"/g, "&quot;")
-          .replace(/'/g, "&#039;");
+        var msg = escapeStringForHtml(response.data.msg);
       } else {
         var msg = "Unknown error occurred";
       }
@@ -205,39 +132,27 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource', 'ngAnimate', 'mgcrea.ng
   $scope.source.mapping = "[\n]";
   $scope.save = function() {
     $scope.saving = true;
+    var sourceObject = angular.copy($scope.source);
     try {
-      var config = JSON.parse($scope.source.adapter.config);
+      sourceObject.adapter.config = JSON.parse(sourceObject.adapter.config);
     } catch(e) {
       $alert({title: "Error:", content: $sce.trustAsHtml("Adapter configuration of the source must be valid JSON"), type: 'danger'});
       $scope.saving = false;
       return;
     }
     try {
-      var mapping = JSON.parse($scope.source.mapping);
+      sourceObject.mapping = JSON.parse(sourceObject.mapping);
     } catch(e) {
       $alert({title: "Error:", content: $sce.trustAsHtml("Mapping must be valid JSON"), type: 'danger'});
       $scope.saving = false;
       return;
-    }
-    var sourceObject = {
-      name: $scope.source.name,
-      adapter: {
-        name: $scope.source.adapter.name,
-        config: config
-      },
-      mapping: mapping
     }
     Sources.create(sourceObject, function() {
       $scope.saving = false;
       $location.path("/sources");
     }, function(response) {
       if(response && response.data && response.data.msg) {
-        var msg = response.data.msg
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;")
-          .replace(/"/g, "&quot;")
-          .replace(/'/g, "&#039;");
+        var msg = escapeStringForHtml(response.data.msg);
       } else {
         msg = "Unknown error occured";
       }
@@ -265,40 +180,27 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource', 'ngAnimate', 'mgcrea.ng
   loadSource();
   $scope.save = function() {
     $scope.saving = true;
+    var sourceObject = angular.copy($scope.source);
     try {
-      var config = JSON.parse($scope.source.adapter.config);
+      sourceObject.adapter.config = JSON.parse(sourceObject.adapter.config);
     } catch(e) {
       $alert({title: "Error:", content: $sce.trustAsHtml("Adapter configuration of the source must be valid JSON"), type: 'danger'});
       $scope.saving = false;
       return;
     }
     try {
-      var mapping = JSON.parse($scope.source.mapping);
+      sourceObject.mapping = JSON.parse(sourceObject.mapping);
     } catch(e) {
       $alert({title: "Error:", content: $sce.trustAsHtml("Mapping must be valid JSON"), type: 'danger'});
       $scope.saving = false;
       return;
-    }
-    var sourceObject = {
-      _id: $routeParams.id,
-      name: $scope.source.name,
-      adapter: {
-        name: $scope.source.adapter.name,
-        config: config
-      },
-      mapping: mapping
     }
     Sources.save(sourceObject, function() {
       $scope.saving = false;
       $location.path("/sources");
     }, function(response) {
       if(response && response.data && response.data.msg) {
-        var msg = response.data.msg
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;")
-          .replace(/"/g, "&quot;")
-          .replace(/'/g, "&#039;");
+        var msg = escapeStringForHtml(response.data.msg);
       } else {
         msg = "Unknown error";
       }
@@ -306,45 +208,5 @@ angular.module('odIntegrator', ['ngRoute', 'ngResource', 'ngAnimate', 'mgcrea.ng
       $scope.saving = false;
     });
   };
-}])
-.controller('RawQueryController', ['$scope', '$alert', '$sce', '$http', '$routeParams', function($scope, $alert, $sce, $http, $routeParams) {
-  if("sourceId" in $routeParams) {
-    $scope.sourceId = $routeParams["sourceId"];
-  }
-  $scope.objectType = "";
-  $scope.conditions = "[]";
-  $scope.fields = "[]";
-  function sendQuery() {
-    delete $scope.error;
-    delete $scope.results;
-    var sourceId = $scope.sourceId;
-    if(!/^[0-9a-f]{24}$/.test(sourceId)) {
-      $scope.error = "Invalid format of source id";
-      return;
-    }
-    var objectType = $scope.objectType;
-    try {
-      var conditions = JSON.parse($scope.conditions);
-    } catch(e) {
-      $scope.error = "Definition of conditions must be valid JSON";
-      return;
-    }
-    try {
-      var fields = JSON.parse($scope.fields);
-    } catch(e) {
-      $scope.error = "Definition of fields must be valid JSON";
-      return;
-    }
-    var bodyContent = {
-      objectType: objectType,
-      conditions: conditions,
-      fields: fields
-    };
-    $http.post('/api/data/raw/'+sourceId+'/query', bodyContent).success(function(data){
-      $scope.results = data;
-    }).error(function(data) {
-      $scope.error = data;
-    });
-  }
-  $scope.sendQuery = sendQuery;
 }]);
+})(angular);
