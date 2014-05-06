@@ -55,8 +55,8 @@ function buildHardvardQueries(conditions, offset, limit) {
 	}
       }
     });  
-    var combinedFilters = filterStrings.join("&");
-    allQueries.push(combinedFilters);
+    var parameters = filterStrings.concat("start=" + offset, "limit=" + limit);
+    allQueries.push(parameters.join("&"));
   });
   return allQueries;
 }
@@ -74,7 +74,7 @@ function requestHardvardData (queryUrl, successCallback, errorCallback) {
         successCallback(exposedData);
         //var parsedCollection = parseHardvardIntoObject(responseBody);
         //successCallback(parsedCollection);
-	      }));
+      }));
     }
   }
   //send the query...
@@ -150,11 +150,10 @@ module.exports = function HardvardAdapter(config) {
 
   //resolves an id
   function resolveId(id, fields, successCallback, errorCallback) {
-    
+    return query("book", [[["=", "id", id]]], fields, successCallback, errorCallback);
   };
   this.resolveId = resolveId;
   //this = {query: [Function], resolveId: [Function]}
-
   //there are no cleanup procedures involved for this adapter
   this.destroy = function() {};
   //this = {query: [Function], resolveId: [Function], destroy: [Function]}
