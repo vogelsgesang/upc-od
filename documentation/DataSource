@@ -1,0 +1,61 @@
+There is two important reason that why we choose these data source :
+* technology point of view :
+  * CERN: nice XML source, well structured, widespread Marc21 format
+  * Harvard: API source, simple to understand (rather short documentation), much larger data set than CERN
+  * British library: vast amount of data available
+* similaryity point of view :
+  since CERN & Harvard are both universities then both focused on scientific literature . Therefore we will expect large overlap between them .They are also perfect for testing our integration layer and deduplication.
+
+*In the end we want to be able to add additional Sparqk and Marc21 sources by simply changing the configuration in our meta data repo.
+
+
+
+
+
+We are interested in these data sources because they are complement each other . In one data source we extract some information that are not available in the other ones.
+
+Harvard gave us complete information about like title, editor,isbn,publisher , publisher data  language, pages .These information are accessible by typing exact matching or keyword matching.
+it give us also information about number of times the item has been checked out by undergraduates ,graduated student , ... of-courcse this information are not reliable bu they are exist .
+
+In Cern data set , we have information commonly includes titles, names, subjects, notes and description of an item.More over it give us information about language,publication
+
+{
+        "__v" : 1,
+{
+        "name" : "CernBibliographicData(Marc21)",
+        "_id" : ObjectId("5358f92317bbf13036efbb71"),
+        "mapping" : [
+                {
+                        "mappedType" : "book",
+                        "sourceType" : "marcRecord",
+                        "fieldMapping" : {
+                                "topic" : [
+                                        "650",
+                                        "a"
+                                ],
+                                "keyword" : [
+                                        "653",
+                                        "a"
+                                ],
+                                "isbn" : [
+                                        "020",
+                                        "a"
+                                ],
+                                "published_in_year" : [
+                                        "260",
+                                        "c"
+                                ],
+                               .....
+                        }
+                }
+        ],
+        "adapter" : {
+                "config" : {
+                        "limit" : 10,
+                        "xmlDocumentPath" : "/db/od/books_export.xml",
+                        "eXistEndpoint" : "http://localhost:8080/exist/rest/"
+                },
+                "name" : "exist-marc21"
+        },
+        }
+ }
