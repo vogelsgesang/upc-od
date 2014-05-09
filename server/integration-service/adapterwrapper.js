@@ -1,5 +1,6 @@
 "use strict";
 var Mapper = require("./mapper");
+var Promise = require("bluebird");
 
 /**
  * sets the configuration of the source with the according _id.
@@ -18,37 +19,35 @@ function AdapterWrapper(sourceConfig) {
    * will be returned in the global schema. Translating from the global to
    * the source schema and vice versa will be handled internally.
    *
-   * The callback will be called as callback(err, results), where err
-   * is an instance of Error in case of an error and null otherwise.
-   * If an error occured, results will be null. Otherwise it will contain
-   * the actual results.
-   *
-   * This function returns a function which can be called in order to abort
-   * the request.
+   * This function returns a cancellable Bluebird promise.
    */
-  this.query= function(objectType, conditions, fields, callback) {
-    //apply the mapping from the consolidated schema to the source schema
-    var relevantMapping = mapper.findMappingTo(objectType);
-    if(relevantMapping == null){
-      callback(null, {});
-      return;
-    }
-    objectType = relevantMapping["sourceType"];
-    conditions = mapper.rewriteConditionsForSource(relevantMapping, conditions);
-    fields = mapper.renameFieldsForSource(relevantMapping, fields);
-    objectType = relevantMapping["sourceType"];
-    return adapter.query(objectType, conditions, fields, function successCallback(results) {
-      //first, remap the results
-      results = mapper.mapInstancesFromSource(results);
-      callback(null, results);
-    }, function errorCallback(error) {
-      callback(error, null);
-    })
+  this.query= function(objectType, conditions, fields) {
+    var abortFunction;
+    return new Promise(function (resolve, reject) {
+      //apply the mapping from the consolidated schema to the source schema
+      var relevantMapping = mapper.findMappingTo(objectType);
+      if(relevantMapping == null){
+        resolve({});
+        return;
+      }
+      objectType = relevantMapping["sourceType"];
+      conditions = mapper.rewriteConditionsForSource(relevantMapping, conditions);
+      fields = mapper.renameFieldsForSource(relevantMapping, fields);
+      //send the query
+      abortFunction = adapter.query(objectType, conditions, fields, function successCallback(results) {
+        results = mapper.mapInstancesFromSource(results);
+        resolve(results);
+      }, function errorCallback(error) {
+        reject(error);
+      })
+    }).cancellable().catch(Promise.CancellationError, function(e) {
+      abortFunction();
+      throw e; //Don't swallow the exception
+    });
   }
 
   this.destroy = function() {
     adapter.destroy();
   }
 }
-
 module.exports = AdapterWrapper;
