@@ -49,6 +49,7 @@ function IntegrationService() {
       process.nextTick(function(){callback(new Error("No such source"), null)});
       return function() {};
     }
+
     return sources[sourceId].query(objectType, conditions, fields, callback);
   }
 

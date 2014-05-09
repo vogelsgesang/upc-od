@@ -24,17 +24,46 @@ module.exports = function Mapper(mappings) {
    * returns the rewritten conditions
    */
   function rewriteConditionsForSource(mapping, conditions) {
-    return conditions;
+    var fieldMapping = mapping.fieldMapping;
+    var defcondic = [];
+    
+    for(var i = 0; i < conditions.length; i++) {
+      var andConditions = [];
+      for(var j = 0; j < conditions[i].length; j++) {
+        var fieldName = conditions[i][j][1];
+        var newFieldname = fieldMapping[fieldName];
+        if(newFieldname==undefined){
+          console.log("Unknown field: " + fieldName);
+        }
+        else andConditions.push([conditions[i][j][0], newFieldname, conditions[i][j][2]]);
+      }
+      if(andConditions.length != 0) {
+        defcondic.push(andConditions);
+      }
+    }
+    return defcondic;
   }
   this.rewriteConditionsForSource = rewriteConditionsForSource;
 
   /*
    * renames all fieldnames to the source's schema.
    * parameters: relevant mapping, array containing the field names to be renamed
-   * returns the rewritten conditions
+   * returns the rewritten fieldnames
    */
   function renameFieldsForSource(mapping, fieldNames) {
-    return fieldNames; //for later...
+    var fieldMapping = mapping.fieldMapping;
+    var defFieldN = [];
+    
+    for(var i = 0; i < fieldNames.length; i++) {
+        var fieldName = fieldNames[i];
+        var vFieldname = fieldMapping[fieldName];
+        
+        if(vFieldname==undefined)
+          console.log("Unknown field: " + fieldName); 
+        else defFieldN.push(vFieldname);
+    }
+    
+    return defFieldN;
   }
   this.renameFieldsForSource = renameFieldsForSource;
 
