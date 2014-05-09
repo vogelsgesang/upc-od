@@ -29,14 +29,17 @@ function AdapterWrapper(sourceConfig) {
   this.query= function(objectType, conditions, fields, callback) {
     //apply the mapping from the consolidated schema to the source schema
     var relevantMapping = mapper.findMappingTo(objectType);
+    if(relevantMapping == null){
+      callback(null, {});
+      return;
+    }
     objectType = relevantMapping["sourceType"];
-    /* 4Franz:
     conditions = mapper.rewriteConditionsForSource(relevantMapping, conditions);
-    fields = mapper.renameFieldsForSource(relevantMapping, fields);*/
-    //objectType = relevantMapping["sourceType"]; //4Franz
+    fields = mapper.renameFieldsForSource(relevantMapping, fields);
+    objectType = relevantMapping["sourceType"];
     return adapter.query(objectType, conditions, fields, function successCallback(results) {
-      //4Franz: for later
-      //results.fields = mapper.mapInstanceFromSource(relevantMapping, results.data);
+      //first, remap the results
+      results = mapper.mapInstancesFromSource(results);
       callback(null, results);
     }, function errorCallback(error) {
       callback(error, null);

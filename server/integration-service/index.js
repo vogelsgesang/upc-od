@@ -35,16 +35,11 @@ function IntegrationService() {
 
   /**
    * forwards the query to a specific source identified by its id and
-   * provides their results to the callback. Schema remapping is handled,
-   * i.e. the query should be posed in the global schema and the results
-   * will be returned in the global schema. Translating from the global to
-   * the source schema and vice versa will be handled internally.
-   *
+   * provides their results to the callback.
    * The callback will be called as callback(err, results), where err
    * is an instance of Error in case of an error and null otherwise.
    * If an error occured, results will be null. Otherwise it will contain
    * the actual results.
-   *
    * This function returns a function which can be called in order to abort
    * the request.
    */
