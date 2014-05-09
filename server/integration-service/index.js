@@ -37,13 +37,10 @@ function IntegrationService() {
    * forwards the query to a specific wrapper for an adapter.
    * This function returns a cancellable Bluebird promise.
    */
-  this.querySource = function(sourceId, objectType, conditions, fields, callback) {
-    var results = {};
+  this.querySource = function(sourceId, objectType, conditions, fields) {
     if(Object.keys(sources).indexOf(""+sourceId) < 0) {
-      process.nextTick(function(){callback(new Error("No such source"), null)});
-      return function() {};
+      return Promise.rejected(new Error("No such source"))});
     }
-
     return sources[sourceId].query(objectType, conditions, fields, callback);
   }
 
