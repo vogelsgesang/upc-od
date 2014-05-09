@@ -61,13 +61,16 @@ function IntegrationService() {
     //get the mapper and the adapter
     var mapper = sources[sourceId].mapper;
     var adapter = sources[sourceId].adapter;
+    
     //apply the mapping from the consolidated schema to the source schema
     var relevantMapping = mapper.findMappingTo(objectType);
     objectType = relevantMapping["sourceType"];
-    /* 4Franz:
     conditions = mapper.rewriteConditionsForSource(relevantMapping, conditions);
-    fields = mapper.renameFieldsForSource(relevantMapping, fields);*/
-    //objectType = relevantMapping["sourceType"]; //4Franz
+    
+    fields = mapper.renameFieldsForSource(relevantMapping, fields);
+    console.log(fields);
+    objectType = relevantMapping["sourceType"]; //4Franz
+    
     return adapter.query(objectType, conditions, fields, function successCallback(results) {
       //4Franz: for later
       //results.fields = mapper.mapInstanceFromSource(relevantMapping, results.data);
