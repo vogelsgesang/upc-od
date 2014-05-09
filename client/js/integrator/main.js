@@ -65,8 +65,11 @@ angular.module('odIntegrator', ['Sources', 'ObjectDefinitions', 'ngRoute', 'ngRe
     };
     $http.post('/api/data/raw/'+sourceId+'/query', bodyContent).success(function(data){
       $scope.results = data;
-    }).error(function(data) {
-      $scope.error = data;
+    }).error(function(data, statusCode) {
+      $scope.error = {
+        status: statusCode == 0 ? "offline": statusCode,
+        body: data
+      };
     });
   }
   $scope.sendQuery = sendQuery;
