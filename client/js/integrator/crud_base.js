@@ -67,6 +67,9 @@ function createOverviewController(config) {
             $scope.import.working = false;
             return;
           }
+          if(!(importedEntries instanceof Array)) {
+            importedEntries = [importedEntries];
+          }
           //the success and error callback
           function successCallback() {
             $alert({title: "Success:", content: $sce.trustAsHtml("Successfully imported \""+jsonFile.name+"\""), type: 'success'});//TODO: change message
