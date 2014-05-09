@@ -4,33 +4,18 @@ var http = require("http");
 var https = require("https");
 var concat = require("concat-stream");
 
-
-    
 //parses a collection of Hardvard into objects
 function parseHardvardIntoObject(jsonString) {
       var parsedResponse = JSON.parse(jsonString);
-      
       var foundBooks = parsedResponse['docs'];
       return foundBooks;
-      
-     // parsedResponse["docs"][0]["title"]
-      /*for(var i = 0; i < foundBooks.length; i++) {
-        console.log("Result " + i);
-        console.log("  Title: " + foundBooks[i]['title']);
-        console.log("  Publisher: " + foundBooks[i]['publisher']);
-        console.log("  Creator: " + foundBooks[i]['creator']);
-	console.log("  ISBN: " + foundBooks[i]['id_isbn']);
-        console.log("  icsh: " + foundBooks[i]['lsch']);
-	console.log("  language: " + foundBooks[i]['language']);
-	console.log("  Year: " + foundBooks[i]['pub_date']);
-      }*/
 };
   
 
- //builds an Xquery string in order to find the relevant records
+ //builds an query string in order to find the relevant records
 function buildHardvardQueries(conditions, offset, limit) {
   var searchword = ["keyword", "id", "title", "title_keyword", "creator", "creator_keyword", "note","note_keyword","lcsh","lcsh_keyword","publisher","pub_date","pub_location","format","Language","pages","height","id_inst","id_inst","id_isbn","id_lccn","call_num","url","holding_libs"];
-    
+
   //handle empty condition arguments
   if(conditions.length === 0) {
     conditions = [[]];
@@ -41,18 +26,15 @@ function buildHardvardQueries(conditions, offset, limit) {
     var filterStrings = [];
     //go through all the subconditions (combined by an AND)
     andConditions.forEach(function(condition) {
-      var fieldName = condition[1];
+      var fieldName = condition[1][0];
       var value = condition[2];
       if(condition[0] == "=") {
-	
-	//filter=keyword:internet
-	
         if(searchword.indexOf(fieldName)!=-1) {
           var filter = "filter="+encodeURIComponent(fieldName+":"+value);
-	  filterStrings.push(filter);
+          filterStrings.push(filter);
         } else {
-          throw new Error("not supported...");
-	}
+          throw new Error("unsupported query condition");
+	      }
       }
     });  
     var parameters = filterStrings.concat("start=" + offset, "limit=" + limit);
@@ -69,11 +51,9 @@ function requestHardvardData (queryUrl, successCallback, errorCallback) {
     } else {
       responseFromHarvard.setEncoding("utf8");
       responseFromHarvard.pipe(concat({encoding: "string"}, function(responseBody) {
-	var parsedData = JSON.parse(responseBody);
-	var exposedData = restructureHardvardData(parsedData["docs"]);
+        var parsedData = JSON.parse(responseBody);
+        var exposedData = restructureHardvardData(parsedData["docs"]);
         successCallback(exposedData);
-        //var parsedCollection = parseHardvardIntoObject(responseBody);
-        //successCallback(parsedCollection);
       }));
     }
   }
@@ -93,9 +73,34 @@ function requestHardvardData (queryUrl, successCallback, errorCallback) {
   return req.abort.bind(req);
 }
 
+//restructures the records in a way in which we can expose them to the integration layer
+function restructureHardvardData(foundBooks) {
+  return foundBooks.map(function(book) {
+    return {
+      "id": book["id"],
+      "type": "book",
+      "fields": book
+    }
+  });
+}
 
 //the object which is actually exported...
 module.exports = function HardvardAdapter(config) {
+  //copy the config to own variable (keep in mind that JS is reference based)
+  config = {
+    harvardEndpoint: config.harvardEndpoint,
+    limit: config.limit
+  };
+  //limit, harvardEndpoint
+  if(!("harvardEndpoint" in config)) {
+    throw new Error("config property \"harvardEndpoint\" is missing");
+  }
+  if(typeof config.harvardEndpoint != "string" || !/^https?:\/\//.test(config.harvardEndpoint)) {
+    throw new Error("harvardEndpoint is not a valid endpoint URL");
+  }
+  if(!("limit" in config)) {
+    throw new Error("config property \"limit\" is missing");
+  }
   //this function can be used in order to query for data
   function query(objectType, conditions, fields, successCallback, errorCallback) {
     if(objectType != "book") {
@@ -103,46 +108,42 @@ module.exports = function HardvardAdapter(config) {
       return function() {};
     } else {
       try {
-	var allQueryStrings = buildHardvardQueries(conditions, 0, config.limit);
+	      var allQueryStrings = buildHardvardQueries(conditions, 0, config.limit);
       } catch(e) {
-	return errorCallback(e);
+	      return errorCallback(e);
       }
       var allResponses = [];
       var abortFunctions = [];
       //abortFunctions = [function for aborting 1st request , function abort 2nd req, ....]
       var errorCallbackAlreadyCalled = false;
       allQueryStrings.forEach(function(queryString) {
-	var queryUrl = config.harvardEndpoint + "?" + queryString;
-	abortFunctions.push(requestHardvardData(queryUrl, function(dataFromOneQuery) {
-	  allResponses.push(dataFromOneQuery);
-	  if(allResponses.length == allQueryStrings.length) {
-	 //   combine all response into one final response
-	    var exposedData = [];
-	    for (var i = 0; i < allResponses.length; i++) {
-	       exposedData = exposedData.concat(allResponses[i]);
-	    }
-	    var exposedData = {
-	      "status": "finished",
-	      "data": exposedData
-	    }
-	    successCallback(exposedData);
-	  }
-	}, function(error){
-	  if(!errorCallbackAlreadyCalled) {
-	    for(var i = 0; i < abortFunctions.length; i++) {
-	      abortFunctions[i]();
-	    }
-	    errorCallbackAlreadyCalled = true;
-	    errorCallback(error);
-	  }
-	}));
+      var queryUrl = config.harvardEndpoint + "?" + queryString;
+	    abortFunctions.push(requestHardvardData(queryUrl, function(dataFromOneQuery) {
+	    allResponses.push(dataFromOneQuery);
+        if(allResponses.length == allQueryStrings.length) {
+          //combine all response into one final response
+          var exposedData = [];
+          for (var i = 0; i < allResponses.length; i++) {
+            exposedData = exposedData.concat(allResponses[i]);
+          }
+          successCallback(exposedData);
+        }
+      }, function(error){
+        if(!errorCallbackAlreadyCalled) {
+          for(var i = 0; i < abortFunctions.length; i++) {
+            abortFunctions[i]();
+          }
+          errorCallbackAlreadyCalled = true;
+          errorCallback(error);
+        }
+      }));
       });
-     }
-     return function() {
-       for(var i = 0; i < abortFunctions.length; i++) {
-	 abortFunctions[i]();
-       }
-     }
+    }
+    return function() {
+      for(var i = 0; i < abortFunctions.length; i++) {
+        abortFunctions[i]();
+      }
+    }
   }
   //this = {}
   this.query = query;
@@ -163,13 +164,3 @@ module.exports = function HardvardAdapter(config) {
 //adapater = {query: [Function], resolveId: [Function]}
 //adapter.query();
 
-//restructures the records in a way in which we can expose them to the integration layer
-function restructureHardvardData(foundBooks) {
-  return foundBooks.map(function(book) {
-    return {
-      "id": book["id"],
-      "type": "book",
-      "fields": book
-    }
-  });
-}

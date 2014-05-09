@@ -122,6 +122,12 @@ function requestMarc21Records(queryUrl, successCallback, errorCallback) {
 
 //the object which is actually exported...
 module.exports = function ExistMarc21Adapter(config) {
+  //copy the config to own variable (keep in mind that JS is reference based)
+  config = {
+    eXistEndpoint: config.eXistEndpoint,
+    xmlDocumentPath: config.xmlDocumentPath,
+    limit: config.limit
+  };
   //check, if the configuration is valid
   if(!("eXistEndpoint" in config)) {
     throw new Error("config property \"eXistEndpoint\" is missing");
@@ -154,11 +160,7 @@ module.exports = function ExistMarc21Adapter(config) {
       var queryUrl = config.eXistEndpoint + config.xmlDocumentPath + "?_query=" + encodeURIComponent(xquery);
       return requestMarc21Records(queryUrl, function(marcRecords) {
         var exposedData = restructureMarcRecords(marcRecords);
-        var results = {
-          "status": "finished",
-          "data": exposedData
-        }
-        successCallback(results);
+        successCallback(exposedData);
       }, errorCallback);
     }
   }

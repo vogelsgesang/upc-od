@@ -68,12 +68,12 @@ module.exports = function Mapper(mappings) {
   this.renameFieldsForSource = renameFieldsForSource;
 
   /*
-   * maps the fields of a specific instance to the global schema.
-   * parameters: relevant mapping, the values know for the field
-   * returns the mapped properties
+   * maps the fields of a set of instances to the global schema.
+   * parameters: an array containing all the instances which should be mapped
+   * returns the instances with the mapped properties
    */
-  function mapInstanceFromSource(mapping, properties) {
-    return parameters; //later...
+  function mapInstancesFromSource(instances) {
+    return instances; //later...
   }
-  this.mapInstanceFromSource = mapInstanceFromSource;
+  this.mapInstancesFromSource = mapInstancesFromSource;
 }
