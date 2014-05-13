@@ -58,7 +58,7 @@ function query(objectType, conditions) {
     //broadcasts a query to all sources
     function broadcastQuery(conditions, createNewObjects) {
       var newPromises = sources.map(function(source) {
-        return source.query(id, fields);
+        return source.query(objectType, conditions, fields);
       }
       addPromises(newPromises, createNewObjects);
     }
