@@ -48,42 +48,38 @@ function restructureMarcRecords(records) {
 
 //builds an Xquery string in order to find the relevant records
 function buildMarc21Xquery(conditions, offset, limit) {
-  var selectionPaths = []; //set of Xpaths for retrieving the correct records
   //handle empty condition arguments
   if(conditions.length === 0) {
-    conditions = [[]];
+    conditions = [];
   }
   //go through all the conditions (combined by an OR)
-  conditions.forEach(function(andConditions){
-    var conditionString = "";
-    //go through all the subconditions (combined by an AND)
-    andConditions.forEach(function(condition) {
-      var operator = condition[0];
-      var fieldPath = condition[1];
-      var escapedValue = condition[2]
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&apos;");
-      if(operator == "=") {
-        if(fieldPath.length == 1 && /^00[1-8]$/.test(fieldPath[0])) {
-          conditionString += "[controlfield[@tag='"+fieldPath[0]+"'] = '"+escapedValue+"']";
-        } else if(fieldPath.length == 2 && /^[0-9]{3}$/.test(fieldPath[0]) && /^[0-9a-z]$/.test(fieldPath[1])) {
-          var tag = fieldPath[0];
-          var code = fieldPath[1];
-          conditionString += "[datafield[@tag='"+tag+"']/"+
-              "subfield[@code='"+code+"'] = '"+escapedValue+"']";
-        } else {
-          throw new Error("unknown field: " + fieldPath);
-        }
+  var conditionString = "";
+  //go through all the subconditions (combined by an AND)
+  conditions.forEach(function(condition) {
+    var operator = condition[0];
+    var fieldPath = condition[1];
+    var escapedValue = condition[2]
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&apos;");
+    if(operator == "=") {
+      if(fieldPath.length == 1 && /^00[1-8]$/.test(fieldPath[0])) {
+        conditionString += "[controlfield[@tag='"+fieldPath[0]+"'] = '"+escapedValue+"']";
+      } else if(fieldPath.length == 2 && /^[0-9]{3}$/.test(fieldPath[0]) && /^[0-9a-z]$/.test(fieldPath[1])) {
+        var tag = fieldPath[0];
+        var code = fieldPath[1];
+        conditionString += "[datafield[@tag='"+tag+"']/"+
+            "subfield[@code='"+code+"'] = '"+escapedValue+"']";
       } else {
-        throw new Error("unknown operator: " + operator);
+        throw new Error("unknown field: " + fieldPath);
       }
-    });
-    selectionPaths.push("/collection/record"+conditionString);
+    } else {
+      throw new Error("unknown operator: " + operator);
+    }
   });
-  var selectionPath = "(\n   " + selectionPaths.join("\n | ") + "\n)";
+  var selectionPath = "/collection/record"+conditionString;
   var selectionXquery = "subsequence(" + selectionPath +","+offset+","+(limit+1)+")";
   var namespaceDefinition = "declare default element namespace 'http://www.loc.gov/MARC21/slim';";
   return namespaceDefinition + "\n" + selectionXquery;
