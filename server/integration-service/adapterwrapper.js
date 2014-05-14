@@ -27,7 +27,7 @@ function AdapterWrapper(sourceConfig) {
       //apply the mapping from the consolidated schema to the source schema
       var relevantMapping = mapper.findMappingTo(objectType);
       if(relevantMapping == null){
-        resolve({});
+        resolve([]);
         return;
       }
       objectType = relevantMapping["sourceType"];
