@@ -74,7 +74,7 @@ function IntegrationService() {
         if(objects.length != 0) {
           //TODO: update the consolidated data
           //var changed = duplicateMerger.mergeWithObjects(results.data, objects, createNewObjects);
-          results.data.push(objects); //just for now; this will be replaced later
+          results.data = results.data.concat(objects); //just for now; this will be replaced later
           //report progress
           //resultsPromise.progress(results);
           //TODO:infer queries
