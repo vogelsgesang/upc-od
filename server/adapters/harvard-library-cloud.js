@@ -117,8 +117,8 @@ module.exports = function HardvardAdapter(config) {
   //this = {query: [Function]}
 
   //resolves an id
-  function resolveId(id, fields, successCallback, errorCallback) {
-    return query("book", [[["=", "id", id]]], fields, successCallback, errorCallback);
+  function resolveId(objectType, id, fields, successCallback, errorCallback) {
+    return query(objectType, [[["=", "id", id]]], fields, successCallback, errorCallback);
   };
   this.resolveId = resolveId;
   //this = {query: [Function], resolveId: [Function]}

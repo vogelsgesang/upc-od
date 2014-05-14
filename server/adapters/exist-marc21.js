@@ -163,8 +163,8 @@ module.exports = function ExistMarc21Adapter(config) {
   this.query = query;
 
   //resolves an id
-  function resolveId(id, fields, successCallback, errorCallback) {
-    return query("marcRecord", [[["=", "001", id]]], fields, successCallback, errorCallback);
+  function resolveId(objectType, id, fields, successCallback, errorCallback) {
+    return query(objectType, [[["=", "001", id]]], fields, successCallback, errorCallback);
   };
   this.resolveId = resolveId;
 
