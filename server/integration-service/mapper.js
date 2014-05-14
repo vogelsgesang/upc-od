@@ -26,20 +26,14 @@ module.exports = function Mapper(mappings) {
   function rewriteConditionsForSource(mapping, conditions) {
     var fieldMapping = mapping.fieldMapping;
     var defcondic = [];
-    
+    var andConditions = [];
     for(var i = 0; i < conditions.length; i++) {
-      var andConditions = [];
-      for(var j = 0; j < conditions[i].length; j++) {
-        var fieldName = conditions[i][j][1];
-        var newFieldname = fieldMapping[fieldName];
-        if(newFieldname==undefined){
-          console.log("Unknown field: " + fieldName);
-        }
-        else andConditions.push([conditions[i][j][0], newFieldname, conditions[i][j][2]]);
+      var fieldName = conditions[i][1];
+      var newFieldname = fieldMapping[fieldName];
+      if(newFieldname==undefined){
+        console.log("Unknown field: " + fieldName);
       }
-      if(andConditions.length != 0) {
-        defcondic.push(andConditions);
-      }
+      else defcondic.push([conditions[i][0], newFieldname, conditions[i][2]]);
     }
     return defcondic;
   }
@@ -55,12 +49,12 @@ module.exports = function Mapper(mappings) {
     var defFieldN = [];
     
     for(var i = 0; i < fieldNames.length; i++) {
-        var fieldName = fieldNames[i];
-        var vFieldname = fieldMapping[fieldName];
-        
-        if(vFieldname==undefined)
-          console.log("Unknown field: " + fieldName); 
-        else defFieldN.push(vFieldname);
+      var fieldName = fieldNames[i];
+      var vFieldname = fieldMapping[fieldName];
+      
+      if(vFieldname==undefined)
+        console.log("Unknown field: " + fieldName); 
+      else defFieldN.push(vFieldname);
     }
     
     return defFieldN;
