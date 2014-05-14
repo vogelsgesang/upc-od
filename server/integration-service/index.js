@@ -41,7 +41,7 @@ function IntegrationService() {
     if(Object.keys(sources).indexOf(""+sourceId) < 0) {
       return Promise.rejected(new Error("No such source"));
     }
-    return sources[sourceId].query(objectType, conditions, fields, callback);
+    return sources[sourceId].query(objectType, conditions, fields);
   }
 
   this.destroy = function() {
