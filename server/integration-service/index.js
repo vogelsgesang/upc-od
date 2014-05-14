@@ -34,23 +34,14 @@ function IntegrationService() {
   };
 
   /**
-   * forwards the query to a specific source identified by its id and
-   * provides their results to the callback.
-   * The callback will be called as callback(err, results), where err
-   * is an instance of Error in case of an error and null otherwise.
-   * If an error occured, results will be null. Otherwise it will contain
-   * the actual results.
-   * This function returns a function which can be called in order to abort
-   * the request.
+   * forwards the query to a specific wrapper for an adapter.
+   * This function returns a cancellable Bluebird promise.
    */
-  this.querySource = function(sourceId, objectType, conditions, fields, callback) {
-    var results = {};
+  this.querySource = function(sourceId, objectType, conditions, fields) {
     if(Object.keys(sources).indexOf(""+sourceId) < 0) {
-      process.nextTick(function(){callback(new Error("No such source"), null)});
-      return function() {};
+      return Promise.rejected(new Error("No such source"));
     }
-
-    return sources[sourceId].query(objectType, conditions, fields, callback);
+    return sources[sourceId].query(objectType, conditions, fields);
   }
 
   this.destroy = function() {

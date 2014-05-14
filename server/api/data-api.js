@@ -15,15 +15,11 @@ module.exports = function(integrationService) {
       var conditions = req.body.conditions;
       var fields = req.body.fields;
       var type = req.body.objectType;
-      var abortQuery = integrationService.querySource(
-        sourceId, type, conditions, fields,
-        function(err, results) {
-          if(err) return next(err);
-          res.json(results);
-        }
-      );
+      var resultsPromise = integrationService.querySource(sourceId, type, conditions, fields)
+        .then(function(results) {res.json(results);})
+        .catch(function(e) {next(e)});
       req.on('close', function() {
-        abortQuery();
+        resultsPromise.cancel();
       });
     })
     .post('/data/raw/:id/resolveLink', function(req, res, next) {
