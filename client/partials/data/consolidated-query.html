@@ -12,13 +12,17 @@
     <button type="submit" class="btn btn-primary btn-block">Send query</button>
   </form>
   <hr>
-  <div ng-show="results !== undefined">
-    Results:
-    <pre>{{results | json}}</pre>
-  </div>
   <div ng-show="error !== undefined">
-    Error:
+    <p>Error:</p>
     <pre class="bg-danger">{{error | json}}</pre>
+  </div>
+  <div ng-show="results !== undefined">
+    <div ng-show="results.errors.length > 0">
+      <p>Errors:</p>
+      <pre class="bg-danger">{{results.errors | json}}</pre>
+    </div>
+    <p>Results:</p>
+    <pre ng-repeat="item in results.data">{{item | json}}</pre>
   </div>
 </div>
 
