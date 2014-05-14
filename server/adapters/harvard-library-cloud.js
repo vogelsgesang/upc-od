@@ -13,34 +13,29 @@ function parseHardvardIntoObject(jsonString) {
   
 
  //builds an query string in order to find the relevant records
-function buildHardvardQueries(conditions, offset, limit) {
-  var searchword = ["keyword", "id", "title", "title_keyword", "creator", "creator_keyword", "note","note_keyword","lcsh","lcsh_keyword","publisher","pub_date","pub_location","format","Language","pages","height","id_inst","id_inst","id_isbn","id_lccn","call_num","url","holding_libs"];
-
+function buildHardvardQuery(conditions, offset, limit) {
+  var searchword = ["keyword", "id", "title", "title_keyword", "creator", "creator_keyword", "note","note_keyword","lcsh","lcsh_keyword","publisher","pub_date","pub_location","format","language","pages","height","id_inst","id_inst","id_isbn","id_lccn","call_num","url","holding_libs"];
   //handle empty condition arguments
   if(conditions.length === 0) {
-    conditions = [[]];
+    conditions = [];
   }
-  var allQueries = [];
-  //go through all the conditions (combined by an OR)
-  conditions.forEach(function(andConditions){
-    var filterStrings = [];
-    //go through all the subconditions (combined by an AND)
-    andConditions.forEach(function(condition) {
-      var fieldName = condition[1][0];
-      var value = condition[2];
-      if(condition[0] == "=") {
-        if(searchword.indexOf(fieldName)!=-1) {
-          var filter = "filter="+encodeURIComponent(fieldName+":"+value);
-          filterStrings.push(filter);
-        } else {
-          throw new Error("unsupported query condition");
-	      }
+  var filterStrings = [];
+  //go through all the subconditions (combined by an AND)
+  conditions.forEach(function(condition) {
+    var fieldName = condition[1][0];
+    var value = condition[2];
+    if(condition[0] == "=") {
+      if(searchword.indexOf(fieldName)!=-1) {
+        var filter = "filter="+encodeURIComponent(fieldName+":"+value);
+        filterStrings.push(filter);
+      } else {
+        throw new Error("unsupported query condition");
       }
-    });  
-    var parameters = filterStrings.concat("start=" + offset, "limit=" + limit);
-    allQueries.push(parameters.join("&"));
-  });
-  return allQueries;
+    }
+  });  
+  var parameters = filterStrings.concat("start=" + offset, "limit=" + limit);
+  var queryString = parameters.join("&");
+  return queryString;
 }
 
 function requestHardvardData (queryUrl, successCallback, errorCallback) {
@@ -91,7 +86,7 @@ module.exports = function HardvardAdapter(config) {
     harvardEndpoint: config.harvardEndpoint,
     limit: config.limit
   };
-  //limit, harvardEndpoint
+  //check the configuration: limit, harvardEndpoint
   if(!("harvardEndpoint" in config)) {
     throw new Error("config property \"harvardEndpoint\" is missing");
   }
@@ -108,41 +103,13 @@ module.exports = function HardvardAdapter(config) {
       return function() {};
     } else {
       try {
-	      var allQueryStrings = buildHardvardQueries(conditions, 0, config.limit);
+	      var queryString = buildHardvardQuery(conditions, 0, config.limit);
       } catch(e) {
 	      return errorCallback(e);
       }
-      var allResponses = [];
-      var abortFunctions = [];
-      //abortFunctions = [function for aborting 1st request , function abort 2nd req, ....]
-      var errorCallbackAlreadyCalled = false;
-      allQueryStrings.forEach(function(queryString) {
       var queryUrl = config.harvardEndpoint + "?" + queryString;
-	    abortFunctions.push(requestHardvardData(queryUrl, function(dataFromOneQuery) {
-	    allResponses.push(dataFromOneQuery);
-        if(allResponses.length == allQueryStrings.length) {
-          //combine all response into one final response
-          var exposedData = [];
-          for (var i = 0; i < allResponses.length; i++) {
-            exposedData = exposedData.concat(allResponses[i]);
-          }
-          successCallback(exposedData);
-        }
-      }, function(error){
-        if(!errorCallbackAlreadyCalled) {
-          for(var i = 0; i < abortFunctions.length; i++) {
-            abortFunctions[i]();
-          }
-          errorCallbackAlreadyCalled = true;
-          errorCallback(error);
-        }
-      }));
-      });
-    }
-    return function() {
-      for(var i = 0; i < abortFunctions.length; i++) {
-        abortFunctions[i]();
-      }
+	    var abortFunction = requestHardvardData(queryUrl, successCallback, errorCallback);
+      return abortFunction;
     }
   }
   //this = {}
