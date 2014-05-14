@@ -39,7 +39,7 @@ function IntegrationService() {
    */
   this.querySource = function(sourceId, objectType, conditions, fields) {
     if(Object.keys(sources).indexOf(""+sourceId) < 0) {
-      return Promise.rejected(new Error("No such source"))});
+      return Promise.rejected(new Error("No such source"));
     }
     return sources[sourceId].query(objectType, conditions, fields, callback);
   }
