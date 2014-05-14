@@ -22,14 +22,23 @@ module.exports = function(integrationService) {
         resultsPromise.cancel();
       });
     })
-    .post('/data/raw/:id/resolveLink', function(req, res, next) {
+    .post('/data/consolidated/resolveLink', function(req, res, next) {
       next(new Error("Not implemented"));
     })
-    .post('/data/composed/resolveLink', function(req, res, next) {
-      next(new Error("Not implemented"));
-    })
-    .post('/data/composed/query', function(req, res, next) {
-      next(new Error("Not implemented"));
+    .post('/data/consolidated/query', function(req, res, next) {
+      if(!req.body) {
+        var err = new Error("Invalid request body");
+        err.statusCode = 422;
+        return next(err);
+      }
+      var conditions = req.body.conditions;
+      var type = req.body.objectType;
+      var resultsPromise = integrationService.query(type, conditions)
+        .then(function(results) {res.json(results);})
+        .catch(function(e) {next(e)});
+      req.on('close', function() {
+        resultsPromise.cancel();
+      });
     });
   return dataApi;
 };
