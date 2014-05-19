@@ -1,6 +1,6 @@
 "use strict";
-
-var Mapper = require("./mapper");
+var AdapterWrapper = require("./adapterwrapper");
+var Promise = require("bluebird");
 
 function IntegrationService() {
   var sources = {};
@@ -11,23 +11,20 @@ function IntegrationService() {
    * throws on error
    */
   this.configureSource = function createSource(sourceConfig) {
-    var AdapterClass = require("../adapters/" + sourceConfig.adapter.name);
-    var mapper = new Mapper(sourceConfig.mapping);
-    var adapter = new AdapterClass(sourceConfig.adapter.config);
-    if(Object.keys(sources).indexOf(sourceConfig._id) >= 0) {
-      removeSource(sourceConfig._id);
+    console.log("updating");
+    var newAdapterWrapper = new AdapterWrapper(sourceConfig);
+    if(Object.keys(sources).indexOf(""+sourceConfig._id) >= 0) {
+      console.log("r");
+      this.removeSource(sourceConfig._id);
     }
-    sources[sourceConfig._id] =  {
-      adapter: adapter,
-      mapper: mapper
-    }
+    sources[sourceConfig._id] = newAdapterWrapper;
   };
 
   /**
    * removes the source with the corresponding id
    */
   this.removeSource = function removeSource(id) {
-    if(Object.keys(sources).indexOf(id) >= 0) {
+    if(Object.keys(sources).indexOf(""+id) >= 0) {
       sources[id].destroy();
       delete sources[id];
     }
@@ -38,43 +35,14 @@ function IntegrationService() {
   };
 
   /**
-   * forwards the query to a specific source identified by its id and
-   * provides their results to the callback. Schema remapping is handled,
-   * i.e. the query should be posed in the global schema and the results
-   * will be returned in the global schema. Translating from the global to
-   * the source schema and vice versa will be handled internally.
-   *
-   * The callback will be called as callback(err, results), where err
-   * is an instance of Error in case of an error and null otherwise.
-   * If an error occured, results will be null. Otherwise it will contain
-   * the actual results.
-   *
-   * This function returns a function which can be called in order to abort
-   * the request.
+   * forwards the query to a specific wrapper for an adapter.
+   * This function returns a cancellable Bluebird promise.
    */
-  this.querySource = function(sourceId, objectType, conditions, fields, callback) {
-    var results = {};
-    if(Object.keys(sources).indexOf(sourceId) < 0) {
-      process.nextTick(function(){callback(new Error("No such source"), null)});
-      return function() {};
+  this.querySource = function(sourceId, objectType, conditions, fields) {
+    if(Object.keys(sources).indexOf(""+sourceId) < 0) {
+      return Promise.rejected(new Error("No such source"));
     }
-    //get the mapper and the adapter
-    var mapper = sources[sourceId].mapper;
-    var adapter = sources[sourceId].adapter;
-    //apply the mapping from the consolidated schema to the source schema
-    var relevantMapping = mapper.findMappingTo(objectType);
-    objectType = relevantMapping["sourceType"];
-    /* 4Franz:
-    conditions = mapper.rewriteConditionsForSource(relevantMapping, conditions);
-    fields = mapper.renameFieldsForSource(relevantMapping, fields);*/
-    //objectType = relevantMapping["sourceType"]; //4Franz
-    return adapter.query(objectType, conditions, fields, function successCallback(results) {
-      //4Franz: for later
-      //results.fields = mapper.mapInstanceFromSource(relevantMapping, results.data);
-      callback(null, results);
-    }, function errorCallback(error) {
-      callback(error, null);
-    })
+    return sources[sourceId].query(objectType, conditions, fields);
   }
 
   this.destroy = function() {
@@ -82,6 +50,78 @@ function IntegrationService() {
       sources[id].destroy();
     });
     sources = {};
+  }
+
+  //queries the consolidated view.
+  this.query = function query(objectType, conditions) {
+    var unresolvedPromises = [];
+    var resultsPromise = new Promise(function (resolve, reject) {
+      var results = {
+        errors: [],
+        data: []
+      }
+
+      //which fields should we search for?
+      var fields = [];//TODO: lookup fields
+
+      function removePosedQueries(queries) {
+        //TODO: filter out queries which were already posed
+        return queries;
+      }
+
+      //integrates new results
+      function handleNewResults(objects, createNewObjects) {
+        if(objects.length != 0) {
+          //TODO: update the consolidated data
+          //var changed = duplicateMerger.mergeWithObjects(results.data, objects, createNewObjects);
+          results.data = results.data.concat(objects); //just for now; this will be replaced later
+          //report progress
+          //resultsPromise.progress(results);
+          //TODO:infer queries
+          //var query = QueryDeducor.createQueriesFor(objectType, results.data);
+          var query = []; //just for now; will be replaced later
+          //filter out already posed parts of the query
+          query = removePosedQueries(query);
+          //pose new queries
+          if(query.length != 0) {
+            broadcastQuery(conditions, false);
+          } else if(unresolvedPromises.length == 0) {
+            resolve(results);
+          }
+        }
+      }
+      function addPromises(promises, createNewObjects) {
+        promises.forEach(function(promise) {
+          var newPromise = promise.finally(function() {
+            //remove this promise from the set of unresolved promises
+            unresolvedPromises.splice(unresolvedPromises.indexOf(newPromise) ,1)
+          })
+          .then(function(objects) {
+            handleNewResults(objects, createNewObjects);
+          }).catch(function(e) {
+            results.errors.push(e); //TODO: resultsPromise.progress(results)
+          });
+          unresolvedPromises.push(newPromise);
+        });
+      }
+      //broadcasts a query to all sources
+      function broadcastQuery(conditions, createNewObjects) {
+        var newPromises = Object.keys(sources).map(function(sourceId) {
+          return sources[sourceId].query(objectType, conditions, fields);
+        });
+        addPromises(newPromises, createNewObjects);
+      }
+      broadcastQuery(conditions, true);
+    }).cancellable().catch(Promise.CancellationError, function(e) {
+      //we must duplicate the array of promises here
+      //since the promises remove themselves from the array
+      //on cancelation. And modifying the array while looping
+      //over it results in unexpected behaviour.
+      var unresolvedCopy = unresolvedPromises.slice();
+      unresolvedCopy.forEach(function(p) {p.cancel()});
+      throw e; //Don't swallow the exception
+    });
+    return resultsPromise;
   }
 }
 

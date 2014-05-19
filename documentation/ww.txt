@@ -1,0 +1,69 @@
+
+
+
+
+For our recommendation system we will use the Random Walk algorithm which is based on Markov chains. Similar to the Google PageRank algorithm, recommendations
+are created based on the topology of a graph. It is initialized based on the ratings of a user and returns other books which are closely linked to the already rated books.
+
+In describing our contextual recommendation algorithm we will focus on three types of objects: author, genre and publisher.
+This algorithm can easily be extended to additional contextual features such as author information or keyword without the need for retraining or changing 
+the recommendation model.
+This model estimate the transition probabilities from node to node using ratings and the links between different nodes.e.g.the authors associated with a book.
+
+Our algorithm is based on the paper ... which defines a Random Walk as:
+
+A random walk over G is a stochastic process in which the initial state is known and the next state S is governed by a
+probability distribution.We can represent this distribution for our graph G by constructing the transition probability matrix X,
+where the probability of going from node i to node j (at time t+1) is presentsd by Xi,j =P(St+1=j|St=i)
+
+In the other words,this algorithm add a self loop to each vertex.then Start at initial node s and consider di as a degree of the current node.
+then it jumps to each of the neighbors with probability 1/di and in final stop if it gets target node.
+
+While this paper suggests to calculate the corresponding probabilities exactly, this approach can be adapted easily in order
+to use sampled data. Hence, we can trade of recommendation quality against time. In addition, we have the opportunity to
+provide a first result quickly to the user and keep improving this recommendation as we are materializing more parts of
+the underlying contextual graph.
+
+We limit our random walks to a finite depth of node.It means that keeping the user in the vicinity of his original book-related recommended need.
+By using ratings instead of binary usage patterns, we can bias the random walk to start from the more likely book,instead of assigning each book 
+the same starting point likelihood.
+
+
+In another word,algorithm start random intial point for walking in the graph,tempered by self-transition to produce a probability distribution.
+
+if there is information for the user`s book interest , algorithm use probability distribution over those nearest neiberhood to the current node.
+ if not ,algorithm produce probability distribution over 20 recommended book by harvard libarary .
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+In fact user could, look up more infomation about recommneded book which could lead him to explore the author profile that guide him to decide
+
+Browsing process : we assume that the user starts with specific book and Browsing the contextual graph until he find an interesting node and stop a Browsing process.
+
+
+
+
+
+
+
+
+
+
+
+
+
+

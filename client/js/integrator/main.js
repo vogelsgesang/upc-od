@@ -11,6 +11,10 @@ angular.module('odIntegrator', ['Sources', 'ObjectDefinitions', 'ngRoute', 'ngRe
     'templateUrl': '/partials/data/raw-query.html',
     'navItem': 'rawquery'
   })
+  .when('/data/consolidated', {
+    'templateUrl': '/partials/data/consolidated-query.html',
+    'navItem': 'consolidatedquery'
+  })
   .otherwise({
     'redirectTo': '/'
   });
@@ -65,8 +69,39 @@ angular.module('odIntegrator', ['Sources', 'ObjectDefinitions', 'ngRoute', 'ngRe
     };
     $http.post('/api/data/raw/'+sourceId+'/query', bodyContent).success(function(data){
       $scope.results = data;
-    }).error(function(data) {
-      $scope.error = data;
+    }).error(function(data, statusCode) {
+      $scope.error = {
+        status: statusCode == 0 ? "offline": statusCode,
+        body: data
+      };
+    });
+  }
+  $scope.sendQuery = sendQuery;
+}])
+.controller('ConsolidatedQueryController', ['$scope', '$alert', '$sce', '$http', function($scope, $alert, $sce, $http) {
+  $scope.objectType = "";
+  $scope.conditions = "[]";
+  function sendQuery() {
+    delete $scope.error;
+    delete $scope.results;
+    var objectType = $scope.objectType;
+    try {
+      var conditions = JSON.parse($scope.conditions);
+    } catch(e) {
+      $scope.error = "Definition of conditions must be valid JSON";
+      return;
+    }
+    var bodyContent = {
+      objectType: objectType,
+      conditions: conditions
+    };
+    $http.post('/api/data/consolidated/query', bodyContent).success(function(data){
+      $scope.results = data;
+    }).error(function(data, statusCode) {
+      $scope.error = {
+        status: statusCode == 0 ? "offline": statusCode,
+        body: data
+      };
     });
   }
   $scope.sendQuery = sendQuery;

@@ -1,0 +1,28 @@
+<div ng-controller="ConsolidatedQueryController">
+  <h1>Consolidated Query</h1>
+  <form name="rawquery" ng-submit="sendQuery()">
+    <div class="form-group">
+      <label for="objectType">Object type:</label>
+      <input class="form-control" ng-model="objectType" id="objectType"></textarea>
+    </div>
+    <div class="form-group">
+      <label for="query">Conditions:</label>
+      <textarea class="form-control" ng-model="conditions" id="conditions"></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary btn-block">Send query</button>
+  </form>
+  <hr>
+  <div ng-show="error !== undefined">
+    <p>Error:</p>
+    <pre class="bg-danger">{{error | json}}</pre>
+  </div>
+  <div ng-show="results !== undefined">
+    <div ng-show="results.errors.length > 0">
+      <p>Errors:</p>
+      <pre class="bg-danger">{{results.errors | json}}</pre>
+    </div>
+    <p>Results:</p>
+    <pre ng-repeat="item in results.data">{{item | json}}</pre>
+  </div>
+</div>
+
