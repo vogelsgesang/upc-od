@@ -1,7 +1,4 @@
 
-
-
-
 For our recommendation system we will use the Random Walk algorithm which is based on Markov chains. Similar to the Google PageRank algorithm, recommendations
 are created based on the topology of a graph. It is initialized based on the ratings of a user and returns other books which are closely linked to the already rated books.
 
@@ -16,7 +13,7 @@ A random walk over G is a stochastic process in which the initial state is known
 probability distribution.We can represent this distribution for our graph G by constructing the transition probability matrix X,
 where the probability of going from node i to node j (at time t+1) is presentsd by Xi,j =P(St+1=j|St=i)
 
-In the other words,this algorithm add a self loop to each vertex.then Start at initial node s and consider di as a degree of the current node.
+In the other words,this algorithm starts at an initial node s and considers di as a degree of the current node.
 then it jumps to each of the neighbors with probability 1/di and in final stop if it gets target node.
 
 While this paper suggests to calculate the corresponding probabilities exactly, this approach can be adapted easily in order
