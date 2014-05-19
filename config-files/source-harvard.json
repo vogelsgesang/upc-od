@@ -1,0 +1,17 @@
+{
+  "_id":"536cb0f1f0bc857b348d20b3",
+  "name":"HarvardLibraryCloudAPI",
+  "mapping":[
+    {
+      "mappedType":"book",
+      "sourceType":"book"
+    }
+  ],
+  "adapter":{
+    "config":{
+      "limit":20,
+      "harvardEndpoint":"http://librarycloud.harvard.edu/v1/api/item/"
+    },
+    "name":"harvard-library-cloud"
+  }
+}
