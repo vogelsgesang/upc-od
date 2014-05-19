@@ -3,3 +3,5 @@ node_modules/
 server/static
 client/build
 *.swp
+.directory
+*.kate-swp
