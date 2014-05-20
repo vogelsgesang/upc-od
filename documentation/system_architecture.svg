@@ -321,11 +321,11 @@
       <rect fill="none" x="516.6618" width="341.8" height="30" y="362.987" clip-path="url(#clipPath2)"/>
     </g>
     <g fill="rgb(255,204,0)" text-rendering="geometricPrecision" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,-246,-69)" stroke="rgb(255,204,0)">
-      <rect x="618.6368" width="239.825" height="30" y="312.6935" clip-path="url(#clipPath2)" stroke="none"/>
+      <rect x="731.6618" width="126.8" height="30" y="312.6935" clip-path="url(#clipPath2)" stroke="none"/>
     </g>
     <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" shape-rendering="geometricPrecision" font-family="sans-serif" transform="matrix(1,0,0,1,-246,-69)" stroke-linecap="butt">
-      <text x="672.3969" xml:space="preserve" y="331.8478" clip-path="url(#clipPath2)" stroke="none">Metadata Managment</text>
-      <rect fill="none" x="618.6368" width="239.825" height="30" y="312.6935" clip-path="url(#clipPath2)"/>
+      <text x="728.9094" xml:space="preserve" y="331.8478" clip-path="url(#clipPath2)" stroke="none">Metadata Managment</text>
+      <rect fill="none" x="731.6618" width="126.8" height="30" y="312.6935" clip-path="url(#clipPath2)"/>
     </g>
     <g fill="rgb(255,204,0)" text-rendering="geometricPrecision" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,-246,-69)" stroke="rgb(255,204,0)">
       <rect x="261.2618" width="597.2" height="30" y="262.4" clip-path="url(#clipPath2)" stroke="none"/>
@@ -634,6 +634,13 @@
     <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" shape-rendering="geometricPrecision" font-family="sans-serif" transform="matrix(1,0,0,1,-246,-69)" stroke-linecap="butt">
       <text x="943.0294" xml:space="preserve" y="377.4452" clip-path="url(#clipPath2)" stroke="none">Metadata</text>
       <text x="937.8936" xml:space="preserve" y="391.4139" clip-path="url(#clipPath2)" stroke="none">(MongoDB)</text>
+    </g>
+    <g fill="rgb(255,204,0)" text-rendering="geometricPrecision" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,-246,-69)" stroke="rgb(255,204,0)">
+      <rect x="574.8618" width="126.8" height="30" y="312.6935" clip-path="url(#clipPath2)" stroke="none"/>
+    </g>
+    <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" shape-rendering="geometricPrecision" font-family="sans-serif" transform="matrix(1,0,0,1,-246,-69)" stroke-linecap="butt">
+      <text x="594.2813" xml:space="preserve" y="331.8478" clip-path="url(#clipPath2)" stroke="none">Recommender</text>
+      <rect fill="none" x="574.8618" width="126.8" height="30" y="312.6935" clip-path="url(#clipPath2)"/>
       <path fill="none" d="M412.2683 392.987 L517.197 459.7662" clip-path="url(#clipPath2)"/>
       <path d="M523.9461 464.0615 L516.507 453.4004 L516.3534 459.2293 L511.1379 461.8367 Z" clip-path="url(#clipPath2)" stroke="none"/>
       <text x="406.3138" xml:space="preserve" y="427.4504" clip-path="url(#clipPath2)" stroke="none">serves</text>
@@ -641,10 +648,10 @@
       <text x="411.4964" xml:space="preserve" y="455.3879" clip-path="url(#clipPath2)" stroke="none">code</text>
       <path fill="none" d="M582.8496 464.0052 L680.9409 397.4774" clip-path="url(#clipPath2)"/>
       <path d="M687.5618 392.987 L674.8239 395.5846 L680.1133 398.0387 L680.437 403.8607 Z" clip-path="url(#clipPath2)" stroke="none"/>
-      <path fill="none" d="M738.5493 362.9848 L738.5493 350.6935" clip-path="url(#clipPath2)"/>
-      <path d="M738.5493 342.6935 L733.5493 354.6935 L738.5493 351.6935 L743.5493 354.6935 Z" clip-path="url(#clipPath2)" stroke="none"/>
-      <path fill="none" d="M738.5493 312.6539 L738.5493 300.439" clip-path="url(#clipPath2)"/>
-      <path d="M738.5493 292.439 L733.5493 304.439 L738.5493 301.439 L743.5493 304.439 Z" clip-path="url(#clipPath2)" stroke="none"/>
+      <path fill="none" d="M795.0618 362.9609 L795.0618 350.6935" clip-path="url(#clipPath2)"/>
+      <path d="M795.0618 342.6935 L790.0618 354.6935 L795.0618 351.6935 L800.0618 354.6935 Z" clip-path="url(#clipPath2)" stroke="none"/>
+      <path fill="none" d="M795.0618 312.6538 L795.0618 300.4224" clip-path="url(#clipPath2)"/>
+      <path d="M795.0618 292.4224 L790.0618 304.4224 L795.0618 301.4224 L800.0618 304.4224 Z" clip-path="url(#clipPath2)" stroke="none"/>
       <path fill="none" d="M559.8618 362.962 L559.8618 300.4" clip-path="url(#clipPath2)"/>
       <path d="M559.8618 292.4 L554.8618 304.4 L559.8618 301.4 L564.8618 304.4 Z" clip-path="url(#clipPath2)" stroke="none"/>
       <path fill="none" d="M324.6617 262.3682 L324.6617 246.6" clip-path="url(#clipPath2)"/>
@@ -667,6 +674,10 @@
       <path d="M951.7975 258.887 L939.0541 256.3172 L942.9695 260.638 L940.9996 266.1261 Z" clip-path="url(#clipPath2)" stroke="none"/>
       <path fill="none" d="M858.4617 327.6935 L943.8542 334.3496" clip-path="url(#clipPath2)"/>
       <path d="M951.83 334.9713 L940.2549 329.0539 L942.8572 334.2719 L939.4777 339.0237 Z" clip-path="url(#clipPath2)" stroke="none"/>
+      <path fill="none" d="M638.2618 362.9766 L638.2618 350.6935" clip-path="url(#clipPath2)"/>
+      <path d="M638.2618 342.6935 L633.2618 354.6935 L638.2618 351.6935 L643.2618 354.6935 Z" clip-path="url(#clipPath2)" stroke="none"/>
+      <path fill="none" d="M638.2618 312.6935 L638.2618 300.4234" clip-path="url(#clipPath2)"/>
+      <path d="M638.2618 292.4234 L633.2618 304.4234 L638.2618 301.4234 L643.2618 304.4234 Z" clip-path="url(#clipPath2)" stroke="none"/>
     </g>
   </g>
 </svg>
