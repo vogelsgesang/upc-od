@@ -21,7 +21,7 @@ function AdapterWrapper(sourceConfig) {
    *
    * This function returns a cancellable Bluebird promise.
    */
-  this.query= function(objectType, conditions, fields) {
+  this.query = function(objectType, conditions, fields) {
     var abortFunction;
     return new Promise(function (resolve, reject) {
       //apply the mapping from the consolidated schema to the source schema
@@ -33,6 +33,9 @@ function AdapterWrapper(sourceConfig) {
       objectType = relevantMapping["sourceType"];
       conditions = mapper.rewriteConditionsForSource(relevantMapping, conditions);
       fields = mapper.renameFieldsForSource(relevantMapping, fields);
+      //check if it is in our cache?
+      //if yes: send results from cache
+      //else: send the query to the original source
       //send the query
       abortFunction = adapter.query(objectType, conditions, fields, function successCallback(results) {
         results = mapper.mapInstancesFromSource(results);
