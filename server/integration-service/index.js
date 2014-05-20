@@ -97,7 +97,7 @@ function IntegrationService() {
           .then(function(objects) {
             handleNewResults(objects, createNewObjects);
           }).catch(function(e) {
-            results.errors.push(e); //TODO: resultsPromise.progress(results)
+            results.errors.push("" + e); //TODO: resultsPromise.progress(results)
           });
           unresolvedPromises.push(newPromise);
         });
