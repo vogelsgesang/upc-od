@@ -11,10 +11,8 @@ function IntegrationService() {
    * throws on error
    */
   this.configureSource = function createSource(sourceConfig) {
-    console.log("updating");
     var newAdapterWrapper = new AdapterWrapper(sourceConfig);
     if(Object.keys(sources).indexOf(""+sourceConfig._id) >= 0) {
-      console.log("r");
       this.removeSource(sourceConfig._id);
     }
     sources[sourceConfig._id] = newAdapterWrapper;
@@ -99,7 +97,7 @@ function IntegrationService() {
           .then(function(objects) {
             handleNewResults(objects, createNewObjects);
           }).catch(function(e) {
-            results.errors.push(e); //TODO: resultsPromise.progress(results)
+            results.errors.push("" + e); //TODO: resultsPromise.progress(results)
           });
           unresolvedPromises.push(newPromise);
         });
