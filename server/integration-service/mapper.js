@@ -104,6 +104,7 @@ module.exports = function Mapper(mappings) {
 
       //remap the fields
       var fMapp = mapping.fieldMapping;
+      if(fMapp == undefined) fMapp = {};
       for(var j = 0; j < Object.keys(fMapp).length; j++) {
         var currentFieldName = Object.keys(fMapp)[j];
         var currentPath = fMapp[currentFieldName];
@@ -137,7 +138,7 @@ module.exports = function Mapper(mappings) {
       };
       definitelyInstances.push(mappedInstance);
     }
-    return definitelyInstances; //later...
+    return definitelyInstances;
   }
   this.mapInstancesFromSource = mapInstancesFromSource;
 }
