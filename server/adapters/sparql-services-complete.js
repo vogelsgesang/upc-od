@@ -13,79 +13,80 @@ function parseHardvardIntoObject(jsonString) {
  
 
 //builds an query string in order to find the relevant records
-function buildSparqlQuery(conditions, offset, limit) {
+function buildSparqlQuery(conditions, fields, offset, limit) {
 
  if(conditions.length === 0) {
    conditions = [];
  }
- console.log(conditions + "limit: " + limit); 
  var filterString = "";
-//  go through all the subconditions (combined by an AND)
+ //go through all the subconditions (combined by an AND)
+ //TODO: escape the values. Currently we are vulnerable to injection attacks
  conditions.forEach(function(condition) {
-   var fieldName = condition[1][0]+":"+condition[1][1];
+   var fieldName = "<" + encodeURI(condition[1][0]) + ">";
    var value = condition[2];
    if(condition[0] == "=") {
-       var filter = fieldName+" '"+value+"';\r\n";
+       var filter = fieldName+" '"+value+"';\n";
        filterString = filterString + filter;
-       
    } else {
        throw new Error("unsupported query condition");
    }
  });  
- console.log(filterString);
+ var fieldString = "";
+ fields.forEach(function(field, index) {
+    fieldString += "<" + encodeURI(field) + "> " + "?f" + index + ";\n";
+ });
  var sparqlStr =
-"PREFIX bibo: <http://purl.org/ontology/bibo/>\r\n" +
-"PREFIX blt: <http://www.bl.uk/schemas/bibliographic/blterms#>\r\n"+
-"PREFIX dct: <http://purl.org/dc/terms/>\r\n"+
-"SELECT * WHERE {\r\n" +
-"?book " + filterString +
-"blt:bnb ?bnb;\r\n" +
-"dct:title ?title;\r\n" +
-"bibo:isbn13 ?isbn;\r\n" +
-"} LIMIT " + limit;
+  "SELECT * WHERE {\n" +
+  "?object " + filterString +
+  fieldString +
+  "} LIMIT " + limit;
  console.log(sparqlStr);
  return sparqlStr;
 }
 
-function requestSparqlData (endpoint, queryStr, successCallback, errorCallback) {
-var options = {
- url: endpoint,
- proxy:'http://squid.srv.dhw.de:3128',
- form: { query: queryStr },
- headers: {
-   Accept:	"application/sparql-results+json"
- }
-};
-var req=request.post(
-   options,
-   function (error, response, body) {
-       if (!error && response.statusCode == 200) {
-       	 var parsedData = JSON.parse(body);
-       	 var results = parsedData.results.bindings;
-       	 var exposedData = restructureSparqlData(results);
-       	 console.log(exposedData);
-       	 successCallback(exposedData);
-//	        	 errorCallback(new Error(JSON.stringify(exposedData)));
-       	
-       }else{
-       	errorCallback(new Error("request failed: " + error.message));
-console.log(error);
-}
+function requestSparqlData (endpoint, queryStr, fields, successCallback, errorCallback) {
+  var options = {
+   url: endpoint,
+   form: { query: queryStr },
+   headers: {
+     Accept:	"application/sparql-results+json"
    }
-);
+  };
+  var req=request.post(
+    options,
+    function (error, response, body) {
+      if (!error && response.statusCode == 200) {
+        var parsedData = JSON.parse(body);
+        var results = parsedData.results.bindings;
+        var exposedData = restructureSparqlData(results, fields);
 
-return req;
+        var util = require('util');
+        console.log(util.inspect(exposedData, false, null));
+        
+        successCallback(exposedData);
+      } else if(error) {
+        errorCallback(new Error("request failed: " + error.message));
+      } else {
+        errorCallback(new Error("request failed: status code from SPARQL endpoint: " + response.statusCode));
+      }
+    }
+  );
+  return req;
 }
 
 //restructures the records in a way in which we can expose them to the integration layer
-function restructureSparqlData(results) {
- return results.map(function(binding) {
-   return {
-     "id": binding["isbn"].value,
-     "type": "book",
-     "fields": binding
-   }
- });
+function restructureSparqlData(results, fieldNames) {
+  return results.map(function(binding) {
+    var fields = {};
+    fieldNames.forEach(function(fieldName, index) {
+      fields[fieldName] = binding["f"+index].value;
+    });
+    return {
+      //"id": binding["isbn"].value,
+      "type": "book",
+      "fields": fields
+    }
+  });
 }
 
 //the object which is actually exported...
@@ -112,12 +113,12 @@ module.exports = function SparqlAdapter(config) {
      return function() {};
    } else {
      try {
-     var queryStr = buildSparqlQuery(conditions, 0, config.limit);
+       var queryStr = buildSparqlQuery(conditions, fields, 0, config.limit);
      } catch(e) {
-     return errorCallback(e);
+       return errorCallback(e);
      }
 
- var abortFunction = requestSparqlData(config.sparqlEndpoint, queryStr, successCallback, errorCallback);
+     var abortFunction = requestSparqlData(config.sparqlEndpoint, queryStr, fields, successCallback, errorCallback);
      return abortFunction;
    }
  }
