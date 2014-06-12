@@ -23,6 +23,7 @@
     </div>
     <p>Results:</p>
     <pre ng-repeat="item in results.data">{{item | json}}</pre>
+    <pre ng-show="results.data.length == 0">Empty</pre>
   </div>
 </div>
 
