@@ -10,12 +10,14 @@ module.exports = function handleApiError(err, req, res, next) {
   if(err.statusCode !== undefined) {
     statusCode = err.statusCode;
   }
+  var response = {}
   var message = "An error occured";
   if(err.message !== undefined) {
-    message = err.message;
+    response.message = err.message;
+  }
+  if(err.stack) {
+    response.stack = err.stack;
   }
   res.statusCode = statusCode;
-  res.json({
-    msg: message
-  });
+  res.json(response);
 }
