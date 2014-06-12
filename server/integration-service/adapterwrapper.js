@@ -86,11 +86,10 @@ function AdapterWrapper(sourceConfig) {
         return;
       }
       objectType = relevantMapping["sourceType"];
-      conditions = mapper.rewriteConditionsForSource(relevantMapping, conditions);
-      fields = mapper.renameFieldsForSource(relevantMapping, fields);
-      var MCkey = "";
+      var mappedConditions = mapper.rewriteConditionsForSource(relevantMapping, conditions);
+      var mappedFields = mapper.renameFieldsForSource(relevantMapping, fields);
       
-      MCkey = keygenerator.generateKey(objectType, conditions, fields);
+      var MCkey = keygenerator.generateKey(objectType, mappedConditions, mappedFields);
       
       //check if it is in our cache?
       //if yes: send results from cache
@@ -100,18 +99,18 @@ function AdapterWrapper(sourceConfig) {
           if (!err && results) {
             // Key found in cache, return value
             console.log("Query has been found in cache: "+MCkey);
-            var mappedResults = mapper.mapInstancesFromSource(results);
+            var mappedResults = mapper.mapInstancesFromSource(results, fields);
             resolve(mappedResults);
           } else {
             // Key not found, fetch value from ORIGINAL source
-            abortFunction = adapter.query(objectType, conditions, fields, function successCallback(results) {
+            abortFunction = adapter.query(objectType, mappedConditions, mappedFields, function successCallback(results) {
               
               mcache.set(MCkey, results, 7200, function(err, result){
                 if(err) console.error(err);
                 else console.log("New query saved in cache: "+MCkey);
               });
                
-              var mappedResults = mapper.mapInstancesFromSource(results);
+              var mappedResults = mapper.mapInstancesFromSource(results, fields);
               resolve(mappedResults);
             }, function errorCallback(error) {
               reject(error);

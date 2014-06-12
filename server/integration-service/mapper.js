@@ -91,10 +91,12 @@ module.exports = function Mapper(mappings) {
   }
   /*
    * maps the fields of a set of instances to the global schema.
-   * parameters: an array containing all the instances which should be mapped
+   * parameters:
+   *  * an array containing all the instances which should be mapped
+   *  * the fields which should be extracted from this source
    * returns the instances with the mapped properties
    */
-  function mapInstancesFromSource(instances) {
+  function mapInstancesFromSource(instances, fields) {
     var definitelyInstances = [];
     
     for(var i = 0;i < instances.length; i++){
@@ -105,9 +107,10 @@ module.exports = function Mapper(mappings) {
       //remap the fields
       var fMapp = mapping.fieldMapping;
       if(fMapp == undefined) fMapp = {};
-      for(var j = 0; j < Object.keys(fMapp).length; j++) {
-        var currentFieldName = Object.keys(fMapp)[j];
+      for(var j = 0; j < fields.length; j++) {
+        var currentFieldName = fields[j];
         var currentPath = fMapp[currentFieldName];
+        if(currentPath == null) continue;
         //extract the content of the instance which is saved under currentPath
         var currentFieldContent = [instances[i].fields]; //scratch space for extracting the data
         var notFound = false;
