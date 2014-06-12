@@ -1,7 +1,7 @@
 var express = require("express");
 var bodyParser = require('body-parser');
 
-module.exports = function(integrationService) {
+module.exports = function createDataApi(integrationService) {
   //expose the integration service
   var dataApi = express()
     .use(bodyParser.json())
@@ -32,12 +32,20 @@ module.exports = function(integrationService) {
         return next(err);
       }
       var conditions = req.body.conditions;
-      var type = req.body.objectType;
-      var resultsPromise = integrationService.query(type, conditions)
-        .then(function(results) {res.json(results);})
-        .catch(function(e) {next(e)});
+      var objectType = req.body.objectType;
+      var consolidatedQuery = integrationService.createConsolidatedQuery();
+      consolidatedQuery.addQueries(objectType, conditions);
+      consolidatedQuery.on("done", function(results) {
+        //errors can not be serialized by JSON.stringify. Hence, they
+        //must be handled differently.
+        var errors = [];
+        results.errors.forEach(function(err) {
+          errors.push("" + err);
+        });
+        res.json({errors: errors, data: results.data});
+      });
       req.on('close', function() {
-        resultsPromise.cancel();
+        consolidatedQuery.cancel();
       });
     });
   return dataApi;

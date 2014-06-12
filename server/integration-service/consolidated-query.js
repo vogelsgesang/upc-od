@@ -1,75 +1,140 @@
-/**
- * So far, this is just a draft!
- * THIS FILE DOES NOT CONTAIN WORKING JAVASCRIPT CODE
- */
-//var duplicateMerger = new DuplicateMerger(); //TODO: implement this one
-//var queryDeducor = new QueryDeducor(); //TODO: implement this one
-function query(objectType, conditions) {
+"use strict";
+var EventEmitter = require('events').EventEmitter;
+
+function ConsolidatedQuery(sources, objectDefinitions) {
+  //necessary for inheriting from EventEmitter
+  EventEmitter.call(this);
+
+  //create independent copies for sources and object definitions.
+  //these two variables shadow the parameters with the same name
+  var tmpSources = {};
+  Object.keys(sources).forEach(function(key) {
+    tmpSources[key] = sources[key];
+  });
+  tmpSources = undefined;
+  var tmpObjectDefinitions = {};
+  Object.keys(objectDefinitions).forEach(function(key) {
+    tmpObjectDefinitions[key] = objectDefinitions[key];
+  });
+  objectDefinitions = tmpObjectDefinitions;
+  tmpObjectDefinitions = undefined;
+  //create an index on the names of object definitions
+  var objectDefinitionsByNames = {};
+  Object.keys(objectDefinitions).forEach(function(key) {
+    objectDefinitionsByNames[objectDefinitions[key].name] = objectDefinitions[key];
+  });
+  
+  //stores all unresolved promises
   var unresolvedPromises = [];
-  var resultsPromise = new Promise(function (resolve, reject) {
-    var results = {
-      errors: []
-      data: []
+  //collects all the results
+  var results = {
+    errors: [],
+    data: []
+  }
+
+  //used by the following functions in order to access this
+  var self = this;
+  //Yes, JS is a little bit different with regards to the
+  //handling of "this".
+
+  //TODO: implement this function
+  function removePosedQueries(queries) {
+    //TODO: filter out queries which were already posed
+    return queries;
+  }
+
+  //checks if we are already done and emits the "done" signal
+  function checkDone() {
+    if(unresolvedPromises.length == 0) {
+      self.emit("done", results);
     }
+  }
 
-    //which fields should we search for?
-    var fields = [];//TODO: lookup fields
-
-    function removePosedQueries(queries) {
-      //TODO: filter out queries which were already posed
-      return queries;
-    }
-
-    //integrates new results
-    function handleNewResults(objects, createNewObjects) {
-      if(objects.length != 0) {
-        //TODO: update the consolidated data
-        //var changed = duplicateMerger.mergeWithObjects(results.data, objects, createNewObjects);
-        results.data.push(objects); //just for now; this will be replaced later
-        //report progress
-        resultsPromise.progress(results);
-        //TODO:infer queries
-        //var query = QueryDeducor.createQueriesFor(objectType, results.data);
-        var query = []; //just for now; will be replaced later
-        //filter out already posed parts of the query
-        query = removePosedQueries(query);
-        //pose new queries
-        if(query.length != 0) {
-          broadcastQuery(conditions, false);
-        } else if(unresolvedPromises.length == 0) {
-          resolve(results);
-        }
+  //integrates new results
+  //parameters:
+  //  objects: the new objects which should be added to the consolidated data
+  //  createNewObjects: should new objects be created, if the new data
+  //    does represent a new object and can not be merged with already existing data
+  function handleNewResults(objects, createNewObjects) {
+    if(objects.length != 0) {
+      //TODO: update the consolidated data
+      //var changed = duplicateMerger.mergeWithObjects(results.data, objects, createNewObjects);
+      results.data = results.data.concat(objects); //just for now; this will be replaced later
+      //report progress
+      this.emit("progress");
+      //TODO:infer queries
+      //var query = QueryDeducor.createQueriesFor(objectType, results.data);
+      var query = []; //just for now; will be replaced later
+      //filter out already posed parts of the query
+      query = removePosedQueries(query);
+      //pose new queries
+      if(query.length != 0) {
+        broadcastQuery(conditions, false);
+      } else {
+        checkDone();
       }
     }
-    function addPromises(promises, createNewObjects) {
-      promises.forEach(function(promise) {
-        newPromise = promise
-        .then(function(objects) {
-          handleNewResults(objects, createNewObjects);
-        }).catch(function(e) {
-          results.errors.push(e); resultsPromise.progress(results)
-        }).finally(function() {
-          //remove this promise from the set of unresolved promises
-          unresolvedPromises.splice(unresolvedPromises.indexOf(newPromise) ,1)
-        });
-        unresolvedPromises.push(newPromise);
+  }
+
+  //adds promises to the list of unresolved promises
+  //and registers the appropriate eventListeners
+  function addPromises(promises, createNewObjects) {
+    promises.forEach(function(promise) {
+      var newPromise = promise.finally(function() {
+        //remove this promise from the set of unresolved promises
+        unresolvedPromises.splice(unresolvedPromises.indexOf(newPromise) ,1)
+      })
+      .then(function(objects) {
+        handleNewResults(objects, createNewObjects);
+      }).catch(function(e) {
+        results.errors.push(e);
+        self.emit("progress", null, e);
       });
-    }
+      unresolvedPromises.push(newPromise);
+    });
+    //we have to check this here since promises might have been an empty array.
+    //and we must do this asynchronously! (hence, I am using process.nextTick)
+    process.nextTick(checkDone); 
+  }
+
+  function broadcastQuery(conditions, createNewObjects) {
+    var newPromises = Object.keys(sources).map(function(sourceId) {
+      return sources[sourceId].query(objectType, conditions, fields);
+    });
+    addPromises(newPromises, createNewObjects);
+  }
+
+  //adds a new query to the scope of interest of this
+  //consolidated query
+  this.addQueries = function addQueries(objectType, conditions) {
     //broadcasts a query to all sources
-    function broadcastQuery(conditions, createNewObjects) {
-      var newPromises = sources.map(function(source) {
-        return source.query(objectType, conditions, fields);
-      }
-      addPromises(newPromises, createNewObjects);
+    var objDef = objectDefinitionsByNames[objectType];
+    if(objDef == undefined) {
+      //we must report errors asynchronously! (hence, I am using process.nextTick)
+      process.nextTick(function() {
+        var err = new Error("unknow object type: " + objectType)
+        results.errors.push(err);
+        self.emit("progress", null, err);
+        checkDone(); //might be, that we are done before even getting started
+      });
+    } else {
+      var fields = objectDefinitionsByNames[objectType].fields;
+      broadcastQuery(conditions, true);
     }
-    broadcastQuery(conditions, true);
-  }.cancellable().catch(Promise.CancellationError, function(e) {
+  }
+
+  //cancels this query
+  this.cancel = function cancel() {
     //we must duplicate the array of promises here
     //since the promises remove themselves from the array
     //on cancelation. And modifying the array while looping
     //over it results in unexpected behaviour.
-    unresolvedCopy = unresolvedPromises.slice();
-    unresolvedCopy.forEach(function(p) {p.cancel()};
+    var unresolvedCopy = unresolvedPromises.slice();
+    unresolvedCopy.forEach(function(p) {p.cancel()});
     throw e; //Don't swallow the exception
-  });
+  }
 }
+//inherit from EventEmitter
+require('util').inherits(ConsolidatedQuery, EventEmitter);
+
+module.exports = ConsolidatedQuery;
