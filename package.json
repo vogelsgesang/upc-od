@@ -25,7 +25,8 @@
     "body-parser": "^1.0.2",
     "compression": "^1.0.1",
     "bluebird": "^1.2.4",
-    "request": "^2.36.0"
+    "request": "^2.36.0",
+    "memcached": "^0.2.8"
   },
   "devDependencies": {
     "grunt": "^0.4.4",
