@@ -62,7 +62,7 @@ function requestHardvardData (queryUrl, successCallback, errorCallback) {
     errorCallback(new Error("unexpected http status code " + responseFromHarvard.statusCode));
   }
   req.on("error", function(error) {
-    errorCallback(new Error("request failed: " + error.message));
+    errorCallback(new Error("request failed (" + queryUrl + "): " + error.message));
   });
   req.end();
   return req.abort.bind(req);
@@ -108,7 +108,7 @@ module.exports = function HardvardAdapter(config) {
 	      return errorCallback(e);
       }
       var queryUrl = config.harvardEndpoint + "?" + queryString;
-	    var abortFunction = requestHardvardData(queryUrl, successCallback, errorCallback);
+      var abortFunction = requestHardvardData(queryUrl, successCallback, errorCallback);
       return abortFunction;
     }
   }

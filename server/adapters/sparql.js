@@ -65,9 +65,9 @@ function requestSparqlData (endpoint, queryStr, fields, successCallback, errorCa
         
         successCallback(exposedData);
       } else if(error) {
-        errorCallback(new Error("request failed: " + error.message));
+        errorCallback(new Error("request failed (" + queryUrl + "): " + error.message));
       } else {
-        errorCallback(new Error("request failed: status code from SPARQL endpoint: " + response.statusCode));
+        errorCallback(new Error("request failed (" + queryUrl + "): status code from SPARQL endpoint: " + response.statusCode));
       }
     }
   );

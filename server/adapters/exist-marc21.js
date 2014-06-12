@@ -110,7 +110,7 @@ function requestMarc21Records(queryUrl, successCallback, errorCallback) {
     return errorCallback(new Error("unknown protocol: " +  protocol));
   }
   req.on("error", function(e) {
-    errorCallback(new Error("request failed: " + e.message));
+    errorCallback(new Error("request failed (" + queryUrl + "): " + e.message));
   });
   req.end();
   return req.abort.bind(req);
