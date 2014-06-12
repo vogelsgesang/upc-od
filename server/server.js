@@ -59,10 +59,11 @@ function createExpressApp(dataService) {
 }
 
 var Source = require("./model/source");
+var ObjectDefinition = require("./model/objectdefinition");
 //initialize the middleware
 //i.e.: load the configuration from the database and configure the middleware accordingly
 //passes the initialized middleware to the callback as second argument.
-//the first argument to the callback is an error object or null
+//the first argument passed to the callback is an error object or null
 function initializeMiddleware(callback) {
   Source.model.find({}, function(err, sources) {
     if(err) {return callback(err);}
@@ -72,12 +73,22 @@ function initializeMiddleware(callback) {
       sources.forEach(function(source) {
         middleware.configureSource(source);
       });
+      ObjectDefinition.model.find({}, function(err,objDefs) {
+        try {
+          objDefs.forEach(function(objDef) {
+            middleware.configureObjectDefinition(objDef);
+          });
+          callback(null, middleware);
+        } catch(e) {
+          middleware.destroy();
+          return callback(e);
+        }
+      });
     } catch(e) {
       middleware.destroy();
       return callback(e);
     }
-    callback(null, middleware);
-  })
+  });
 }
 //registers the necessary event listeners
 //in order to keep the middleware in sync with the meta data repository
@@ -93,6 +104,22 @@ function registerMongooseListenersForMiddleware(middleware) {
   Source.schema.pre('remove', function(next) {
     try{
       middleware.removeSource(this._id);
+    } catch(e) {
+      return next(e);
+    }
+    next();
+  });
+  ObjectDefinition.schema.pre('save', function(next) {
+    try {
+      middleware.configureObjectDefinition(this);
+    } catch(e) {
+      return next(e);
+    }
+    next();
+  });
+  ObjectDefinition.schema.pre('remove', function(next) {
+    try{
+      middleware.removeObjectDefinition(this._id);
     } catch(e) {
       return next(e);
     }
