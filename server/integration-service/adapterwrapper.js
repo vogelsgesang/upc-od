@@ -96,23 +96,23 @@ function AdapterWrapper(sourceConfig) {
       //if yes: send results from cache
       //else: send the query to the original source
       //send the query
-      mcache.get(MCkey, function(err, result) {
-          if (!err && result) {
+      mcache.get(MCkey, function(err, results) {
+          if (!err && results) {
             // Key found in cache, return value
             console.log("Query has been found in cache: "+MCkey);
-            resolve(result);
-          }
-          else {
+            var mappedResults = mapper.mapInstancesFromSource(results);
+            resolve(mappedResults);
+          } else {
             // Key not found, fetch value from ORIGINAL source
             abortFunction = adapter.query(objectType, conditions, fields, function successCallback(results) {
-              results = mapper.mapInstancesFromSource(results);
               
               mcache.set(MCkey, results, 7200, function(err, result){
                 if(err) console.error(err);
                 else console.log("New query saved in cache: "+MCkey);
               });
                
-              resolve(results);
+              var mappedResults = mapper.mapInstancesFromSource(results);
+              resolve(mappedResults);
             }, function errorCallback(error) {
               reject(error);
             });
