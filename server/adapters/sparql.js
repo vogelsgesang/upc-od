@@ -14,10 +14,6 @@ function parseHardvardIntoObject(jsonString) {
 
 //builds an query string in order to find the relevant records
 function buildSparqlQuery(conditions, fields, offset, limit) {
-
- if(conditions.length === 0) {
-   conditions = [];
- }
  var filterString = "";
  //go through all the subconditions (combined by an AND)
  //TODO: escape the values. Currently we are vulnerable to injection attacks

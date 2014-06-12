@@ -48,10 +48,6 @@ function restructureMarcRecords(records) {
 
 //builds an Xquery string in order to find the relevant records
 function buildMarc21Xquery(conditions, offset, limit) {
-  //handle empty condition arguments
-  if(conditions.length === 0) {
-    conditions = [];
-  }
   //go through all the conditions (combined by an OR)
   var conditionString = "";
   //go through all the subconditions (combined by an AND)

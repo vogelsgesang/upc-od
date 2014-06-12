@@ -15,10 +15,6 @@ function parseHardvardIntoObject(jsonString) {
  //builds an query string in order to find the relevant records
 function buildHardvardQuery(conditions, offset, limit) {
   var searchword = ["keyword", "id", "title", "title_keyword", "creator", "creator_keyword", "note","note_keyword","lcsh","lcsh_keyword","publisher","pub_date","pub_location","format","language","pages","height","id_inst","id_inst","id_isbn","id_lccn","call_num","url","holding_libs"];
-  //handle empty condition arguments
-  if(conditions.length === 0) {
-    conditions = [];
-  }
   var filterStrings = [];
   //go through all the subconditions (combined by an AND)
   conditions.forEach(function(condition) {
