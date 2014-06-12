@@ -91,6 +91,7 @@ function ConsolidatedQuery(sources, objectDefinitions) {
       }).catch(function(e) {
         results.errors.push(e);
         self.emit("progress", null, e);
+        checkDone();
       });
       unresolvedPromises.push(newPromise);
     });
