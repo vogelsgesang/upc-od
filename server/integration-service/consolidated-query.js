@@ -61,7 +61,7 @@ function ConsolidatedQuery(sources, objectDefinitions) {
       //var changed = duplicateMerger.mergeWithObjects(results.data, objects, createNewObjects);
       results.data = results.data.concat(objects); //just for now; this will be replaced later
       //report progress
-      this.emit("progress");
+      self.emit("progress");
       //TODO:infer queries
       //var query = QueryDeducor.createQueriesFor(objectType, results.data);
       var query = []; //just for now; will be replaced later
@@ -73,6 +73,8 @@ function ConsolidatedQuery(sources, objectDefinitions) {
       } else {
         checkDone();
       }
+    } else {
+      checkDone();
     }
   }
 
@@ -115,7 +117,7 @@ function ConsolidatedQuery(sources, objectDefinitions) {
         var err = new Error("unknow object type: " + objectType)
         results.errors.push(err);
         self.emit("progress", null, err);
-        checkDone(); //might be, that we are done before even getting started
+        checkDone(); //might be that we are done before even getting started
       });
     } else {
       var fields = objectDefinitionsByNames[objectType].fields;
