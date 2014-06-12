@@ -1,7 +1,7 @@
 function QueryDeducor(schemaDefinition) {
   //deduces queries based on already known facts
   //and on the schema definition
-  this.deduceQueries(facts) {
+  this.deduceQueries = function(facts) {
     //you can access the schema definition using the variable schemaDefinition.
     //I think that the equality definition schemaDefinition.equality is of special interest for you.
     //The parameter facts will contain all the facts which are already known about a specific object
@@ -23,3 +23,4 @@ function QueryDeducor(schemaDefinition) {
     return [];
   }
 }
+module.exports = QueryDeducor;

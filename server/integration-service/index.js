@@ -1,7 +1,9 @@
 "use strict";
+var Promise = require("bluebird");
 var AdapterWrapper = require("./adapterwrapper");
 var ConsolidatedQuery = require("./consolidated-query");
-var Promise = require("bluebird");
+var QueryDeducor = require("./querydeducor");
+var ObjectMerger = function(){}; //place holder
 
 function IntegrationService() {
   var sources = {};

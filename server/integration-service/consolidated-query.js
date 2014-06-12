@@ -69,7 +69,7 @@ function ConsolidatedQuery(sources, objectDefinitions) {
       query = removePosedQueries(query);
       //pose new queries
       if(query.length != 0) {
-        broadcastQuery(conditions, false);
+        //TODO: broadcastQuery(conditions, false);
       } else {
         checkDone();
       }
@@ -97,7 +97,7 @@ function ConsolidatedQuery(sources, objectDefinitions) {
     process.nextTick(checkDone); 
   }
 
-  function broadcastQuery(conditions, createNewObjects) {
+  function broadcastQuery(objectType, conditions, fields, createNewObjects) {
     var newPromises = Object.keys(sources).map(function(sourceId) {
       return sources[sourceId].query(objectType, conditions, fields);
     });
@@ -119,7 +119,7 @@ function ConsolidatedQuery(sources, objectDefinitions) {
       });
     } else {
       var fields = objectDefinitionsByNames[objectType].fields;
-      broadcastQuery(conditions, true);
+      broadcastQuery(objectType, conditions, fields, true);
     }
   }
 
