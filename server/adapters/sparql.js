@@ -4,16 +4,9 @@ var http = require("http");
 var https = require("https");
 var concat = require("concat-stream");
 var request = require('request');
-//parses a collection of Hardvard into objects
-function parseHardvardIntoObject(jsonString) {
-     var parsedResponse = JSON.parse(jsonString);
-     var foundBooks = parsedResponse['docs'];
-     return foundBooks;
-};
- 
 
 //builds an query string in order to find the relevant records
-function buildSparqlQuery(conditions, fields, offset, limit) {
+function buildSparqlQuery(type, conditions, fields, offset, limit) {
  var filterString = "";
  //go through all the subconditions (combined by an AND)
  //TODO: escape the values. Currently we are vulnerable to injection attacks
@@ -33,14 +26,15 @@ function buildSparqlQuery(conditions, fields, offset, limit) {
  });
  var sparqlStr =
   "SELECT * WHERE {\n" +
-  "?object " + filterString +
+  "?object a <" + encodeURI(type) + ">;" +
+  filterString +
   fieldString +
   "} LIMIT " + limit;
- console.log(sparqlStr);
+ console.log("SparQL query: \n" + sparqlStr);
  return sparqlStr;
 }
 
-function requestSparqlData (endpoint, queryStr, fields, successCallback, errorCallback) {
+function requestSparqlData(endpoint, queryStr, type, fields, successCallback, errorCallback) {
   var options = {
    url: endpoint,
    form: { query: queryStr },
@@ -54,16 +48,15 @@ function requestSparqlData (endpoint, queryStr, fields, successCallback, errorCa
       if (!error && response.statusCode == 200) {
         var parsedData = JSON.parse(body);
         var results = parsedData.results.bindings;
-        var exposedData = restructureSparqlData(results, fields);
+        var exposedData = restructureSparqlData(results, type, fields);
 
-        var util = require('util');
-        console.log(util.inspect(exposedData, false, null));
+        console.log(require('util').inspect(exposedData, false, null));
         
         successCallback(exposedData);
       } else if(error) {
-        errorCallback(new Error("request failed (" + queryUrl + "): " + error.message));
+        errorCallback(new Error("request failed (" + endpoint + "): " + error.message));
       } else {
-        errorCallback(new Error("request failed (" + queryUrl + "): status code from SPARQL endpoint: " + response.statusCode));
+        errorCallback(new Error("request failed (" + endpoint + "): status code from SPARQL endpoint: " + response.statusCode));
       }
     }
   );
@@ -71,7 +64,7 @@ function requestSparqlData (endpoint, queryStr, fields, successCallback, errorCa
 }
 
 //restructures the records in a way in which we can expose them to the integration layer
-function restructureSparqlData(results, fieldNames) {
+function restructureSparqlData(results, type, fieldNames) {
   return results.map(function(binding) {
     var fields = {};
     fieldNames.forEach(function(fieldName, index) {
@@ -79,7 +72,7 @@ function restructureSparqlData(results, fieldNames) {
     });
     return {
       //"id": binding["isbn"].value,
-      "type": "book",
+      "type": type,
       "fields": fields
     }
   });
@@ -104,19 +97,14 @@ module.exports = function SparqlAdapter(config) {
  }
  //this function can be used in order to query for data
  function query(objectType, conditions, fields, successCallback, errorCallback) {
-   if(objectType != "book") {
-     errorCallback(new Error("unsupported object type: " + objectType));
-     return function() {};
-   } else {
-     try {
-       var queryStr = buildSparqlQuery(conditions, fields, 0, config.limit);
-     } catch(e) {
-       return errorCallback(e);
-     }
-
-     var abortFunction = requestSparqlData(config.sparqlEndpoint, queryStr, fields, successCallback, errorCallback);
-     return abortFunction;
+   try {
+     var queryStr = buildSparqlQuery(objectType, conditions, fields, 0, config.limit);
+   } catch(e) {
+     return errorCallback(e);
    }
+
+   var abortFunction = requestSparqlData(config.sparqlEndpoint, queryStr, objectType, fields, successCallback, errorCallback);
+   return abortFunction;
  }
  //this = {}
  this.query = query;
@@ -128,11 +116,7 @@ module.exports = function SparqlAdapter(config) {
  };
  this.resolveId = resolveId;
  //this = {query: [Function], resolveId: [Function]}
- //there are no cleanup procedures involved for this adapter
+ //there are no cleanup procedures necessary for this adapter
  this.destroy = function() {};
  //this = {query: [Function], resolveId: [Function], destroy: [Function]}
 }
-
-//var adapter = new HarvardAdapter(config);
-//adapater = {query: [Function], resolveId: [Function]}
-//adapter.query();
