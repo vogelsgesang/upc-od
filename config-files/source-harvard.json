@@ -1,17 +1,29 @@
 {
-  "_id":"536cb0f1f0bc857b348d20b3",
-  "name":"HarvardLibraryCloudAPI",
-  "mapping":[
-    {
-      "mappedType":"book",
-      "sourceType":"book"
+  "_id": "536cb0f1f0bc857b348d20b3",
+  "name": "HarvardLibraryCloudAPI",
+  "adapter": {
+    "name": "harvard-library-cloud",
+    "config": {
+      "limit": 20,
+      "harvardEndpoint": "http://librarycloud.harvard.edu/v1/api/item/"
     }
-  ],
-  "adapter":{
-    "config":{
-      "limit":20,
-      "harvardEndpoint":"http://librarycloud.harvard.edu/v1/api/item/"
-    },
-    "name":"harvard-library-cloud"
-  }
+  },
+  "mapping": [
+    {
+      "mappedType": "book",
+      "sourceType": "book",
+      "fieldMapping": {
+        "publisher": ["publisher"],
+        "publication_place": ["pub_location"],
+        "keyword": ["source_record", "650a"],
+        "usc_classification": ["source_record", "80a"],
+        "published_in_year": ["pub_date_numeric"],
+        "topic": ["source_record", "245a"],
+        "author": ["author_name"],
+        "language": ["language"],
+        "title": ["title"],
+        "isbn": ["id_isbn"]
+      }
+    }
+  ]
 }
