@@ -7,31 +7,31 @@ var request = require('request');
 
 //builds an query string in order to find the relevant records
 function buildSparqlQuery(type, conditions, fields, offset, limit) {
- var filterString = "";
- //go through all the subconditions (combined by an AND)
- //TODO: escape the values. Currently we are vulnerable to injection attacks
- conditions.forEach(function(condition) {
-   var fieldName = "<" + encodeURI(condition[1][0]) + ">";
-   var value = condition[2];
-   if(condition[0] == "=") {
-       var filter = fieldName+" '"+value+"';\n";
-       filterString = filterString + filter;
-   } else {
-       throw new Error("unsupported query condition");
-   }
- });  
- var fieldString = "";
- fields.forEach(function(field, index) {
-    fieldString += "<" + encodeURI(field) + "> " + "?f" + index + ";\n";
- });
- var sparqlStr =
-  "SELECT * WHERE {\n" +
-  "?object a <" + encodeURI(type) + ">;" +
-  filterString +
-  fieldString +
-  "} LIMIT " + limit;
- console.log("SparQL query: \n" + sparqlStr);
- return sparqlStr;
+  //go through all the subconditions (combined by an AND)
+  var conditionString = [];
+  conditions.forEach(function(condition) {
+    var fieldName = "<" + encodeURI(condition[1][0]) + ">";
+    //TODO: escape the values. Currently we are vulnerable to injection attacks
+    var value = condition[2];
+    if(condition[0] == "=") {
+      var conditionStr = fieldName + " '" + value + ";\n";
+      conditionString += conditionStr;
+    } else {
+      throw new Error("unsupported query condition");
+    }
+  });
+  var fieldString = "";
+  fields.forEach(function(field, index) {
+    fieldString += "OPTIONAL {?object <" + encodeURI(field) + "> " + "?f" + index + "}.\n";
+  });
+  var sparqlStr =
+    "SELECT * WHERE {\n" +
+    "?object a <" + encodeURI(type) + ">;\n" +
+    conditionString + ".\n" +
+    fieldString +
+    "} LIMIT " + limit;
+  console.log("SparQL query: \n" + sparqlStr);
+  return sparqlStr;
 }
 
 function requestSparqlData(endpoint, queryStr, type, fields, successCallback, errorCallback) {
@@ -67,11 +67,14 @@ function requestSparqlData(endpoint, queryStr, type, fields, successCallback, er
 function restructureSparqlData(results, type, fieldNames) {
   return results.map(function(binding) {
     var fields = {};
+    console.log(binding);
     fieldNames.forEach(function(fieldName, index) {
-      fields[fieldName] = binding["f"+index].value;
+      if(binding["f"+index]) {
+        fields[fieldName] = binding["f"+index].value;
+      }
     });
     return {
-      //"id": binding["isbn"].value,
+      "id": binding.object.value,
       "type": type,
       "fields": fields
     }
