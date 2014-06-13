@@ -2,10 +2,10 @@
 var Mapper = require("./mapper");
 var Promise = require("bluebird");
 var MemCache = require("memcached");
+var Crypto = require("crypto");
 
 // Connect to the memcached server with its private AWS IP address
 var mcache = new MemCache('localhost:11211');
-
 /*
  Function to identify is a object is Empty
  */
@@ -24,37 +24,32 @@ function KeyGenerator(sourceId) {
     var key = sourceId + ":" + type + ";";
     var sField = "";
     var sConditions = "";
+    var sortFields = [];
+    var idxItm = 0;
     
-    if(isEmptyObject(conditions)){
-      if(isEmptyObject(fields)){
-        key += "ALL";
-      }
-      else {
-        var arrFields = fields.toString().split(",");
-        
-        arrFields = arrFields.sort();
-        sField = arrFields.join(",");
-        key += "F:" + sField;
-      }
-    } else {
-      if(isEmptyObject(fields)){
-        var arrConditions = conditions.toString().split(",");
-        
-        arrConditions = arrConditions.sort();
-        sConditions = arrConditions.join(",");
-        key += "C:" + sConditions;
-      } else {
-        var arrFields = fields.toString().split(",");
-        var arrConditions = conditions.toString().split(",");
-        
-        arrConditions = arrConditions.sort();
-        sConditions = arrConditions.join(",");
-        arrFields = arrFields.sort();
-        sField = arrFields.join(",");
-        
-        key += "C:" + sConditions + ";F:" + sField;
-      }
+    var arrFields = [];
+    for(var i = 0; i < fields.length; i++) {
+      arrFields.push(JSON.stringify(fields[i]));
     }
+    
+    arrFields = arrFields.sort();
+    sField = arrFields.join(",");
+    
+    var arrConditions = [];
+    for(var i = 0; i < conditions.length; i++) {
+      arrConditions.push(JSON.stringify(conditions[i]));
+    }
+    
+    arrConditions = arrConditions.sort();
+    sConditions = arrConditions.join(",");
+    
+    key += "C:" + sConditions + ";F:" + sField;
+
+    //hash it in order to get rid of whitespaces
+    var chash = Crypto.createHash("md5");
+    chash.update(key)
+    key = chash.digest("hex");
+    
     return key;
   }
 }
