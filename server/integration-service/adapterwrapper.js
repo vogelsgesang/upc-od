@@ -14,32 +14,36 @@ function isEmptyObject(obj) {
 }
 
 function KeyGenerator(sourceId) {
+  //@Franz: this function has/had multiple issues:
+  // 1. you did not take the sourceId into account. Hence, cache collisions between different sources were possible
+  // 2. your sorting aproach makes some mistakes:
+  //    F.e. the two field specifications [["a","b"], "c"] and ["a", ["b", "c"]] are both mapped to "a,b,c".
+  //    But these two field specifications have different meanings.
+  // 3. whitespaces are not handled correctly. The returned key must not contain whitespaces.
   this.generateKey = function(type, conditions, fields) {
-    var key = type + ";";
+    var key = sourceId + ":" + type + ";";
     var sField = "";
     var sConditions = "";
     
     if(isEmptyObject(conditions)){
       if(isEmptyObject(fields)){
-        key = "ALL";
+        key += "ALL";
       }
       else {
         var arrFields = fields.toString().split(",");
         
         arrFields = arrFields.sort();
         sField = arrFields.join(",");
-        key = "F:" + sField;
+        key += "F:" + sField;
       }
-    }
-    else{
+    } else {
       if(isEmptyObject(fields)){
         var arrConditions = conditions.toString().split(",");
         
         arrConditions = arrConditions.sort();
         sConditions = arrConditions.join(",");
-        key = "C:" + sConditions;
-      }
-      else {
+        key += "C:" + sConditions;
+      } else {
         var arrFields = fields.toString().split(",");
         var arrConditions = conditions.toString().split(",");
         
@@ -48,11 +52,10 @@ function KeyGenerator(sourceId) {
         arrFields = arrFields.sort();
         sField = arrFields.join(",");
         
-        key = "C:" + sConditions + ";F:" + sField;
+        key += "C:" + sConditions + ";F:" + sField;
       }
     }
-    
-    return sourceId + ":" +key;
+    return key;
   }
 }
 
