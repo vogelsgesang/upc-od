@@ -6,32 +6,52 @@ var concat = require("concat-stream");
 var request = require('request');
 
 //builds an query string in order to find the relevant records
-function buildSparqlQuery(type, conditions, fields, offset, limit) {
-  //go through all the subconditions (combined by an AND)
-  var conditionString = [];
-  conditions.forEach(function(condition) {
-    var fieldName = "<" + encodeURI(condition[1][0]) + ">";
-    //TODO: escape the values. Currently we are vulnerable to injection attacks
-    var value = condition[2];
-    if(condition[0] == "=") {
-      var conditionStr = fieldName + " '" + value + ";\n";
-      conditionString += conditionStr;
-    } else {
-      throw new Error("unsupported query condition");
-    }
-  });
+//parameters:
+// * type: the type (usually a URL)
+// * conditionString: a string representing the additional conditions
+//     might be created using buildConditionStringFromArray or buildConditionStringForId.
+// * fields: which fields should be requested
+// * limit: limits the maximal number of items returned by this source
+function buildSparqlQuery(type, conditionString, fields, offset, limit) {
   var fieldString = "";
   fields.forEach(function(field, index) {
     fieldString += "OPTIONAL {?object <" + encodeURI(field) + "> " + "?f" + index + "}.\n";
   });
   var sparqlStr =
     "SELECT * WHERE {\n" +
-    "?object a <" + encodeURI(type) + ">;\n" +
-    conditionString + ".\n" +
+    "?object a <" + encodeURI(type) + ">.\n" +
+    conditionString +
     fieldString +
     "} LIMIT " + limit;
   console.log("SparQL query: \n" + sparqlStr);
   return sparqlStr;
+}
+
+//builds a SparQL fragment for a query by id
+function buildConditionStringForId(id) {
+  return "FILTER(?object = <" + encodeURI(id) +">.\n";
+}
+
+//builds a SparQL fragment which specifies the conditions
+function buildConditionStringFromArray(conditions) {
+  if(conditions.length == 0) {
+    return "";
+  } else {
+    //go through all the subconditions (combined by an AND)
+    var conditionString = "";
+    conditions.forEach(function(condition) {
+      var fieldName = "<" + encodeURI(condition[1][0]) + ">";
+      //TODO: escape the values. Currently we are vulnerable to injection attacks
+      var value = condition[2];
+      if(condition[0] == "=") {
+        var conditionStr = fieldName + " '" + value + "';\n";
+        conditionString += conditionStr;
+      } else {
+        throw new Error("unsupported query condition");
+      }
+    });
+    return "?object " + conditionString + ".\n";
+  }
 }
 
 function requestSparqlData(endpoint, queryStr, type, fields, successCallback, errorCallback) {
@@ -101,11 +121,11 @@ module.exports = function SparqlAdapter(config) {
  //this function can be used in order to query for data
  function query(objectType, conditions, fields, successCallback, errorCallback) {
    try {
-     var queryStr = buildSparqlQuery(objectType, conditions, fields, 0, config.limit);
+     var conditionString = buildConditionStringFromArray(conditions);
+     var queryStr = buildSparqlQuery(objectType, conditionString, fields, 0, config.limit);
    } catch(e) {
      return errorCallback(e);
    }
-
    var abortFunction = requestSparqlData(config.sparqlEndpoint, queryStr, objectType, fields, successCallback, errorCallback);
    return abortFunction;
  }
@@ -115,7 +135,14 @@ module.exports = function SparqlAdapter(config) {
 
  //resolves an id
  function resolveId(objectType, id, fields, successCallback, errorCallback) {
-   return query(objectType, [[["=", "id", id]]], fields, successCallback, errorCallback);
+   try {
+     var conditionString = buildConditionStringForId(id);
+     var queryStr = buildSparqlQuery(objectType, conditionString, fields, 0, config.limit);
+   } catch(e) {
+     return errorCallback(e);
+   }
+   var abortFunction = requestSparqlData(config.sparqlEndpoint, queryStr, objectType, fields, successCallback, errorCallback);
+   return abortFunction;
  };
  this.resolveId = resolveId;
  //this = {query: [Function], resolveId: [Function]}
