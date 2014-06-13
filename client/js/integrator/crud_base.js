@@ -13,7 +13,18 @@ function createBaucisResourceFactory(collectionName) {
     return $ressource('/api/'+collectionName+'/:_id', {_id: "@_id"}, {
       'save': {method: 'PUT'},
       'create': {method: 'POST'},
-      'createBulk': {method: 'POST', isArray: true, transformResponse: function(data, header) {if(typeof data == "object") return [data];}}
+      'createBulk': {
+        method: 'POST', isArray: true,
+        transformResponse: function(data, header) {
+          try {
+            var parsed = JSON.parse(data);
+            if(parsed instanceof Array) return parsed;
+            else return [parsed];
+          } catch(e) {
+            return data;
+          }
+        }
+      }
     });
   }];
 }
@@ -77,8 +88,8 @@ function createOverviewController(config) {
             loadEntries();
           }
           function errorCallback(response) {
-            if(response && response.data && response.data.msg) {
-              var msg = escapeStringForHtml(response.data.msg);
+            if(response && response.data && response.data instanceof Array && response.data[0].msg) {
+              var msg = escapeStringForHtml(response.data[0].msg);
             } else {
               var msg = "Unknown error";
             }
@@ -114,10 +125,10 @@ function createOverviewController(config) {
       }, function(response) {
         var severity = "danger";
         if(response && response.data && response.data.msg) {
-          var sourceName = '<unknown>';
-          for(var i = 0; i < $scope.sources.length; i++) {
-            if($scope.sources[i]._id == id) {
-              sourceName = $scope.sources[i].name;
+          var instanceName = '<unknown>';
+          for(var i = 0; i < $scope[config.scopeVariable].length; i++) {
+            if($scope[config.scopeVariable][i]._id == id) {
+              instanceName = $scope[config.scopeVariable][i].name;
               break;
             }
           }
@@ -131,7 +142,7 @@ function createOverviewController(config) {
         } else {
           var msg = "Unknown error occurred";
         }
-        var title = "Failed to delete \"" + sourceName + "\"";
+        var title = "Failed to delete \"" + instanceName + "\"";
         $alert({title: title, content: $sce.trustAsHtml(msg), type: severity});
         delete $scope.deleting[id];
       });
