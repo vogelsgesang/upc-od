@@ -14,10 +14,10 @@
       "mappedType": "book",
       "fieldMapping": {
         "title": [ "http://purl.org/dc/terms/title" ],
-        "isbn": [ "http://purl.org/ontology/bibo/isbn13" ],
+        "isbn": [ "http://purl.org/ontology/bibo/isbn10" ],
         "bnb": [ "http://www.bl.uk/schemas/bibliographic/blterms#bnb" ],
         "author_name": [ "http://www.bl.uk/schemas/bibliographic/blterms#author" ]
       }
     }
-  ],
+  ]
 }
