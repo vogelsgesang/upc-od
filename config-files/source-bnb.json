@@ -1,0 +1,23 @@
+{
+  "_id": "538359929c2946772d6b27c2",
+  "name": "Sparql BNB British Library",
+  "adapter": {
+    "name": "sparql",
+    "config": {
+      "limit": 20,
+      "sparqlEndpoint": "http://bnb.data.bl.uk/sparql"
+    }
+  },
+  "mapping": [
+    {
+      "sourceType": "http://purl.org/ontology/bibo/Book",
+      "mappedType": "book",
+      "fieldMapping": {
+        "title": [ "http://purl.org/dc/terms/title" ],
+        "isbn": [ "http://purl.org/ontology/bibo/isbn13" ],
+        "bnb": [ "http://www.bl.uk/schemas/bibliographic/blterms#bnb" ],
+        "author_name": [ "http://www.bl.uk/schemas/bibliographic/blterms#author" ]
+      }
+    }
+  ],
+}
