@@ -40,7 +40,7 @@
           <y:Geometry height="56.231998443603516" width="35.095298767089844" x="463.9141036987301" y="118.36800155639645"/>
           <y:Fill color="#CCCCFF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="56.376953125" x="-10.640827178955078" y="-30.15887603759772">JSON API<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="133.931640625" x="-49.41817092895508" y="-30.15887603759772">BNB SparQL endpoint<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -80,7 +80,7 @@
           <y:Geometry height="39.59999999999991" width="275.1907945330522" x="416.69595854922284" y="463.5740020751953"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="38.740234375" x="118.2252800790261" y="10.815624999999955">Client<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="172.65625" x="51.267272266526106" y="10.815624999999955">Browser (FF, Chrome, IE, ...)<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -129,10 +129,10 @@ static files<y:LabelModel>
     <node id="n6">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="30.0" width="126.80000000000007" x="731.661753082275" y="312.69350051879877"/>
+          <y:Geometry height="30.0" width="138.26880000000006" x="720.192953082275" y="312.69350051879877"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="136.3046875" x="-4.752343749999909" y="6.015625">Metadata Managment<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="136.3046875" x="0.9820562500000278" y="6.015625">Metadata Managment<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -166,8 +166,8 @@ static files<y:LabelModel>
           <y:Geometry height="30.0" width="126.79999999999995" x="261.2617530822751" y="208.59999999999997"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="31.9375" modelName="custom" textColor="#000000" visible="true" width="56.376953125" x="35.21152343749998" y="-0.96875">JSON API
-Adapter<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="31.9375" modelName="custom" textColor="#000000" visible="true" width="71.1953125" x="27.802343749999977" y="-0.96875">Harvard LC
+adapter<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -184,8 +184,7 @@ Adapter<y:LabelModel>
           <y:Geometry height="30.0" width="126.79999999999995" x="418.06175308227506" y="208.59999999999997"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="31.9375" modelName="custom" textColor="#000000" visible="true" width="56.376953125" x="35.21152343749998" y="-0.96875">JSON API
-Adapter<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="98.4296875" x="14.185156249999977" y="6.015625">SparQL adapter<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -237,7 +236,7 @@ adapter<y:LabelModel>
           <y:Geometry height="56.231998443603516" width="35.095298767089844" x="309.1914543151852" y="122.36800155639645"/>
           <y:Fill color="#CCCCFF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="56.376953125" x="-10.640827178955078" y="-30.15887603759772">JSON API<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="108.5078125" x="-36.70625686645508" y="-30.15887603759772">Harvard JSON API<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -293,7 +292,6 @@ adapter<y:LabelModel>
       </data>
     </node>
     <node id="n15">
-      <data key="d5"/>
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="30.0" width="126.79999999999995" x="574.8617530822751" y="312.69350051879877"/>
@@ -393,7 +391,7 @@ adapter<y:LabelModel>
     <edge id="e8" source="n6" target="n7">
       <data key="d10">
         <y:PolyLineEdge>
-          <y:Path sx="0.0" sy="-15.0" tx="235.20000000000005" ty="14.98281250000008"/>
+          <y:Path sx="0.0" sy="-15.0" tx="229.4656" ty="14.98479999999995"/>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
           <y:BendStyle smoothed="false"/>
@@ -403,7 +401,7 @@ adapter<y:LabelModel>
     <edge id="e9" source="n5" target="n6">
       <data key="d10">
         <y:PolyLineEdge>
-          <y:Path sx="107.5" sy="-15.026063537597622" tx="0.0" ty="15.0"/>
+          <y:Path sx="101.76559999999995" sy="-14.97180103759763" tx="0.0" ty="15.0"/>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
           <y:BendStyle smoothed="false"/>
@@ -426,9 +424,8 @@ adapter<y:LabelModel>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
-          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="45.90625" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="67.62109375" x="-20.11275922627692" y="21.324759368240393">serves
-the source
-code<y:LabelModel>
+          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="31.9375" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="106.4921875" x="-41.62552216986336" y="26.98714195120249">serves
+HTML, CSS, JS, ...<y:LabelModel>
               <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -463,7 +460,7 @@ code<y:LabelModel>
     <edge id="e14" source="n6" target="n14">
       <data key="d10">
         <y:PolyLineEdge>
-          <y:Path sx="63.400000000000034" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:Path sx="69.13440000000003" sy="0.0" tx="0.0" ty="0.0"/>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
           <y:BendStyle smoothed="false"/>
@@ -471,7 +468,6 @@ code<y:LabelModel>
       </data>
     </edge>
     <edge id="e15" source="n5" target="n15">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="-49.30000000000007" sy="-15.010438537597622" tx="0.0" ty="15.0"/>
@@ -482,7 +478,6 @@ code<y:LabelModel>
       </data>
     </edge>
     <edge id="e16" source="n15" target="n7">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="78.39999999999998" ty="6.10000000000008"/>

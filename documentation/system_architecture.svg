@@ -185,7 +185,7 @@
       </g>
     </g>
     <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" shape-rendering="geometricPrecision" font-family="sans-serif" transform="matrix(1,0,0,1,-246,-69)" stroke-linecap="butt">
-      <text x="455.2733" xml:space="preserve" y="101.3478" clip-path="url(#clipPath2)" stroke="none">JSON API</text>
+      <text x="416.4959" xml:space="preserve" y="101.3478" clip-path="url(#clipPath2)" stroke="none">BNB SparQL endpoint</text>
     </g>
     <g shape-rendering="geometricPrecision" text-rendering="geometricPrecision" transform="matrix(1,0,0,1,529.4368,57.987)">
       <g clip-path="url(#clipPath5)">
@@ -302,7 +302,7 @@
       <ellipse rx="137.5954" ry="19.8" clip-path="url(#clipPath2)" cx="554.2914" cy="483.374" stroke="none"/>
     </g>
     <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" shape-rendering="geometricPrecision" font-family="sans-serif" transform="matrix(1,0,0,1,-246,-69)" stroke-linecap="butt">
-      <text x="536.9213" xml:space="preserve" y="487.5283" clip-path="url(#clipPath2)" stroke="none">Client</text>
+      <text x="469.9632" xml:space="preserve" y="487.5283" clip-path="url(#clipPath2)" stroke="none">Browser (FF, Chrome, IE, ...)</text>
       <ellipse rx="137.5954" fill="none" ry="19.8" clip-path="url(#clipPath2)" cx="554.2914" cy="483.374"/>
     </g>
     <g fill="rgb(255,204,0)" text-rendering="geometricPrecision" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,-246,-69)" stroke="rgb(255,204,0)">
@@ -321,11 +321,11 @@
       <rect fill="none" x="516.6618" width="341.8" height="30" y="362.987" clip-path="url(#clipPath2)"/>
     </g>
     <g fill="rgb(255,204,0)" text-rendering="geometricPrecision" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,-246,-69)" stroke="rgb(255,204,0)">
-      <rect x="731.6618" width="126.8" height="30" y="312.6935" clip-path="url(#clipPath2)" stroke="none"/>
+      <rect x="720.193" width="138.2688" height="30" y="312.6935" clip-path="url(#clipPath2)" stroke="none"/>
     </g>
     <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" shape-rendering="geometricPrecision" font-family="sans-serif" transform="matrix(1,0,0,1,-246,-69)" stroke-linecap="butt">
-      <text x="728.9094" xml:space="preserve" y="331.8478" clip-path="url(#clipPath2)" stroke="none">Metadata Managment</text>
-      <rect fill="none" x="731.6618" width="126.8" height="30" y="312.6935" clip-path="url(#clipPath2)"/>
+      <text x="723.175" xml:space="preserve" y="331.8478" clip-path="url(#clipPath2)" stroke="none">Metadata Managment</text>
+      <rect fill="none" x="720.193" width="138.2688" height="30" y="312.6935" clip-path="url(#clipPath2)"/>
     </g>
     <g fill="rgb(255,204,0)" text-rendering="geometricPrecision" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,-246,-69)" stroke="rgb(255,204,0)">
       <rect x="261.2618" width="597.2" height="30" y="262.4" clip-path="url(#clipPath2)" stroke="none"/>
@@ -338,16 +338,15 @@
       <rect x="261.2618" width="126.8" height="30" y="208.6" clip-path="url(#clipPath2)" stroke="none"/>
     </g>
     <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" shape-rendering="geometricPrecision" font-family="sans-serif" transform="matrix(1,0,0,1,-246,-69)" stroke-linecap="butt">
-      <text x="298.4733" xml:space="preserve" y="220.7699" clip-path="url(#clipPath2)" stroke="none">JSON API</text>
-      <text x="300.7526" xml:space="preserve" y="234.7387" clip-path="url(#clipPath2)" stroke="none">Adapter</text>
+      <text x="291.0641" xml:space="preserve" y="220.7699" clip-path="url(#clipPath2)" stroke="none">Harvard LC</text>
+      <text x="301.1803" xml:space="preserve" y="234.7387" clip-path="url(#clipPath2)" stroke="none">adapter</text>
       <rect fill="none" x="261.2618" width="126.8" height="30" y="208.6" clip-path="url(#clipPath2)"/>
     </g>
     <g fill="rgb(255,204,0)" text-rendering="geometricPrecision" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,-246,-69)" stroke="rgb(255,204,0)">
       <rect x="418.0618" width="126.8" height="30" y="208.6" clip-path="url(#clipPath2)" stroke="none"/>
     </g>
     <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" shape-rendering="geometricPrecision" font-family="sans-serif" transform="matrix(1,0,0,1,-246,-69)" stroke-linecap="butt">
-      <text x="455.2733" xml:space="preserve" y="220.7699" clip-path="url(#clipPath2)" stroke="none">JSON API</text>
-      <text x="457.5526" xml:space="preserve" y="234.7387" clip-path="url(#clipPath2)" stroke="none">Adapter</text>
+      <text x="434.2469" xml:space="preserve" y="227.7543" clip-path="url(#clipPath2)" stroke="none">SparQL adapter</text>
       <rect fill="none" x="418.0618" width="126.8" height="30" y="208.6" clip-path="url(#clipPath2)"/>
     </g>
     <g fill="rgb(255,204,0)" text-rendering="geometricPrecision" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,-246,-69)" stroke="rgb(255,204,0)">
@@ -410,7 +409,7 @@
       </g>
     </g>
     <g text-rendering="geometricPrecision" stroke-miterlimit="1.45" shape-rendering="geometricPrecision" font-family="sans-serif" transform="matrix(1,0,0,1,-246,-69)" stroke-linecap="butt">
-      <text x="300.5506" xml:space="preserve" y="105.3478" clip-path="url(#clipPath2)" stroke="none">JSON API</text>
+      <text x="274.4852" xml:space="preserve" y="105.3478" clip-path="url(#clipPath2)" stroke="none">Harvard JSON API</text>
     </g>
     <g shape-rendering="geometricPrecision" text-rendering="geometricPrecision" transform="matrix(1,0,0,1,705.8165,166.0805)">
       <g clip-path="url(#clipPath7)">
@@ -643,15 +642,14 @@
       <rect fill="none" x="574.8618" width="126.8" height="30" y="312.6935" clip-path="url(#clipPath2)"/>
       <path fill="none" d="M412.2683 392.987 L517.197 459.7662" clip-path="url(#clipPath2)"/>
       <path d="M523.9461 464.0615 L516.507 453.4004 L516.3534 459.2293 L511.1379 461.8367 Z" clip-path="url(#clipPath2)" stroke="none"/>
-      <text x="406.3138" xml:space="preserve" y="427.4504" clip-path="url(#clipPath2)" stroke="none">serves</text>
-      <text x="394.1556" xml:space="preserve" y="441.4192" clip-path="url(#clipPath2)" stroke="none">the source</text>
-      <text x="411.4964" xml:space="preserve" y="455.3879" clip-path="url(#clipPath2)" stroke="none">code</text>
+      <text x="404.2366" xml:space="preserve" y="433.1128" clip-path="url(#clipPath2)" stroke="none">serves</text>
+      <text x="372.6428" xml:space="preserve" y="447.0816" clip-path="url(#clipPath2)" stroke="none">HTML, CSS, JS, ...</text>
       <path fill="none" d="M582.8496 464.0052 L680.9409 397.4774" clip-path="url(#clipPath2)"/>
       <path d="M687.5618 392.987 L674.8239 395.5846 L680.1133 398.0387 L680.437 403.8607 Z" clip-path="url(#clipPath2)" stroke="none"/>
-      <path fill="none" d="M795.0618 362.9609 L795.0618 350.6935" clip-path="url(#clipPath2)"/>
-      <path d="M795.0618 342.6935 L790.0618 354.6935 L795.0618 351.6935 L800.0618 354.6935 Z" clip-path="url(#clipPath2)" stroke="none"/>
-      <path fill="none" d="M795.0618 312.6538 L795.0618 300.4224" clip-path="url(#clipPath2)"/>
-      <path d="M795.0618 292.4224 L790.0618 304.4224 L795.0618 301.4224 L800.0618 304.4224 Z" clip-path="url(#clipPath2)" stroke="none"/>
+      <path fill="none" d="M789.3273 362.9755 L789.3273 350.6935" clip-path="url(#clipPath2)"/>
+      <path d="M789.3273 342.6935 L784.3273 354.6935 L789.3273 351.6935 L794.3273 354.6935 Z" clip-path="url(#clipPath2)" stroke="none"/>
+      <path fill="none" d="M789.3273 312.6538 L789.3273 300.4244" clip-path="url(#clipPath2)"/>
+      <path d="M789.3273 292.4244 L784.3273 304.4244 L789.3273 301.4244 L794.3273 304.4244 Z" clip-path="url(#clipPath2)" stroke="none"/>
       <path fill="none" d="M559.8618 362.962 L559.8618 300.4" clip-path="url(#clipPath2)"/>
       <path d="M559.8618 292.4 L554.8618 304.4 L559.8618 301.4 L564.8618 304.4 Z" clip-path="url(#clipPath2)" stroke="none"/>
       <path fill="none" d="M324.6617 262.3682 L324.6617 246.6" clip-path="url(#clipPath2)"/>
