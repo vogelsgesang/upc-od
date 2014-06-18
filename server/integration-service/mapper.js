@@ -45,10 +45,9 @@ module.exports = function Mapper(mappings) {
     for(var i = 0; i < conditions.length; i++) {
       var fieldName = conditions[i][1];
       var newFieldname = fieldMapping[fieldName];
-      if(newFieldname==undefined){
-        console.log("Unknown field: " + fieldName);
+      if(newFieldname !== undefined) {
+        defcondic.push([conditions[i][0], newFieldname, conditions[i][2]]);
       }
-      else defcondic.push([conditions[i][0], newFieldname, conditions[i][2]]);
     }
     return defcondic;
   }
@@ -67,9 +66,9 @@ module.exports = function Mapper(mappings) {
       var fieldName = fieldNames[i];
       var vFieldname = fieldMapping[fieldName];
       
-      if(vFieldname==undefined)
-        console.log("Unknown field: " + fieldName); 
-      else defFieldN.push(vFieldname);
+      if(vFieldname !== undefined) {
+        defFieldN.push(vFieldname);
+      }
     }
     
     return defFieldN;
