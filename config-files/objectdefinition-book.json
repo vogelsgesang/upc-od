@@ -1,0 +1,20 @@
+{
+  "__v": 3,
+  "_id": "539a1930363ecb2f5e93eb07",
+  "name": "book",
+  "equality": [
+    ["=", "isbn"]
+  ],
+  "fields": [
+    "usc_classification",
+    "language",
+    "title",
+    "author",
+    "publication_place",
+    "publisher",
+    "published_in_year",
+    "isbn",
+    "keyword",
+    "topic"
+  ]
+}
