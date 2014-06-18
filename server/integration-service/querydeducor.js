@@ -1,13 +1,11 @@
-function QueryDeducor(schemaDefinition) {
-  //deduces queries based on already known facts
-  //and on the schema definition
+//deduces queries based on already known facts
+//and on the schema definition
+function QueryDeducor(equality) {
   this.deduceQueries = function(facts) {
-    //you can access the schema definition using the variable schemaDefinition.
-    //I think that the equality definition schemaDefinition.equality is of special interest for you.
     //The parameter facts will contain all the facts which are already known about a specific object
-    //(i.e. only the fields)
+    //(i.e. only obj.fields)
     //
-    //Please return an array of query conditions which can be used in order to query for additional
+    //returs an array of query conditions which can be used in order to query for additional
     //informations for a specific object. Return an array of the following format:
     //[
     //  [
@@ -18,9 +16,8 @@ function QueryDeducor(schemaDefinition) {
     //  ]
     //]
     //This return value would have the meaning: search for all books with isbn 1234 or 23456
-    //
-    //for now, I just return an empty array. Just remove the following line as soon as you have something useful
-    return [];
+    //An example of this can be found on https://gist.github.com/vogelsgesang/27da988e271ff70a70ea
+    
   }
 }
 module.exports = QueryDeducor;

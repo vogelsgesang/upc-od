@@ -75,23 +75,25 @@ function ObjectMerger(equality) {
     if(obj1.type !== obj2.type) {
       return false;
     } else {
-      //check all conditions using Array.prototype.some
-      var retVal = equality.some(function(condition) {
-        var conditionType = condition[0];
-        if(conditionType == "=") {
-          var fieldName = condition[1];
-          if((obj1.fields[fieldName]!==undefined)&&(obj2.fields[fieldName]!==undefined)){
-            if(obj1.fields[fieldName][0]===obj2.fields[fieldName][0]) { //TODO: better equality checking
-              return true;
+      //check all conditions using Array.prototype.some (=> ORed)
+      return equality.some(function(andConditions) {
+        //check the sub conditions using Array.prototype.every (=> ANDed)
+        return andConditions.every(function(condition) {
+          var conditionType = condition[0];
+          if(conditionType == "=") {
+            var fieldName = condition[1];
+            if((obj1.fields[fieldName]!==undefined)&&(obj2.fields[fieldName]!==undefined)){
+              if(obj1.fields[fieldName][0]===obj2.fields[fieldName][0]) { //TODO: better equality checking
+                return true;
+              } else {
+                return false
+              }
             } else {
-              return false
+              return false;
             }
-          } else {
-            return false;
           }
-        }
+        }); //andConditions.every
       }); //equality.some
-      return retVal;
     }
   }
 }

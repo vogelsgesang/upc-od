@@ -3,7 +3,9 @@
   "_id": "539a1930363ecb2f5e93eb07",
   "name": "book",
   "equality": [
-    ["=", "isbn"]
+    [
+      ["=", "isbn"]
+    ]
   ],
   "fields": [
     "usc_classification",
