@@ -34,7 +34,7 @@ module.exports = function Mapper(mappings) {
   
   /*
    * rewrites a condition so that it can be passed to the source
-   * Fields without a corresponding mapping should be removed from the array.
+   * if the condition includes an field which is not mapped, false will be returned
    * parameters: relevant mapping, conditions which should be rewritten
    * returns the rewritten conditions
    */
@@ -47,6 +47,8 @@ module.exports = function Mapper(mappings) {
       var newFieldname = fieldMapping[fieldName];
       if(newFieldname !== undefined) {
         defcondic.push([conditions[i][0], newFieldname, conditions[i][2]]);
+      } else {
+        return false;
       }
     }
     return defcondic;

@@ -85,6 +85,10 @@ function AdapterWrapper(sourceConfig) {
       }
       objectType = relevantMapping["sourceType"];
       var mappedConditions = mapper.rewriteConditionsForSource(relevantMapping, conditions);
+      if(mappedConditions === false) {
+        resolve([]);
+        return;
+      }
       var mappedFields = mapper.renameFieldsForSource(relevantMapping, fields);
       
       var MCkey = keygenerator.generateKey(objectType, mappedConditions, mappedFields);
