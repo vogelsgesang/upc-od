@@ -75,11 +75,7 @@ function ConsolidatedQuery(sources, objectDefinitions) {
       //pose new queries
       if(query.length != 0) {
         //TODO: broadcastQuery(conditions, false);
-      } else {
-        checkDone();
       }
-    } else {
-      checkDone();
     }
   }
 
@@ -87,15 +83,20 @@ function ConsolidatedQuery(sources, objectDefinitions) {
   //and registers the appropriate eventListeners
   function addPromises(promises, createNewObjects) {
     promises.forEach(function(promise) {
-      var newPromise = promise.finally(function() {
-        //remove this promise from the set of unresolved promises
-        unresolvedPromises.splice(unresolvedPromises.indexOf(newPromise) ,1)
-      })
+      var newPromise = promise
       .then(function(objects) {
         handleNewResults(objects, createNewObjects);
+      }).then(function() {
+        //remove this promise from the set of unresolved promises
+        unresolvedPromises.splice(unresolvedPromises.indexOf(newPromise) ,1)
+        checkDone();
       }).catch(function(e) {
+        //remove this promise from the set of unresolved promises
+        unresolvedPromises.splice(unresolvedPromises.indexOf(newPromise) ,1)
+        //add the error to the list of errors
         results.errors.push(e);
-        self.emit("progress", e);
+        self.emit("progress", e, results);
+        //check if we are already done
         checkDone();
       });
       unresolvedPromises.push(newPromise);
@@ -123,7 +124,7 @@ function ConsolidatedQuery(sources, objectDefinitions) {
       process.nextTick(function() {
         var err = new Error("unknow object type: " + objectType)
         results.errors.push(err);
-        self.emit("progress", err);
+        self.emit("progress", err, results);
         checkDone(); //might be that we are done before even getting started
       });
     } else {
