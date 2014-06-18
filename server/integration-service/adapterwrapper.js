@@ -61,8 +61,8 @@ function KeyGenerator(sourceId) {
  */
 function AdapterWrapper(sourceConfig) {
   var AdapterClass = require("../adapters/" + sourceConfig.adapter.name);
-  var mapper = new Mapper(sourceConfig.mapping);
   var adapter = new AdapterClass(sourceConfig.adapter.config);
+  var mapper = new Mapper(sourceConfig.mapping);
   var keygenerator = new KeyGenerator(sourceConfig._id);
 
   /**

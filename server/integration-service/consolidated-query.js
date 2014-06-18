@@ -1,6 +1,5 @@
 "use strict";
 var EventEmitter = require('events').EventEmitter;
-
 function ConsolidatedQuery(sources, objectDefinitions) {
   //necessary for inheriting from EventEmitter
   EventEmitter.call(this);
@@ -19,9 +18,9 @@ function ConsolidatedQuery(sources, objectDefinitions) {
   objectDefinitions = tmpObjectDefinitions;
   tmpObjectDefinitions = undefined;
   //create an index on the names of object definitions
-  var objectDefinitionsByNames = {};
+  var objectDefinitionsByName = {};
   Object.keys(objectDefinitions).forEach(function(key) {
-    objectDefinitionsByNames[objectDefinitions[key].name] = objectDefinitions[key];
+    objectDefinitionsByName[objectDefinitions[key].name] = objectDefinitions[key];
   });
   
   //stores all unresolved promises
@@ -32,10 +31,9 @@ function ConsolidatedQuery(sources, objectDefinitions) {
     data: []
   }
 
-  //used by the following functions in order to access this
+  //used by the following functions in order to access the reference to this
   var self = this;
-  //Yes, JS is a little bit different with regards to the
-  //handling of "this".
+  //Yes, JS is a little bit different with regards to the handling of "this".
 
   //TODO: implement this function
   function removePosedQueries(queries) {
@@ -57,11 +55,18 @@ function ConsolidatedQuery(sources, objectDefinitions) {
   //    does represent a new object and can not be merged with already existing data
   function handleNewResults(objects, createNewObjects) {
     if(objects.length != 0) {
-      //TODO: update the consolidated data
-      //var changed = duplicateMerger.mergeWithObjects(results.data, objects, createNewObjects);
-      results.data = results.data.concat(objects); //just for now; this will be replaced later
+      //update the consolidated data
+      objects.forEach(function(newObject) {
+        var type = newObject.type;
+        var objectDefinition = objectDefinitionsByName[type];
+        if(objectDefinition) {
+          results.data = objectDefinition.objectMerger.addNewObject(results.data, newObject, createNewObjects);
+        } else {
+          results.data = results.data.concat(newObject);
+        }
+      });
       //report progress
-      self.emit("progress");
+      self.emit("progress", null, results);
       //TODO:infer queries
       //var query = QueryDeducor.createQueriesFor(objectType, results.data);
       var query = []; //just for now; will be replaced later
@@ -90,7 +95,7 @@ function ConsolidatedQuery(sources, objectDefinitions) {
         handleNewResults(objects, createNewObjects);
       }).catch(function(e) {
         results.errors.push(e);
-        self.emit("progress", null, e);
+        self.emit("progress", e);
         checkDone();
       });
       unresolvedPromises.push(newPromise);
@@ -100,6 +105,7 @@ function ConsolidatedQuery(sources, objectDefinitions) {
     process.nextTick(checkDone); 
   }
 
+  //used internally in order to broadcast a query
   function broadcastQuery(objectType, conditions, fields, createNewObjects) {
     var newPromises = Object.keys(sources).map(function(sourceId) {
       return sources[sourceId].query(objectType, conditions, fields);
@@ -111,17 +117,17 @@ function ConsolidatedQuery(sources, objectDefinitions) {
   //consolidated query
   this.addQueries = function addQueries(objectType, conditions) {
     //broadcasts a query to all sources
-    var objDef = objectDefinitionsByNames[objectType];
+    var objDef = objectDefinitionsByName[objectType];
     if(objDef == undefined) {
       //we must report errors asynchronously! (hence, I am using process.nextTick)
       process.nextTick(function() {
         var err = new Error("unknow object type: " + objectType)
         results.errors.push(err);
-        self.emit("progress", null, err);
+        self.emit("progress", err);
         checkDone(); //might be that we are done before even getting started
       });
     } else {
-      var fields = objectDefinitionsByNames[objectType].fields;
+      var fields = objDef.fields;
       broadcastQuery(objectType, conditions, fields, true);
     }
   }

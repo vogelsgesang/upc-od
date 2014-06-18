@@ -3,7 +3,7 @@ var Promise = require("bluebird");
 var AdapterWrapper = require("./adapterwrapper");
 var ConsolidatedQuery = require("./consolidated-query");
 var QueryDeducor = require("./querydeducor");
-var ObjectMerger = function(){}; //place holder
+var ObjectMerger = require("./objectmerger");
 
 function IntegrationService() {
   var sources = {};
@@ -46,6 +46,7 @@ function IntegrationService() {
     if(Object.keys(objectDefinitions).indexOf(""+objectConfig._id) >= 0) {
       this.removeObjectDefinition(objectConfig._id);
     }
+    //console.log(require('util').inspect(objectConfig, false, null));
     objectDefinitions[objectConfig._id] = {
       id: objectConfig._id,
       name: objectConfig.name,
