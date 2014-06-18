@@ -31,15 +31,30 @@ function ConsolidatedQuery(sources, objectDefinitions) {
     data: []
   }
 
+  var posedQueries = [];
+  //creates a normalized (!) string representation of a conjunctive clause
+  function hashQuery(objType, query) {
+    var stringifiedConditions = query.map(function(c) {
+      return JSON.stringify(c);
+    });
+    var normalizedHash = objType + ";" + stringifiedConditions.sort().join(",");
+    return normalizedHash;
+  }
+  //was this query already posed
+  function queryAlreadyPosed(objType, query) {
+    var normalizedHash = hashQuery(objType, query);
+    return posedQueries.indexOf(normalizedHash) !== -1;
+  }
+  //remembers a query as being already posed
+  function rememberPosedQuery(objType, query) {
+    var normalizedHash = hashQuery(objType, query);
+    posedQueries.push(normalizedHash);
+  }
+
   //used by the following functions in order to access the reference to this
   var self = this;
   //Yes, JS is a little bit different with regards to the handling of "this".
 
-  //TODO: implement this function
-  function removePosedQueries(queries) {
-    //TODO: filter out queries which were already posed
-    return queries;
-  }
 
   //checks if we are already done and emits the "done" signal
   function checkDone() {
@@ -67,18 +82,13 @@ function ConsolidatedQuery(sources, objectDefinitions) {
       });
       //report progress
       self.emit("progress", null, results);
-      //infer queries
-      var deducedQueries = [];
+      //infer queries and broadcast them
       results.data.forEach(function(obj) {
-        deducedQueries = deducedQueries.concat(objectDefinitionsByName[obj.type].queryDeducor.deduceQueries(obj.fields));
+        var deducedQueries = objectDefinitionsByName[obj.type].queryDeducor.deduceQueries(obj.fields);
+        deducedQueries.forEach(function(query) {
+          broadcastQuery(obj.type, query, false);
+        });
       });
-      console.log(deducedQueries);
-      //TODO: filter out already posed parts of the query
-      //query = removePosedQueries(query);
-      //pose new queries
-      /*if(query.length != 0) {
-        //TODO: broadcastQuery(conditions, false);
-      }*/
     }
   }
 
@@ -110,16 +120,11 @@ function ConsolidatedQuery(sources, objectDefinitions) {
   }
 
   //used internally in order to broadcast a query
-  function broadcastQuery(objectType, conditions, fields, createNewObjects) {
-    var newPromises = Object.keys(sources).map(function(sourceId) {
-      return sources[sourceId].query(objectType, conditions, fields);
-    });
-    addPromises(newPromises, createNewObjects);
-  }
-
-  //adds a new query to the scope of interest of this
-  //consolidated query
-  this.addQueries = function addQueries(objectType, conditions) {
+  //if this query was already broadcasted before, this function does nothing.
+  function broadcastQuery(objectType, conditions, createNewObjects) {
+    if(queryAlreadyPosed(objectType, conditions) && !createNewObjects) {
+      return;
+    }
     //broadcasts a query to all sources
     var objDef = objectDefinitionsByName[objectType];
     if(objDef == undefined) {
@@ -128,12 +133,23 @@ function ConsolidatedQuery(sources, objectDefinitions) {
         var err = new Error("unknow object type: " + objectType)
         results.errors.push(err);
         self.emit("progress", err, results);
-        checkDone(); //might be that we are done before even getting started
+        checkDone(); //might be that we are done before even sending the (first) query...
       });
     } else {
       var fields = objDef.fields;
-      broadcastQuery(objectType, conditions, fields, true);
+      var newPromises = Object.keys(sources).map(function(sourceId) {
+        return sources[sourceId].query(objectType, conditions, fields);
+      });
+      rememberPosedQuery(objectType, conditions);
+      addPromises(newPromises, createNewObjects);
     }
+  }
+
+  //adds a new query to the scope of interest of this
+  //consolidated query
+  this.addQuery = function addQuery(objectType, conditions) {
+    //broadcasts a query to all sources
+    broadcastQuery(objectType, conditions, true);
   }
 
   //cancels this query

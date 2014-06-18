@@ -31,7 +31,6 @@ function KeyGenerator(sourceId) {
     for(var i = 0; i < fields.length; i++) {
       arrFields.push(JSON.stringify(fields[i]));
     }
-    
     arrFields = arrFields.sort();
     sField = arrFields.join(",");
     
@@ -39,7 +38,6 @@ function KeyGenerator(sourceId) {
     for(var i = 0; i < conditions.length; i++) {
       arrConditions.push(JSON.stringify(conditions[i]));
     }
-    
     arrConditions = arrConditions.sort();
     sConditions = arrConditions.join(",");
     

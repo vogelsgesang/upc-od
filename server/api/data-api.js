@@ -34,7 +34,7 @@ module.exports = function createDataApi(integrationService) {
       var conditions = req.body.conditions;
       var objectType = req.body.objectType;
       var consolidatedQuery = integrationService.createConsolidatedQuery();
-      consolidatedQuery.addQueries(objectType, conditions);
+      consolidatedQuery.addQuery(objectType, conditions);
       consolidatedQuery.on("done", function(results) {
         //errors can not be serialized by JSON.stringify. Hence, they
         //must be handled differently.
