@@ -67,15 +67,18 @@ function ConsolidatedQuery(sources, objectDefinitions) {
       });
       //report progress
       self.emit("progress", null, results);
-      //TODO:infer queries
-      //var query = QueryDeducor.createQueriesFor(objectType, results.data);
-      var query = []; //just for now; will be replaced later
-      //filter out already posed parts of the query
-      query = removePosedQueries(query);
+      //infer queries
+      var deducedQueries = [];
+      results.data.forEach(function(obj) {
+        deducedQueries = deducedQueries.concat(objectDefinitionsByName[obj.type].queryDeducor.deduceQueries(obj.fields));
+      });
+      console.log(deducedQueries);
+      //TODO: filter out already posed parts of the query
+      //query = removePosedQueries(query);
       //pose new queries
-      if(query.length != 0) {
+      /*if(query.length != 0) {
         //TODO: broadcastQuery(conditions, false);
-      }
+      }*/
     }
   }
 
