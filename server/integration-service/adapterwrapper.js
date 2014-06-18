@@ -97,7 +97,7 @@ function AdapterWrapper(sourceConfig) {
           if (!err && results) {
             // Key found in cache, return value
             console.log("Query has been found in cache: "+MCkey);
-            var mappedResults = mapper.mapInstancesFromSource(results, fields);
+            var mappedResults = mapper.mapInstancesFromSource(results, fields, sourceConfig._id);
             resolve(mappedResults);
           } else {
             // Key not found, fetch value from ORIGINAL source
@@ -108,7 +108,7 @@ function AdapterWrapper(sourceConfig) {
                 else console.log("New query saved in cache: "+MCkey);
               });
                
-              var mappedResults = mapper.mapInstancesFromSource(results, fields);
+              var mappedResults = mapper.mapInstancesFromSource(results, fields, sourceConfig._id);
               resolve(mappedResults);
             }, function errorCallback(error) {
               reject(error);

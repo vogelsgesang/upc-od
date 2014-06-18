@@ -94,9 +94,11 @@ module.exports = function Mapper(mappings) {
    * parameters:
    *  * an array containing all the instances which should be mapped
    *  * the fields which should be extracted from this source
+   *  * the sourceId. The original id is ammended by this id in order to
+   *    keep it unique even when compared to objects form other sources
    * returns the instances with the mapped properties
    */
-  function mapInstancesFromSource(instances, fields) {
+  function mapInstancesFromSource(instances, fields, sourceId) {
     var definitelyInstances = [];
     
     for(var i = 0;i < instances.length; i++){
@@ -104,6 +106,11 @@ module.exports = function Mapper(mappings) {
       var mapping = this.findMappingFrom(originalInstance.type);
       var mappedFields = {};
 
+      //embed the source id into the id
+      mappedId = {
+        s: sourceId,
+        i: originalInstance.id
+      }
       //remap the fields
       var fMapp = mapping.fieldMapping;
       if(fMapp == undefined) fMapp = {};
@@ -135,7 +142,7 @@ module.exports = function Mapper(mappings) {
         }
       }
       var mappedInstance = {
-        id: originalInstance.id,
+        id: mappedId,
         type: mapping.mappedType,
         fields: mappedFields
       };

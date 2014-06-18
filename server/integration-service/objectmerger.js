@@ -2,7 +2,7 @@
 //Every instance of this class takes care of only one object type.
 //The class constructor expects the definition of equality of this object type.
 function ObjectMerger(equality) {
-  
+
   this.addNewObject = function(mergedData, newObject, createNewObjects) {
     //search for all duplicates in the mergedData
     var allDuplicatesIndices = [];
@@ -35,7 +35,15 @@ function ObjectMerger(equality) {
 
   function mergeObjects(objects) {
     var merged = {};
-    merged.id = {}; //TODO: assign a combined id
+    //merge the ids
+    merged.id = [];
+    objects.forEach(function(obj) {
+      if(obj.id instanceof Array) {
+        merged.id = merged.id.concat(obj.id);
+      } else {
+        merged.id.push(obj.id);
+      }
+    });
     //I simply use the type of the first merged object.
     //The type of all objects which have to be merged is the same, anyway.
     merged.type = objects[0].type;
