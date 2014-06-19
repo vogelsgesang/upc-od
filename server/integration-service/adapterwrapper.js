@@ -14,12 +14,10 @@ function isEmptyObject(obj) {
 }
 
 function KeyGenerator(sourceId) {
-  //@Franz: this function has/had multiple issues:
-  // 1. you did not take the sourceId into account. Hence, cache collisions between different sources were possible
-  // 2. your sorting aproach makes some mistakes:
-  //    F.e. the two field specifications [["a","b"], "c"] and ["a", ["b", "c"]] are both mapped to "a,b,c".
-  //    But these two field specifications have different meanings.
-  // 3. whitespaces are not handled correctly. The returned key must not contain whitespaces.
+/**
+ * Split the FIELDS and CONDITIONS to generate a KEY that wil be stored in memcache
+ * MD5 is used to encrypt the key.
+ */
   this.generateKey = function(type, conditions, fields) {
     var key = sourceId + ":" + type + ";";
     var sField = "";
@@ -91,7 +89,6 @@ function AdapterWrapper(sourceConfig) {
       
       var MCkey = keygenerator.generateKey(objectType, mappedConditions, mappedFields);
       
-      //check if it is in our cache?
       //if yes: send results from cache
       //else: send the query to the original source
       //send the query
